@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · dashboard-admin.html · role: Admin</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html" class="active">Dashboard</a>
+        <a href="products-list.html">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Dashboard Admin</div>
+          <div class="page-subtitle">Seluruh data — DASH-01</div>
+        </div>
+        <div class="topbar-user">
+          <span>Budi (Admin)</span>
+          <div class="avatar-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile">
+          <div class="value">Rp 128.4jt</div>
+          <div class="label">Total nilai inventori</div>
+        </div>
+        <div class="stat-tile warn">
+          <div class="value">7</div>
+          <div class="label">Produk di bawah reorder point</div>
+        </div>
+        <div class="stat-tile">
+          <div class="value">4</div>
+          <div class="label">Sales Order — Pending Approval</div>
+        </div>
+        <div class="stat-tile">
+          <div class="value">3</div>
+          <div class="label">Purchase Order — Ordered</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <h3>Produk di bawah reorder point</h3>
+          <div class="table-wrap">
+            <table class="wf-table">
+              <thead><tr><th>SKU</th><th>Produk</th><th>Stok</th><th>Reorder Point</th></tr></thead>
+              <tbody>
+                <tr><td>SKU-0012</td><td>Kabel HDMI 2m</td><td class="num">4</td><td class="num">10</td></tr>
+                <tr><td>SKU-0045</td><td>Mouse Wireless</td><td class="num">2</td><td class="num">15</td></tr>
+                <tr><td>SKU-0091</td><td>Kertas A4 80gr</td><td class="num">8</td><td class="num">20</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Order pending per status</h3>
+          <div class="table-wrap">
+            <table class="wf-table">
+              <thead><tr><th>Jenis</th><th>Status</th><th>Jumlah</th></tr></thead>
+              <tbody>
+                <tr><td>Sales Order</td><td><span class="badge pending">PendingApproval</span></td><td class="num">4</td></tr>
+                <tr><td>Sales Order</td><td><span class="badge approved">Approved</span></td><td class="num">2</td></tr>
+                <tr><td>Purchase Order</td><td><span class="badge ordered">Ordered</span></td><td class="num">3</td></tr>
+                <tr><td>Purchase Order</td><td><span class="badge partial">PartiallyReceived</span></td><td class="num">1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <p class="page-subtitle">Seluruh angka di atas berasal dari query agregasi (bukan angka statis) — lihat catatan implementasi di ADR terkait dashboard.</p>
+    </main>
+  </div>
+</body>
+</html>

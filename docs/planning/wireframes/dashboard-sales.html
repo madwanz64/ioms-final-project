@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Sales — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · dashboard-sales.html · role: Sales</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Sales</span>
+      <nav>
+        <a href="dashboard-sales.html" class="active">Dashboard</a>
+        <a href="products-list.html">Katalog Produk</a>
+        <a href="sales-orders-list.html">Sales Order Saya</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Dashboard Sales</div>
+          <div class="page-subtitle">Ringkasan order milik sendiri — DASH-01</div>
+        </div>
+        <div class="topbar-user">
+          <span>Sinta (Sales)</span>
+          <div class="avatar-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="value">2</div><div class="label">Draft</div></div>
+        <div class="stat-tile warn"><div class="value">1</div><div class="label">Pending Approval</div></div>
+        <div class="stat-tile"><div class="value">3</div><div class="label">Approved (menunggu goods issue)</div></div>
+        <div class="stat-tile"><div class="value">12</div><div class="label">Fulfilled (bulan ini)</div></div>
+      </div>
+
+      <div class="panel">
+        <h3>Sales Order saya — terbaru</h3>
+        <div class="table-wrap">
+          <table class="wf-table">
+            <thead><tr><th>No. SO</th><th>Customer</th><th>Tanggal</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>SO-2026-0088</td><td>PT Sumber Makmur</td><td>2026-09-02</td><td><span class="badge pending">PendingApproval</span></td><td class="actions"><a class="btn small" href="sales-order-detail.html">Lihat</a></td></tr>
+              <tr><td>SO-2026-0087</td><td>Toko Jaya Abadi</td><td>2026-09-01</td><td><span class="badge approved">Approved</span></td><td class="actions"><a class="btn small" href="sales-order-detail.html">Lihat</a></td></tr>
+              <tr><td>SO-2026-0086</td><td>CV Berkah</td><td>2026-08-30</td><td><span class="badge draft">Draft</span></td><td class="actions"><a class="btn small" href="sales-order-form.html">Lanjutkan</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="form-actions" style="margin-top:14px;">
+          <a class="btn primary" href="sales-order-form.html">+ Buat Sales Order</a>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

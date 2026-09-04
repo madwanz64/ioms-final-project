@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Sales Order — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · sales-order-form.html · role: Sales</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Sales</span>
+      <nav>
+        <a href="dashboard-sales.html">Dashboard</a>
+        <a href="products-list.html">Katalog Produk</a>
+        <a href="sales-orders-list.html" class="active">Sales Order Saya</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Buat Sales Order</div>
+          <div class="page-subtitle">SO-01 — dibuat berdasarkan katalog &amp; stok tersedia</div>
+        </div>
+      </div>
+
+      <form class="wf-form wide" action="#" method="post">
+        <div class="form-row">
+          <div class="field">
+            <label for="customer">Customer <span class="req">*</span></label>
+            <select id="customer">
+              <option>PT Sumber Makmur</option>
+              <option>Toko Jaya Abadi</option>
+              <option>CV Berkah</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="warehouse">Gudang Asal <span class="req">*</span></label>
+            <select id="warehouse">
+              <option>Gudang Jakarta</option>
+              <option>Gudang Surabaya</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Item Order</h3>
+        <div class="line-items-scroll">
+        <table class="wf-line-items">
+          <thead><tr><th>Produk</th><th style="width:90px;">Stok</th><th style="width:100px;">Qty</th><th style="width:150px;">Harga Jual</th><th style="width:130px;">Subtotal</th><th style="width:40px;"></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><select><option>Mouse Wireless</option><option>Keyboard Mechanical</option></select></td>
+              <td class="num">2</td>
+              <td><input type="number" value="5" min="1"></td>
+              <td class="num">Rp 120.000</td>
+              <td class="num">Rp 600.000</td>
+              <td><button type="button" class="btn small danger">×</button></td>
+            </tr>
+            <tr>
+              <td><select><option>Keyboard Mechanical</option><option>Mouse Wireless</option></select></td>
+              <td class="num">36</td>
+              <td><input type="number" value="2" min="1"></td>
+              <td class="num">Rp 650.000</td>
+              <td class="num">Rp 1.300.000</td>
+              <td><button type="button" class="btn small danger">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <button type="button" class="btn small ghost">+ Tambah Item</button>
+
+        <div class="alert error" style="margin-top:16px;">
+          Qty Mouse Wireless (5) melebihi stok tersedia di Gudang Jakarta (2). Perbaiki qty sebelum mengajukan.
+        </div>
+
+        <div class="panel" style="max-width:320px; margin-left:auto;">
+          <div style="display:flex; justify-content:space-between;"><span>Total</span><strong>Rp 1.900.000</strong></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn ghost">Simpan sebagai Draft</button>
+          <button type="submit" class="btn primary">Ajukan untuk Approval</button>
+          <a class="btn ghost" href="sales-orders-list.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

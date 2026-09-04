@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Produk & Stok — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · product-detail.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html" class="active">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Kabel HDMI 2m</div>
+          <div class="page-subtitle">SKU-0012 · Aksesoris · WH-01: stok multi-gudang</div>
+        </div>
+        <a class="btn primary" href="product-form.html">Edit Produk</a>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <h3>Informasi Produk</h3>
+          <div style="display:flex; gap:16px;">
+            <div class="img-placeholder">gambar produk</div>
+            <table class="wf-table" style="border:none;">
+              <tbody>
+                <tr><td>Harga Beli</td><td class="num">Rp 30.000</td></tr>
+                <tr><td>Harga Jual</td><td class="num">Rp 45.000</td></tr>
+                <tr><td>Reorder Point</td><td class="num">10</td></tr>
+                <tr><td>Status</td><td><span class="badge active">Aktif</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Stok Total: <strong>4 unit</strong> <span class="badge low-stock" style="margin-left:6px;">Low Stock</span></h3>
+          <div class="table-wrap">
+            <table class="wf-table">
+              <thead><tr><th>Gudang</th><th>Quantity</th><th>Update Terakhir</th></tr></thead>
+              <tbody>
+                <tr><td>Gudang Jakarta</td><td class="num">3</td><td>2026-09-03 14:20</td></tr>
+                <tr><td>Gudang Surabaya</td><td class="num">1</td><td>2026-09-02 09:10</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Riwayat Pergerakan Stok (StockLedger) — terbaru</h3>
+        <div class="table-wrap">
+          <table class="wf-table">
+            <thead><tr><th>Tanggal</th><th>Gudang</th><th>Tipe</th><th>Qty</th><th>Referensi</th><th>Oleh</th></tr></thead>
+            <tbody>
+              <tr><td>2026-09-03 14:20</td><td>Jakarta</td><td><span class="badge cancelled">Issue</span></td><td class="num">-2</td><td>SO-2026-0087</td><td>Rudi</td></tr>
+              <tr><td>2026-09-01 10:00</td><td>Jakarta</td><td><span class="badge received">Receipt</span></td><td class="num">+10</td><td>PO-2026-0029</td><td>Rudi</td></tr>
+              <tr><td>2026-08-28 16:40</td><td>Surabaya</td><td><span class="badge cancelled">Issue</span></td><td class="num">-1</td><td>SO-2026-0079</td><td>Agus</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

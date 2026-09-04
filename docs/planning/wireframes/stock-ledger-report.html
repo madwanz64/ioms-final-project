@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laporan Stock Ledger — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · stock-ledger-report.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin (laporan lengkap) / Warehouse Staff (laporan stok)</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html">Produk</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html" class="active">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Laporan Pergerakan Stok</div>
+          <div class="page-subtitle">REPORT-01 — CSV, dihasilkan dari query agregasi yang sama dengan dashboard</div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        <strong>Perbedaan per role:</strong> <strong>Sales</strong> hanya dapat mengunduh laporan order miliknya sendiri (bukan halaman ini).
+      </div>
+
+      <div class="toolbar">
+        <label style="font-size:.8rem;">Dari <input type="date" value="2026-08-01"></label>
+        <label style="font-size:.8rem;">Sampai <input type="date" value="2026-09-04"></label>
+        <select><option>Semua Gudang</option><option>Gudang Jakarta</option><option>Gudang Surabaya</option></select>
+        <select><option>Semua Tipe</option><option>Receipt</option><option>Issue</option><option>Adjustment</option></select>
+        <span class="spacer"></span>
+        <a class="btn primary" href="#">Unduh CSV</a>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wf-table">
+          <thead><tr><th>Tanggal</th><th>Produk</th><th>Gudang</th><th>Tipe</th><th>Qty</th><th>Referensi</th><th>Oleh</th></tr></thead>
+          <tbody>
+            <tr><td>2026-09-03 14:20</td><td>Kabel HDMI 2m</td><td>Jakarta</td><td><span class="badge cancelled">Issue</span></td><td class="num">-2</td><td>SO-2026-0087</td><td>Rudi</td></tr>
+            <tr><td>2026-09-01 09:15</td><td>Kertas A4 80gr</td><td>Jakarta</td><td><span class="badge received">Receipt</span></td><td class="num">+30</td><td>PO-2026-0029</td><td>Rudi</td></tr>
+            <tr><td>2026-08-30 11:00</td><td>Map Plastik</td><td>Jakarta</td><td><span class="badge received">Receipt</span></td><td class="num">+100</td><td>PO-2026-0029</td><td>Rudi</td></tr>
+            <tr><td>2026-08-28 16:40</td><td>Kabel HDMI 2m</td><td>Surabaya</td><td><span class="badge cancelled">Issue</span></td><td class="num">-1</td><td>SO-2026-0079</td><td>Agus</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel" style="margin-top:20px;">
+        <h3>Laporan Status Order (rentang tanggal sama)</h3>
+        <div class="table-wrap">
+          <table class="wf-table">
+            <thead><tr><th>Jenis</th><th>Nomor</th><th>Pihak Terkait</th><th>Status</th><th>Tanggal</th></tr></thead>
+            <tbody>
+              <tr><td>SO</td><td>SO-2026-0088</td><td>PT Sumber Makmur</td><td><span class="badge pending">PendingApproval</span></td><td>2026-09-02</td></tr>
+              <tr><td>PO</td><td>PO-2026-0029</td><td>PT Kertas Nusantara</td><td><span class="badge partial">PartiallyReceived</span></td><td>2026-08-29</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

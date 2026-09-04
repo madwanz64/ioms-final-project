@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · login.html</span>
+  <div class="login-shell">
+    <div class="login-card">
+      <h1>Inventory &amp; Order Management</h1>
+      <p class="sub">Masuk menggunakan akun yang diberikan Admin. Tidak ada pendaftaran mandiri.</p>
+
+      <!-- AUTH-01: contoh pesan gagal login, disembunyikan by default -->
+      <div class="alert error" hidden>
+        Email atau password salah.
+      </div>
+
+      <form class="wf-form" action="#" method="post">
+        <div class="field">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="nama@perusahaan.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Password <span class="req">*</span></label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary" style="width:100%;">Masuk</button>
+        </div>
+      </form>
+
+      <div class="demo-accounts">
+        <strong>Redirect setelah login (contoh alur, bukan tombol sungguhan):</strong>
+        <ul style="margin:6px 0 0; padding-left:18px;">
+          <li>Admin → <a href="dashboard-admin.html">dashboard-admin.html</a></li>
+          <li>Sales → <a href="dashboard-sales.html">dashboard-sales.html</a></li>
+          <li>Warehouse Staff → <a href="dashboard-warehouse.html">dashboard-warehouse.html</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

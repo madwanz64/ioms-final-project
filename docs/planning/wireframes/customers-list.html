@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · customers-list.html · role: Admin only</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html" class="active">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Customer</div>
+          <div class="page-subtitle">Digunakan pada Sales Order</div>
+        </div>
+        <a class="btn primary" href="#">+ Tambah Customer</a>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wf-table">
+          <thead><tr><th>Nama</th><th>Kontak</th><th>Alamat</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>PT Sumber Makmur</td><td>021-7778899</td><td>Jakarta Selatan</td><td><span class="badge active">Aktif</span></td><td class="actions"><a class="btn small" href="#">Edit</a></td></tr>
+            <tr><td>Toko Jaya Abadi</td><td>0812-1122-3344</td><td>Surabaya</td><td><span class="badge active">Aktif</span></td><td class="actions"><a class="btn small" href="#">Edit</a></td></tr>
+            <tr><td>CV Berkah</td><td>0819-5566-7788</td><td>Bandung</td><td><span class="badge active">Aktif</span></td><td class="actions"><a class="btn small" href="#">Edit</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Produk — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · product-form.html · role: Admin only</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html" class="active">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Tambah / Edit Produk</div>
+          <div class="page-subtitle">PRD-01 — SKU unik, angka &gt;= 0 tervalidasi frontend &amp; backend</div>
+        </div>
+      </div>
+
+      <div class="alert error">
+        <strong>Validasi gagal:</strong> periksa kembali field yang ditandai di bawah. Input yang sudah diisi tetap dipertahankan.
+      </div>
+
+      <form class="wf-form wide" action="#" method="post">
+        <div class="form-row">
+          <div class="field">
+            <label for="sku">SKU <span class="req">*</span></label>
+            <input type="text" id="sku" value="SKU-0012">
+            <span class="hint">Harus unik di seluruh katalog.</span>
+          </div>
+          <div class="field">
+            <label for="name">Nama Produk <span class="req">*</span></label>
+            <input type="text" id="name" value="Kabel HDMI 2m">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="category">Kategori <span class="req">*</span></label>
+            <select id="category">
+              <option>Aksesoris</option>
+              <option>Elektronik</option>
+              <option>ATK</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="unit">Unit <span class="req">*</span></label>
+            <input type="text" id="unit" value="pcs">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="buy-price">Harga Beli <span class="req">*</span></label>
+            <input type="number" id="buy-price" value="30000" min="0">
+          </div>
+          <div class="field">
+            <label for="sell-price">Harga Jual <span class="req">*</span></label>
+            <input type="number" id="sell-price" value="45000" min="0">
+          </div>
+        </div>
+
+        <div class="field has-error" style="max-width:260px;">
+          <label for="reorder">Reorder Point <span class="req">*</span></label>
+          <input type="number" id="reorder" value="-5" min="0">
+          <span class="error-msg">Reorder point harus angka &gt;= 0.</span>
+        </div>
+
+        <div class="field">
+          <label>Gambar Produk (opsional)</label>
+          <div style="display:flex; gap:14px; align-items:center;">
+            <div class="img-placeholder">preview gambar</div>
+            <div>
+              <input type="file" accept="image/png,image/jpeg">
+              <div class="hint">Maks 2MB, format JPG/PNG. Disimpan dengan nama acak (tidak dapat ditebak).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="max-width:200px;">
+          <label for="status">Status</label>
+          <select id="status">
+            <option>Aktif</option>
+            <option>Nonaktif</option>
+          </select>
+          <span class="hint">Produk yang sudah dipakai di order hanya bisa dinonaktifkan, bukan dihapus.</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Simpan Produk</button>
+          <a class="btn ghost" href="products-list.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

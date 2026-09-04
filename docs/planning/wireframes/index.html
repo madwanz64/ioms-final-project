@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe Index — Inventory & Order Management System</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+<style>
+  body{padding:32px; max-width:900px; margin:0 auto;}
+  .group{margin-bottom:28px;}
+  .group h2{font-size:1rem; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:10px;}
+  .links{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px;}
+  .links a{
+    display:block; padding:10px 12px; border:1px solid var(--border); border-radius:6px;
+    text-decoration:none; font-size:.85rem; background:#fafafa;
+  }
+  .links a:hover{background:#eee;}
+  .links a small{display:block; color:var(--text-muted); font-size:.7rem; margin-top:2px;}
+</style>
+</head>
+<body>
+  <h1>Wireframe — Inventory &amp; Order Management System</h1>
+  <p class="page-subtitle">Low-fidelity, HTML/CSS murni (belum ada JS/PHP/DB). Klik antar halaman untuk menyusuri alur navigasi tiap role.</p>
+
+  <div class="group">
+    <h2>Autentikasi</h2>
+    <div class="links">
+      <a href="login.html">Login <small>Titik masuk semua role</small></a>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Dashboard (per role — DASH-01)</h2>
+    <div class="links">
+      <a href="dashboard-admin.html">Dashboard Admin <small>Nilai inventori, low-stock, order pending</small></a>
+      <a href="dashboard-sales.html">Dashboard Sales <small>Ringkasan order miliknya</small></a>
+      <a href="dashboard-warehouse.html">Dashboard Warehouse Staff <small>Antrean receipt/issue, low-stock</small></a>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Master Data</h2>
+    <div class="links">
+      <a href="users-list.html">User <small>Admin only — USR-01</small></a>
+      <a href="products-list.html">Produk <small>List + search/filter/sort/pagination</small></a>
+      <a href="product-form.html">Form Produk <small>Create/edit + upload gambar</small></a>
+      <a href="product-detail.html">Detail Produk & Stok <small>Rincian stok per gudang — WH-01</small></a>
+      <a href="categories-list.html">Kategori</a>
+      <a href="warehouses-list.html">Gudang</a>
+      <a href="suppliers-list.html">Supplier</a>
+      <a href="customers-list.html">Customer</a>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Purchase Order</h2>
+    <div class="links">
+      <a href="purchase-orders-list.html">Daftar PO <small>Search/filter/sort — FIND-01</small></a>
+      <a href="purchase-order-detail.html">Detail PO <small>Status flow + goods receipt</small></a>
+      <a href="purchase-order-form.html">Form PO baru <small>Item baris produk</small></a>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Sales Order</h2>
+    <div class="links">
+      <a href="sales-orders-list.html">Daftar SO <small>Search/filter/sort</small></a>
+      <a href="sales-order-detail.html">Detail SO <small>Approval + goods issue</small></a>
+      <a href="sales-order-form.html">Form SO baru <small>Item baris produk</small></a>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Laporan &amp; API</h2>
+    <div class="links">
+      <a href="stock-ledger-report.html">Laporan Stock Ledger (CSV) <small>REPORT-01</small></a>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Error States</h2>
+    <div class="links">
+      <a href="error-403.html">403 Forbidden</a>
+      <a href="error-404.html">404 Not Found</a>
+    </div>
+  </div>
+
+  <p class="page-subtitle" style="margin-top:32px;">
+    Catatan: halaman <code>products-list.html</code>, <code>purchase-*</code>, dan <code>sales-*</code>
+    ditampilkan dari sudut pandang akses terluas (Admin/pihak pemroses). Perbedaan tampilan
+    tiap role dijelaskan lewat kotak anotasi di masing-masing halaman, sesuai matriks §1.2 brief.
+  </p>
+</body>
+</html>

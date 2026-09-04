@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gudang — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · warehouses-list.html · role: Admin only</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html" class="active">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Gudang</div>
+          <div class="page-subtitle">WH-01 — multi-lokasi, stok dihitung per gudang</div>
+        </div>
+        <a class="btn primary" href="#">+ Tambah Gudang</a>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wf-table">
+          <thead><tr><th>Nama Gudang</th><th>Lokasi</th><th>Jumlah SKU</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>Gudang Jakarta</td><td>Jl. Industri No. 12, Jakarta Utara</td><td class="num">28</td><td><span class="badge active">Aktif</span></td><td class="actions"><a class="btn small" href="#">Edit</a></td></tr>
+            <tr><td>Gudang Surabaya</td><td>Jl. Rungkut Industri No. 5, Surabaya</td><td class="num">19</td><td><span class="badge active">Aktif</span></td><td class="actions"><a class="btn small" href="#">Edit</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

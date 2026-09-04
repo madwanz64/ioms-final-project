@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daftar Purchase Order — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · purchase-orders-list.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html" class="active">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Purchase Order</div>
+          <div class="page-subtitle">PO-01, FIND-01</div>
+        </div>
+        <a class="btn primary" href="purchase-order-form.html">+ Buat PO</a>
+      </div>
+
+      <div class="annotation">
+        <strong>Perbedaan per role (§1.2):</strong> Admin dan <strong>Warehouse Staff</strong> boleh membuat PO (Warehouse Staff berstatus "mengusulkan"). <strong>Sales</strong> tidak memiliki akses ke halaman ini sama sekali.
+      </div>
+
+      <div class="toolbar">
+        <input type="text" placeholder="Cari nomor PO / supplier...">
+        <select><option>Semua Status</option><option>Draft</option><option>Ordered</option><option>PartiallyReceived</option><option>Received</option><option>Cancelled</option></select>
+        <span class="spacer"></span>
+        <select><option>Urutkan: Tanggal Terbaru</option><option>Tanggal Terlama</option></select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wf-table">
+          <thead><tr><th>No. PO</th><th>Supplier</th><th>Gudang Tujuan</th><th>Tanggal</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>PO-2026-0031</td><td>CV Elektronik Jaya</td><td>Gudang Jakarta</td><td>2026-09-01</td><td><span class="badge ordered">Ordered</span></td><td class="actions"><a class="btn small" href="purchase-order-detail.html">Lihat</a></td></tr>
+            <tr><td>PO-2026-0029</td><td>PT Kertas Nusantara</td><td>Gudang Jakarta</td><td>2026-08-29</td><td><span class="badge partial">PartiallyReceived</span></td><td class="actions"><a class="btn small" href="purchase-order-detail.html">Lihat</a></td></tr>
+            <tr><td>PO-2026-0027</td><td>UD Sumber Aksesoris</td><td>Gudang Surabaya</td><td>2026-08-25</td><td><span class="badge received">Received</span></td><td class="actions"><a class="btn small" href="purchase-order-detail.html">Lihat</a></td></tr>
+            <tr><td>PO-2026-0022</td><td>CV Elektronik Jaya</td><td>Gudang Jakarta</td><td>2026-08-18</td><td><span class="badge cancelled">Cancelled</span></td><td class="actions"><a class="btn small" href="purchase-order-detail.html">Lihat</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <span class="disabled">&laquo; Prev</span>
+        <span class="active">1</span>
+        <a href="#">2</a>
+        <a href="#">Next &raquo;</a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

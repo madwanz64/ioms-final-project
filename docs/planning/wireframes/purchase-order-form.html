@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Purchase Order — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · purchase-order-form.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin / Warehouse Staff</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="purchase-orders-list.html" class="active">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Buat Purchase Order</div>
+          <div class="page-subtitle">PO-01</div>
+        </div>
+      </div>
+
+      <form class="wf-form wide" action="#" method="post">
+        <div class="form-row">
+          <div class="field">
+            <label for="supplier">Supplier <span class="req">*</span></label>
+            <select id="supplier">
+              <option>CV Elektronik Jaya</option>
+              <option>PT Kertas Nusantara</option>
+              <option>UD Sumber Aksesoris</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="warehouse">Gudang Tujuan <span class="req">*</span></label>
+            <select id="warehouse">
+              <option>Gudang Jakarta</option>
+              <option>Gudang Surabaya</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" style="max-width:220px;">
+          <label for="order-date">Tanggal Order <span class="req">*</span></label>
+          <input type="date" id="order-date" value="2026-09-04">
+        </div>
+
+        <h3>Item Pesanan</h3>
+        <div class="line-items-scroll">
+        <table class="wf-line-items">
+          <thead><tr><th>Produk</th><th style="width:110px;">Qty</th><th style="width:160px;">Harga Beli</th><th style="width:140px;">Subtotal</th><th style="width:40px;"></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><select><option>Kertas A4 80gr</option><option>Map Plastik</option></select></td>
+              <td><input type="number" value="50" min="1"></td>
+              <td><input type="number" value="52000" min="0"></td>
+              <td class="num">Rp 2.600.000</td>
+              <td><button type="button" class="btn small danger">×</button></td>
+            </tr>
+            <tr>
+              <td><select><option>Map Plastik</option><option>Kertas A4 80gr</option></select></td>
+              <td><input type="number" value="100" min="1"></td>
+              <td><input type="number" value="5000" min="0"></td>
+              <td class="num">Rp 500.000</td>
+              <td><button type="button" class="btn small danger">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <button type="button" class="btn small ghost">+ Tambah Item</button>
+
+        <div class="panel" style="margin-top:18px; max-width:320px; margin-left:auto;">
+          <div style="display:flex; justify-content:space-between;"><span>Total</span><strong>Rp 3.100.000</strong></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Simpan sebagai Draft</button>
+          <button type="submit" class="btn ghost">Simpan &amp; Order ke Supplier</button>
+          <a class="btn ghost" href="purchase-orders-list.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

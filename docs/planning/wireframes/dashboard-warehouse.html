@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Warehouse Staff — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · dashboard-warehouse.html · role: Warehouse Staff</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Warehouse Staff</span>
+      <nav>
+        <a href="dashboard-warehouse.html" class="active">Dashboard</a>
+        <a href="products-list.html">Produk &amp; Stok</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Dashboard Warehouse Staff</div>
+          <div class="page-subtitle">Antrean goods receipt/issue &amp; produk low-stock — DASH-01</div>
+        </div>
+        <div class="topbar-user">
+          <span>Rudi (Warehouse Staff)</span>
+          <div class="avatar-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="value">2</div><div class="label">PO menunggu goods receipt</div></div>
+        <div class="stat-tile"><div class="value">3</div><div class="label">SO Approved — siap goods issue</div></div>
+        <div class="stat-tile warn"><div class="value">7</div><div class="label">Produk low-stock</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <h3>Antrean Goods Receipt (PO)</h3>
+          <div class="table-wrap">
+            <table class="wf-table">
+              <thead><tr><th>No. PO</th><th>Supplier</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>PO-2026-0031</td><td>CV Elektronik Jaya</td><td><span class="badge ordered">Ordered</span></td><td class="actions"><a class="btn small" href="purchase-order-detail.html">Proses</a></td></tr>
+                <tr><td>PO-2026-0029</td><td>PT Kertas Nusantara</td><td><span class="badge partial">PartiallyReceived</span></td><td class="actions"><a class="btn small" href="purchase-order-detail.html">Proses</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Antrean Goods Issue (SO)</h3>
+          <div class="table-wrap">
+            <table class="wf-table">
+              <thead><tr><th>No. SO</th><th>Customer</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>SO-2026-0087</td><td>Toko Jaya Abadi</td><td><span class="badge approved">Approved</span></td><td class="actions"><a class="btn small" href="sales-order-detail.html">Proses</a></td></tr>
+                <tr><td>SO-2026-0084</td><td>PT Sumber Makmur</td><td><span class="badge approved">Approved</span></td><td class="actions"><a class="btn small" href="sales-order-detail.html">Proses</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

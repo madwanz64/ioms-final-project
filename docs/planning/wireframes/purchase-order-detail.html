@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Purchase Order — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · purchase-order-detail.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin / Warehouse Staff</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="purchase-orders-list.html" class="active">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">PO-2026-0029</div>
+          <div class="page-subtitle">PT Kertas Nusantara · Gudang Jakarta · Dibuat 2026-08-29</div>
+        </div>
+        <span class="badge partial" style="font-size:.85rem; padding:6px 14px;">PartiallyReceived</span>
+      </div>
+
+      <div class="panel">
+        <h3>Status Flow</h3>
+        <p style="font-size:.8rem; color:var(--text-muted);">
+          Draft → Ordered → <strong>PartiallyReceived</strong> → Received (atau Cancelled sebelum Received)
+        </p>
+      </div>
+
+      <div class="panel">
+        <h3>Item Pesanan</h3>
+        <div class="table-wrap">
+          <table class="wf-table">
+            <thead><tr><th>Produk</th><th>Qty Dipesan</th><th>Qty Diterima</th><th>Sisa</th><th>Harga Beli</th><th>Subtotal</th></tr></thead>
+            <tbody>
+              <tr><td>Kertas A4 80gr</td><td class="num">50</td><td class="num">30</td><td class="num">20</td><td class="num">Rp 52.000</td><td class="num">Rp 2.600.000</td></tr>
+              <tr><td>Map Plastik</td><td class="num">100</td><td class="num">100</td><td class="num">0</td><td class="num">Rp 5.000</td><td class="num">Rp 500.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Proses Goods Receipt <span class="role-note">(khusus Admin &amp; Warehouse Staff — PO-01)</span></h3>
+        <p class="page-subtitle">Penerimaan sebagian (partial) diperbolehkan; sisa qty tetap tercatat pada PO.</p>
+        <div class="line-items-scroll">
+        <table class="wf-line-items">
+          <thead><tr><th>Produk</th><th>Sisa</th><th>Qty Diterima Sekarang</th></tr></thead>
+          <tbody>
+            <tr><td>Kertas A4 80gr</td><td>20</td><td><input type="number" value="20" min="0" max="20"></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="button">Konfirmasi Goods Receipt</button>
+        </div>
+        <p class="hint" style="margin-top:8px;">
+          Aksi ini menambah ProductStock &amp; menulis baris StockLedger (tipe Receipt) dalam satu transaksi — ARCH-02.
+        </p>
+      </div>
+
+      <div class="panel">
+        <h3>Riwayat Penerimaan (StockLedger terkait)</h3>
+        <div class="table-wrap">
+          <table class="wf-table">
+            <thead><tr><th>Tanggal</th><th>Produk</th><th>Qty Diterima</th><th>Oleh</th></tr></thead>
+            <tbody>
+              <tr><td>2026-09-01 09:15</td><td>Kertas A4 80gr</td><td class="num">+30</td><td>Rudi</td></tr>
+              <tr><td>2026-08-30 11:00</td><td>Map Plastik</td><td class="num">+100</td><td>Rudi</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

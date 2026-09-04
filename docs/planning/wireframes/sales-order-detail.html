@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Sales Order — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · sales-order-detail.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Semua role (aksi berbeda)</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html" class="active">Sales Order</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">SO-2026-0088</div>
+          <div class="page-subtitle">PT Sumber Makmur · Gudang Jakarta · Dibuat oleh Sinta (Sales) pada 2026-09-02</div>
+        </div>
+        <span class="badge pending" style="font-size:.85rem; padding:6px 14px;">PendingApproval</span>
+      </div>
+
+      <div class="panel">
+        <h3>Status Flow</h3>
+        <p style="font-size:.8rem; color:var(--text-muted);">
+          Draft → <strong>PendingApproval</strong> → Approved → Fulfilled (atau Cancelled sebelum Fulfilled)
+        </p>
+      </div>
+
+      <div class="panel">
+        <h3>Item Order</h3>
+        <div class="table-wrap">
+          <table class="wf-table">
+            <thead><tr><th>Produk</th><th>Qty</th><th>Harga Jual</th><th>Subtotal</th></tr></thead>
+            <tbody>
+              <tr><td>Mouse Wireless</td><td class="num">5</td><td class="num">Rp 120.000</td><td class="num">Rp 600.000</td></tr>
+              <tr><td>Keyboard Mechanical</td><td class="num">2</td><td class="num">Rp 650.000</td><td class="num">Rp 1.300.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="text-align:right; margin-top:8px; font-weight:600;">Total: Rp 1.900.000</div>
+      </div>
+
+      <div class="panel">
+        <h3>Approval <span class="role-note">(khusus Admin)</span></h3>
+        <p class="alert info">
+          Order ini dibuat oleh <strong>Sinta (Sales)</strong>. Jika Anda login sebagai Sinta, tombol approve/reject di bawah
+          <strong>tidak akan tampil / ditolak di server</strong> — Sales tidak dapat menyetujui order miliknya sendiri (§1.2, SO-01).
+        </p>
+        <div class="form-actions">
+          <button class="btn primary" type="button">Setujui Order</button>
+          <button class="btn danger" type="button">Tolak Order</button>
+        </div>
+        <div class="form-actions" style="margin-top:10px;">
+          <button class="btn" type="button" disabled>Setujui Order</button>
+          <span class="role-note">Tampilan tombol saat login sebagai Sinta (Sales, pembuat order) — nonaktif.</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Goods Issue <span class="role-note">(khusus Warehouse Staff, hanya jika status Approved)</span></h3>
+        <p class="page-subtitle">Contoh di bawah mengasumsikan status sudah Approved.</p>
+        <div class="line-items-scroll">
+        <table class="wf-line-items">
+          <thead><tr><th>Produk</th><th>Qty Dipesan</th><th>Stok Tersedia</th><th>Qty Dikeluarkan</th></tr></thead>
+          <tbody>
+            <tr><td>Mouse Wireless</td><td>5</td><td class="num">2</td><td><input type="number" value="2" max="2"></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="alert error">
+          Stok tidak mencukupi untuk memenuhi qty pesanan (5). Goods issue akan ditolak jika dipaksakan melebihi stok tersedia — ARCH-02.
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="button" disabled>Proses Goods Issue</button>
+        </div>
+        <p class="hint" style="margin-top:8px;">
+          Aksi ini mengurangi ProductStock &amp; menulis StockLedger (tipe Issue) dalam satu transaksi yang aman dari race condition.
+        </p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

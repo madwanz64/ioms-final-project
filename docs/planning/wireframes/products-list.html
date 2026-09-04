@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daftar Produk — Wireframe</title>
+<link rel="stylesheet" href="assets/wireframe.css">
+</head>
+<body>
+  <span class="wf-tag">WIREFRAME · products-list.html</span>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav>
+        <a href="dashboard-admin.html">Dashboard</a>
+        <a href="products-list.html" class="active">Produk</a>
+        <a href="categories-list.html">Kategori</a>
+        <a href="warehouses-list.html">Gudang</a>
+        <a href="suppliers-list.html">Supplier</a>
+        <a href="customers-list.html">Customer</a>
+        <a href="users-list.html">User</a>
+        <a href="purchase-orders-list.html">Purchase Order</a>
+        <a href="sales-orders-list.html">Sales Order</a>
+        <a href="stock-ledger-report.html">Laporan</a>
+        <a href="login.html">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Daftar Produk</div>
+          <div class="page-subtitle">PRD-01, FIND-01 — search/filter/sort/pagination</div>
+        </div>
+        <a class="btn primary" href="product-form.html">+ Tambah Produk</a>
+      </div>
+
+      <div class="annotation">
+        <strong>Perbedaan per role (§1.2):</strong> tampilan di atas adalah versi Admin (full CRUD).
+        <strong>Sales</strong> melihat versi katalog read-only (tombol Tambah/Edit/Nonaktifkan disembunyikan, harga beli disembunyikan).
+        <strong>Warehouse Staff</strong> melihat produk &amp; stok saja (tanpa harga jual, tanpa tombol edit).
+      </div>
+
+      <div class="toolbar">
+        <input type="text" placeholder="Cari nama / SKU...">
+        <select><option>Semua Kategori</option><option>Elektronik</option><option>ATK</option><option>Aksesoris</option></select>
+        <select><option>Semua Status Stok</option><option>Normal</option><option>Low Stock</option></select>
+        <span class="spacer"></span>
+        <select><option>Urutkan: Nama A-Z</option><option>Nama Z-A</option><option>Stok Terendah</option></select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wf-table">
+          <thead>
+            <tr><th>SKU</th><th>Nama Produk</th><th>Kategori</th><th>Harga Jual</th><th>Stok Total</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SKU-0012</td><td>Kabel HDMI 2m</td><td>Aksesoris</td><td class="num">Rp 45.000</td><td class="num">4</td><td><span class="badge low-stock">Low Stock</span></td><td class="actions"><a class="btn small" href="product-detail.html">Lihat</a> <a class="btn small" href="product-form.html">Edit</a></td></tr>
+            <tr><td>SKU-0034</td><td>Keyboard Mechanical</td><td>Elektronik</td><td class="num">Rp 650.000</td><td class="num">36</td><td><span class="badge active">Normal</span></td><td class="actions"><a class="btn small" href="product-detail.html">Lihat</a> <a class="btn small" href="product-form.html">Edit</a></td></tr>
+            <tr><td>SKU-0045</td><td>Mouse Wireless</td><td>Elektronik</td><td class="num">Rp 120.000</td><td class="num">2</td><td><span class="badge low-stock">Low Stock</span></td><td class="actions"><a class="btn small" href="product-detail.html">Lihat</a> <a class="btn small" href="product-form.html">Edit</a></td></tr>
+            <tr><td>SKU-0091</td><td>Kertas A4 80gr</td><td>ATK</td><td class="num">Rp 52.000</td><td class="num">8</td><td><span class="badge low-stock">Low Stock</span></td><td class="actions"><a class="btn small" href="product-detail.html">Lihat</a> <a class="btn small" href="product-form.html">Edit</a></td></tr>
+            <tr><td>SKU-0102</td><td>Map Plastik</td><td>ATK</td><td class="num">Rp 5.000</td><td class="num">210</td><td><span class="badge active">Normal</span></td><td class="actions"><a class="btn small" href="product-detail.html">Lihat</a> <a class="btn small" href="product-form.html">Edit</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <span class="disabled">&laquo; Prev</span>
+        <span class="active">1</span>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">Next &raquo;</a>
+      </div>
+      <p class="page-subtitle">Seed minimal 30 produk agar pagination (10/halaman) dapat diuji — FIND-01.</p>
+    </main>
+  </div>
+
+  <!-- ===== Contoh empty state (dipisah agar bisa dilihat langsung di file yang sama) ===== -->
+  <div class="app-shell" style="border-top:4px dashed #999;">
+    <aside class="sidebar">
+      <div class="brand">IOMS</div>
+      <span class="role-tag">Admin</span>
+      <nav><a class="active" href="#">Produk (contoh: hasil pencarian kosong)</a></nav>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="page-title">Daftar Produk</div>
+      </div>
+      <div class="toolbar">
+        <input type="text" value="xyz-tidak-ada">
+      </div>
+      <div class="empty-state">
+        <div class="icon-box"></div>
+        <h3>Tidak ada produk yang cocok</h3>
+        <p>Coba ubah kata kunci pencarian atau filter yang digunakan.</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
