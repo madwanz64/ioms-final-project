@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laporan — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title">Laporan Pergerakan Stok</div>
+          <div class="page-subtitle" id="page-subtitle">REPORT-01 — dihasilkan dari data yang sama dengan dashboard</div>
+        </div>
+        <div class="topbar-user">
+          <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="toolbar animate-in">
+        <label style="font-size:.8rem; display:flex; flex-direction:column; gap:3px;">Dari
+          <input type="date" id="f-start">
+        </label>
+        <label style="font-size:.8rem; display:flex; flex-direction:column; gap:3px;">Sampai
+          <input type="date" id="f-end">
+        </label>
+        <select id="f-warehouse"><option value="">Semua Gudang</option></select>
+        <select id="f-type">
+          <option value="">Semua Tipe</option>
+          <option value="Receipt">Receipt</option>
+          <option value="Issue">Issue</option>
+          <option value="Adjustment">Adjustment</option>
+        </select>
+        <span class="spacer"></span>
+        <button type="button" class="btn primary" id="btn-export-ledger">Unduh CSV Pergerakan Stok</button>
+      </div>
+
+      <div class="table-wrap animate-in">
+        <table class="data-table">
+          <thead><tr><th>Tanggal</th><th>Produk</th><th>Gudang</th><th>Tipe</th><th class="num">Qty</th><th>Referensi</th><th>Oleh</th></tr></thead>
+          <tbody id="ledger-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="panel animate-in" id="order-report-panel" style="margin-top:24px;">
+        <div class="topbar" style="margin-bottom:14px;">
+          <h3 class="mt-0 mb-0">Laporan Status Order (rentang tanggal sama)</h3>
+          <button type="button" class="btn small" id="btn-export-orders">Unduh CSV Status Order</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Jenis</th><th>Nomor</th><th>Pihak Terkait</th><th>Status</th><th>Tanggal</th></tr></thead>
+            <tbody id="order-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/stock-ledger-report.js"></script>
+</body>
+</html>
