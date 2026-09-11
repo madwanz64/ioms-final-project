@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Produk — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="product-name">Memuat...</div>
+          <div class="page-subtitle" id="product-meta"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <a class="btn primary" id="edit-link" href="#">Edit Produk</a>
+          <div class="topbar-user">
+            <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+            <div class="avatar" data-user-avatar></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel animate-in">
+          <h3>Informasi Produk</h3>
+          <div style="display:flex; gap:18px;">
+            <div class="img-drop" style="cursor:default;">
+              <img id="product-image" hidden alt="Gambar produk">
+              <span id="no-image-text">Tidak ada<br>gambar</span>
+            </div>
+            <table class="data-table" style="border:none;" id="info-table">
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <h3 id="stock-heading">Stok per Gudang</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Gudang</th><th class="num">Quantity</th></tr></thead>
+              <tbody id="stock-rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Riwayat Pergerakan Stok (StockLedger) — terbaru</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Tanggal</th><th>Gudang</th><th>Tipe</th><th class="num">Qty</th><th>Referensi</th></tr></thead>
+            <tbody id="ledger-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/product-detail.js"></script>
+</body>
+</html>

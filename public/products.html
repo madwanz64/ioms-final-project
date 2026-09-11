@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Produk — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title">Daftar Produk</div>
+          <div class="page-subtitle" id="page-subtitle">PRD-01, FIND-01</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <a class="btn primary" href="product-form.html" id="btn-add-product">+ Tambah Produk</a>
+          <div class="topbar-user">
+            <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+            <div class="avatar" data-user-avatar></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar animate-in">
+        <input type="text" id="f-search" placeholder="Cari nama / SKU...">
+        <select id="f-category"><option value="">Semua Kategori</option></select>
+        <select id="f-stock">
+          <option value="">Semua Status Stok</option>
+          <option value="low">Low Stock</option>
+          <option value="normal">Normal</option>
+        </select>
+        <span class="spacer"></span>
+        <select id="f-sort">
+          <option value="name-asc">Urutkan: Nama A-Z</option>
+          <option value="name-desc">Nama Z-A</option>
+          <option value="stock-asc">Stok Terendah</option>
+        </select>
+      </div>
+
+      <div class="table-wrap animate-in">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>SKU</th><th>Nama Produk</th><th>Kategori</th>
+              <th class="num">Harga Jual</th><th class="num">Stok Total</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="product-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/products.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Produk — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="form-title">Tambah Produk</div>
+          <div class="page-subtitle">PRD-01 — SKU unik, angka &gt;= 0 divalidasi di form ini</div>
+        </div>
+        <div class="topbar-user">
+          <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="alert error" id="form-error" hidden></div>
+
+      <form class="data-form wide animate-in" id="product-form" novalidate>
+        <input type="hidden" id="original-sku">
+
+        <div class="form-row">
+          <div class="field" id="field-sku">
+            <label for="sku">SKU <span class="req">*</span></label>
+            <input type="text" id="sku" placeholder="SKU-0027">
+            <span class="hint">Harus unik di seluruh katalog.</span>
+            <span class="error-msg" hidden></span>
+          </div>
+          <div class="field" id="field-name">
+            <label for="name">Nama Produk <span class="req">*</span></label>
+            <input type="text" id="name" placeholder="Nama produk">
+            <span class="error-msg" hidden></span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field" id="field-category">
+            <label for="category">Kategori <span class="req">*</span></label>
+            <select id="category"></select>
+          </div>
+          <div class="field" id="field-unit">
+            <label for="unit">Unit <span class="req">*</span></label>
+            <input type="text" id="unit" placeholder="pcs / box / rim">
+            <span class="error-msg" hidden></span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field" id="field-buy-price">
+            <label for="buy-price">Harga Beli <span class="req">*</span></label>
+            <input type="number" id="buy-price" min="0">
+            <span class="error-msg" hidden></span>
+          </div>
+          <div class="field" id="field-sell-price">
+            <label for="sell-price">Harga Jual <span class="req">*</span></label>
+            <input type="number" id="sell-price" min="0">
+            <span class="error-msg" hidden></span>
+          </div>
+        </div>
+
+        <div class="field" id="field-reorder" style="max-width:260px;">
+          <label for="reorder">Reorder Point <span class="req">*</span></label>
+          <input type="number" id="reorder" min="0">
+          <span class="error-msg" hidden></span>
+        </div>
+
+        <div class="field">
+          <label>Gambar Produk (opsional)</label>
+          <div style="display:flex; gap:16px; align-items:center;">
+            <label class="img-drop" id="img-drop" for="image-input">
+              <span id="img-placeholder-text">Klik untuk<br>pilih gambar</span>
+              <img id="img-preview" hidden alt="Preview gambar produk">
+            </label>
+            <div>
+              <input type="file" id="image-input" accept="image/png,image/jpeg" style="display:none;">
+              <div class="hint">Maks 2MB, format JPG/PNG.<br>Disimpan sebagai data URL di prototype ini —<br>nanti diganti upload ke server dengan nama acak (PRD-01).</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="max-width:200px;" id="field-status">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="true">Aktif</option>
+            <option value="false">Nonaktif</option>
+          </select>
+          <span class="hint">Produk yang sudah dipakai di order hanya bisa dinonaktifkan, bukan dihapus.</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="submit-btn">Simpan Produk</button>
+          <a class="btn ghost" href="products.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/product-form.js"></script>
+</body>
+</html>
