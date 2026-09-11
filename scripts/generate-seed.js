@@ -50,6 +50,16 @@ const customers = [
 ];
 write('customers.json', customers);
 
+// ===== Suppliers =====
+const suppliers = [
+  { id: 1, name: 'CV Elektronik Jaya', contact: '021-5551234', address: 'Jakarta Barat', active: true },
+  { id: 2, name: 'PT Kertas Nusantara', contact: '021-5559876', address: 'Tangerang', active: true },
+  { id: 3, name: 'UD Sumber Aksesoris', contact: '0813-9988-2211', address: 'Bekasi', active: true },
+  { id: 4, name: 'PT Sumber Plastik', contact: '024-8765432', address: 'Semarang', active: true },
+  { id: 5, name: 'Toko Aksesoris Komputer', contact: '0857-2233-4455', address: 'Surabaya', active: false },
+];
+write('suppliers.json', suppliers);
+
 // ===== Products =====
 const productDefs = [
   ['Kabel HDMI 2m', 3, 'pcs', 30000, 45000, 10],
@@ -158,7 +168,49 @@ const salesOrders = soDefs.map((d) => {
 });
 write('sales-orders.json', salesOrders);
 
-// ===== Stock Ledger (dari order yang sudah Fulfilled) =====
+// ===== Purchase Orders =====
+const poDefs = [
+  // [supplierId, warehouseId, status, dayOffset, items:[[skuIdx, qtyOrdered, receivedQty]]]
+  [1, 1, 'Received', 20, [[6, 5, 5]]],
+  [2, 1, 'Received', 18, [[4, 50, 50], [5, 100, 100]]],
+  [3, 2, 'Received', 16, [[1, 20, 20]]],
+  [1, 1, 'PartiallyReceived', 10, [[9, 10, 4]]],
+  [2, 1, 'PartiallyReceived', 8, [[4, 30, 10], [10, 40, 40]]],
+  [1, 1, 'Ordered', 5, [[2, 15, 0]]],
+  [4, 2, 'Ordered', 4, [[5, 50, 0]]],
+  [3, 2, 'Draft', 2, [[7, 10, 0]]],
+  [2, 1, 'Draft', 1, [[11, 100, 0]]],
+  [1, 1, 'Cancelled', 12, [[3, 5, 0]]],
+];
+
+let poId = 1;
+const purchaseOrders = poDefs.map((d) => {
+  const [supplierId, warehouseId, status, dayOffset, itemDefs] = d;
+  const items = itemDefs.map(([skuIdx, qty, receivedQty]) => {
+    const prod = productBySkuIdx(skuIdx);
+    return { sku: prod.sku, qty, receivedQty, buyPrice: prod.buyPrice };
+  });
+  const date = new Date('2026-09-04');
+  date.setDate(date.getDate() - dayOffset);
+  const order = {
+    id: poId,
+    orderNo: `PO-2026-${String(poId).padStart(4, '0')}`,
+    supplierId,
+    warehouseId,
+    status,
+    createdAt: date.toISOString().slice(0, 10),
+    items,
+  };
+  poId += 1;
+  return order;
+});
+write('purchase-orders.json', purchaseOrders);
+
+// ===== Stock Ledger (dari SO Fulfilled + PO yang sudah menerima barang) =====
+// CATATAN: angka di product-stock.json TIDAK secara matematis direplay dari
+// ledger ini (keduanya diisi manual agar demo terlihat masuk akal). Saat
+// backend MySQL sungguhan dibangun (DB-01), ProductStock wajib selalu berasal
+// dari akumulasi StockLedger, bukan diisi terpisah seperti pada seed prototype ini.
 let ledgerId = 1;
 const stockLedger = [];
 salesOrders.filter((o) => o.status === 'Fulfilled').forEach((o) => {
@@ -171,11 +223,28 @@ salesOrders.filter((o) => o.status === 'Fulfilled').forEach((o) => {
       quantity: -item.qty,
       refType: 'SO',
       refId: o.orderNo,
-      byUserId: o.approvedBy ? 4 : 4,
+      byUserId: 4,
       timestamp: `${o.createdAt}T14:00:00`,
     });
   });
 });
+purchaseOrders.forEach((o) => {
+  o.items.forEach((item) => {
+    if (item.receivedQty > 0) {
+      stockLedger.push({
+        id: ledgerId++,
+        sku: item.sku,
+        warehouseId: o.warehouseId,
+        type: 'Receipt',
+        quantity: item.receivedQty,
+        refType: 'PO',
+        refId: o.orderNo,
+        byUserId: 4,
+        timestamp: `${o.createdAt}T10:00:00`,
+      });
+    }
+  });
+});
 write('stock-ledger.json', stockLedger);
 
-console.log('Selesai. Total produk:', products.length, '| Total SO:', salesOrders.length);
+console.log('Selesai. Total produk:', products.length, '| Total SO:', salesOrders.length, '| Total PO:', purchaseOrders.length);

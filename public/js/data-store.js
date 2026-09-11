@@ -21,9 +21,11 @@
     categories: 'categories.json',
     warehouses: 'warehouses.json',
     customers: 'customers.json',
+    suppliers: 'suppliers.json',
     products: 'products.json',
     productStock: 'product-stock.json',
     salesOrders: 'sales-orders.json',
+    purchaseOrders: 'purchase-orders.json',
     stockLedger: 'stock-ledger.json',
   };
 

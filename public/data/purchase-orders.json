@@ -1,0 +1,174 @@
+[
+  {
+    "id": 1,
+    "orderNo": "PO-2026-0001",
+    "supplierId": 1,
+    "warehouseId": 1,
+    "status": "Received",
+    "createdAt": "2026-08-15",
+    "items": [
+      {
+        "sku": "SKU-0006",
+        "qty": 5,
+        "receivedQty": 5,
+        "buyPrice": 1450000
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "orderNo": "PO-2026-0002",
+    "supplierId": 2,
+    "warehouseId": 1,
+    "status": "Received",
+    "createdAt": "2026-08-17",
+    "items": [
+      {
+        "sku": "SKU-0004",
+        "qty": 50,
+        "receivedQty": 50,
+        "buyPrice": 42000
+      },
+      {
+        "sku": "SKU-0005",
+        "qty": 100,
+        "receivedQty": 100,
+        "buyPrice": 3000
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "orderNo": "PO-2026-0003",
+    "supplierId": 3,
+    "warehouseId": 2,
+    "status": "Received",
+    "createdAt": "2026-08-19",
+    "items": [
+      {
+        "sku": "SKU-0001",
+        "qty": 20,
+        "receivedQty": 20,
+        "buyPrice": 30000
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "orderNo": "PO-2026-0004",
+    "supplierId": 1,
+    "warehouseId": 1,
+    "status": "PartiallyReceived",
+    "createdAt": "2026-08-25",
+    "items": [
+      {
+        "sku": "SKU-0009",
+        "qty": 10,
+        "receivedQty": 4,
+        "buyPrice": 890000
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "orderNo": "PO-2026-0005",
+    "supplierId": 2,
+    "warehouseId": 1,
+    "status": "PartiallyReceived",
+    "createdAt": "2026-08-27",
+    "items": [
+      {
+        "sku": "SKU-0004",
+        "qty": 30,
+        "receivedQty": 10,
+        "buyPrice": 42000
+      },
+      {
+        "sku": "SKU-0010",
+        "qty": 40,
+        "receivedQty": 40,
+        "buyPrice": 38000
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "orderNo": "PO-2026-0006",
+    "supplierId": 1,
+    "warehouseId": 1,
+    "status": "Ordered",
+    "createdAt": "2026-08-30",
+    "items": [
+      {
+        "sku": "SKU-0002",
+        "qty": 15,
+        "receivedQty": 0,
+        "buyPrice": 85000
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "orderNo": "PO-2026-0007",
+    "supplierId": 4,
+    "warehouseId": 2,
+    "status": "Ordered",
+    "createdAt": "2026-08-31",
+    "items": [
+      {
+        "sku": "SKU-0005",
+        "qty": 50,
+        "receivedQty": 0,
+        "buyPrice": 3000
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "orderNo": "PO-2026-0008",
+    "supplierId": 3,
+    "warehouseId": 2,
+    "status": "Draft",
+    "createdAt": "2026-09-02",
+    "items": [
+      {
+        "sku": "SKU-0007",
+        "qty": 10,
+        "receivedQty": 0,
+        "buyPrice": 95000
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "orderNo": "PO-2026-0009",
+    "supplierId": 2,
+    "warehouseId": 1,
+    "status": "Draft",
+    "createdAt": "2026-09-03",
+    "items": [
+      {
+        "sku": "SKU-0011",
+        "qty": 100,
+        "receivedQty": 0,
+        "buyPrice": 2500
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "orderNo": "PO-2026-0010",
+    "supplierId": 1,
+    "warehouseId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-08-23",
+    "items": [
+      {
+        "sku": "SKU-0003",
+        "qty": 5,
+        "receivedQty": 0,
+        "buyPrice": 480000
+      }
+    ]
+  }
+]

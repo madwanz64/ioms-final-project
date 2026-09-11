@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "CV Elektronik Jaya",
+    "contact": "021-5551234",
+    "address": "Jakarta Barat",
+    "active": true
+  },
+  {
+    "id": 2,
+    "name": "PT Kertas Nusantara",
+    "contact": "021-5559876",
+    "address": "Tangerang",
+    "active": true
+  },
+  {
+    "id": 3,
+    "name": "UD Sumber Aksesoris",
+    "contact": "0813-9988-2211",
+    "address": "Bekasi",
+    "active": true
+  },
+  {
+    "id": 4,
+    "name": "PT Sumber Plastik",
+    "contact": "024-8765432",
+    "address": "Semarang",
+    "active": true
+  },
+  {
+    "id": 5,
+    "name": "Toko Aksesoris Komputer",
+    "contact": "0857-2233-4455",
+    "address": "Surabaya",
+    "active": false
+  }
+]

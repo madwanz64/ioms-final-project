@@ -75,5 +75,82 @@
     "refId": "SO-2026-0014",
     "byUserId": 4,
     "timestamp": "2026-08-27T14:00:00"
+  },
+  {
+    "id": 8,
+    "sku": "SKU-0006",
+    "warehouseId": 1,
+    "type": "Receipt",
+    "quantity": 5,
+    "refType": "PO",
+    "refId": "PO-2026-0001",
+    "byUserId": 4,
+    "timestamp": "2026-08-15T10:00:00"
+  },
+  {
+    "id": 9,
+    "sku": "SKU-0004",
+    "warehouseId": 1,
+    "type": "Receipt",
+    "quantity": 50,
+    "refType": "PO",
+    "refId": "PO-2026-0002",
+    "byUserId": 4,
+    "timestamp": "2026-08-17T10:00:00"
+  },
+  {
+    "id": 10,
+    "sku": "SKU-0005",
+    "warehouseId": 1,
+    "type": "Receipt",
+    "quantity": 100,
+    "refType": "PO",
+    "refId": "PO-2026-0002",
+    "byUserId": 4,
+    "timestamp": "2026-08-17T10:00:00"
+  },
+  {
+    "id": 11,
+    "sku": "SKU-0001",
+    "warehouseId": 2,
+    "type": "Receipt",
+    "quantity": 20,
+    "refType": "PO",
+    "refId": "PO-2026-0003",
+    "byUserId": 4,
+    "timestamp": "2026-08-19T10:00:00"
+  },
+  {
+    "id": 12,
+    "sku": "SKU-0009",
+    "warehouseId": 1,
+    "type": "Receipt",
+    "quantity": 4,
+    "refType": "PO",
+    "refId": "PO-2026-0004",
+    "byUserId": 4,
+    "timestamp": "2026-08-25T10:00:00"
+  },
+  {
+    "id": 13,
+    "sku": "SKU-0004",
+    "warehouseId": 1,
+    "type": "Receipt",
+    "quantity": 10,
+    "refType": "PO",
+    "refId": "PO-2026-0005",
+    "byUserId": 4,
+    "timestamp": "2026-08-27T10:00:00"
+  },
+  {
+    "id": 14,
+    "sku": "SKU-0010",
+    "warehouseId": 1,
+    "type": "Receipt",
+    "quantity": 40,
+    "refType": "PO",
+    "refId": "PO-2026-0005",
+    "byUserId": 4,
+    "timestamp": "2026-08-27T10:00:00"
   }
 ]
