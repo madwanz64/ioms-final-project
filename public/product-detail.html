@@ -59,6 +59,21 @@
           </table>
         </div>
       </div>
+
+      <div class="panel animate-in" id="api-demo-panel" hidden>
+        <h3>Demo Endpoint API <span class="role-note">(API-01 — GET /api/products/{sku}/availability)</span></h3>
+        <p class="hint">
+          Endpoint nyata ini dilayani oleh <code>scripts/static-server.js</code> (bukan simulasi di frontend),
+          membaca data seed <code>public/data/*.json</code>. "Token" di sini hanya userId polos untuk
+          mendemokan kontrak 200/401/404 — bukan autentikasi sungguhan (menyusul saat backend PHP ada).
+        </p>
+        <div class="form-actions">
+          <button type="button" class="btn small primary" id="api-call-ok">Panggil dengan token (200)</button>
+          <button type="button" class="btn small" id="api-call-nouth">Panggil tanpa token (401)</button>
+          <button type="button" class="btn small" id="api-call-404">Panggil SKU salah (404)</button>
+        </div>
+        <pre id="api-result" style="margin-top:12px; background:var(--surface-alt); padding:12px 14px; border-radius:8px; font-size:.78rem; overflow-x:auto; display:none;"></pre>
+      </div>
     </main>
   </div>
 

@@ -17,12 +17,7 @@
     const product = sku && IOMS.DataStore.findById('products', sku, 'sku');
 
     if (!product) {
-      document.querySelector('main').innerHTML = `
-        <div class="empty-state">
-          <div class="icon-box">❓</div>
-          <h3>Produk tidak ditemukan</h3>
-          <p>SKU pada URL tidak ada di data. <a href="products.html">Kembali ke daftar produk</a>.</p>
-        </div>`;
+      window.location.href = 'error-404.html';
       return;
     }
 
@@ -82,5 +77,30 @@
           )
           .join('')
       : `<tr><td colspan="5" class="text-muted">Belum ada pergerakan stok tercatat.</td></tr>`;
+
+    if (isAdmin) bindApiDemo(product.sku);
+  }
+
+  function bindApiDemo(sku) {
+    const panel = document.getElementById('api-demo-panel');
+    panel.hidden = false;
+    const resultBox = document.getElementById('api-result');
+
+    async function callApi(url) {
+      resultBox.style.display = 'block';
+      resultBox.textContent = 'Memanggil ' + url + ' ...';
+      try {
+        const res = await fetch(url);
+        const body = await res.json();
+        resultBox.textContent = `HTTP ${res.status}\nContent-Type: ${res.headers.get('content-type')}\n\n${JSON.stringify(body, null, 2)}`;
+      } catch (err) {
+        resultBox.textContent = 'Gagal memanggil endpoint: ' + err.message;
+      }
+    }
+
+    const token = IOMS.Auth.getSession()?.userId;
+    document.getElementById('api-call-ok').addEventListener('click', () => callApi(`/api/products/${sku}/availability?token=${token}`));
+    document.getElementById('api-call-nouth').addEventListener('click', () => callApi(`/api/products/${sku}/availability`));
+    document.getElementById('api-call-404').addEventListener('click', () => callApi(`/api/products/SKU-TIDAK-ADA/availability?token=${token}`));
   }
 })();
