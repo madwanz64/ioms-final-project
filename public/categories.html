@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kategori — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title">Kategori Produk</div>
+          <div class="page-subtitle">Master data sederhana — nama &amp; deskripsi</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <a class="btn primary" href="category-form.html">+ Tambah Kategori</a>
+          <div class="topbar-user">
+            <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+            <div class="avatar" data-user-avatar></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap animate-in">
+        <table class="data-table">
+          <thead><tr><th>Nama</th><th>Deskripsi</th><th class="num">Jumlah Produk</th><th></th></tr></thead>
+          <tbody id="category-rows"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/categories.js"></script>
+</body>
+</html>

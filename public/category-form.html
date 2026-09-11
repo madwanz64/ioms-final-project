@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Kategori — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="form-title">Tambah Kategori</div>
+        </div>
+        <div class="topbar-user">
+          <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="alert error" id="form-error" hidden></div>
+
+      <form class="data-form animate-in" id="category-form" novalidate>
+        <input type="hidden" id="editing-id">
+        <div class="field" id="field-name">
+          <label for="name">Nama Kategori <span class="req">*</span></label>
+          <input type="text" id="name">
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field">
+          <label for="description">Deskripsi</label>
+          <textarea id="description"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Simpan Kategori</button>
+          <a class="btn ghost" href="categories.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/category-form.js"></script>
+</body>
+</html>
