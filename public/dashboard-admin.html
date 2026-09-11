@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title">Dashboard Admin</div>
+          <div class="page-subtitle">Seluruh data — dihitung dari query agregasi, bukan angka statis</div>
+        </div>
+        <div class="topbar-user">
+          <div>
+            <span class="name" data-user-name style="display:block; text-align:right;"></span>
+            <span class="role" data-user-role></span>
+          </div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="stat-grid stagger" id="stat-grid">
+        <div class="stat-tile"><div class="value skeleton" style="width:70px;height:24px;"></div><div class="label">Memuat...</div></div>
+        <div class="stat-tile"><div class="value skeleton" style="width:70px;height:24px;"></div><div class="label">Memuat...</div></div>
+        <div class="stat-tile"><div class="value skeleton" style="width:70px;height:24px;"></div><div class="label">Memuat...</div></div>
+        <div class="stat-tile"><div class="value skeleton" style="width:70px;height:24px;"></div><div class="label">Memuat...</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel animate-in">
+          <h3>Produk di bawah reorder point</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="low-stock-table">
+              <thead><tr><th>SKU</th><th>Produk</th><th class="num">Stok</th><th class="num">Reorder</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel animate-in">
+          <h3>Sales Order per status</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="so-status-table">
+              <thead><tr><th>Status</th><th class="num">Jumlah</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <p class="page-subtitle">Seluruh angka di atas dihitung ulang tiap halaman dimuat dari data produk, stok, dan order yang tersimpan (DASH-01).</p>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/dashboard-admin.js"></script>
+</body>
+</html>

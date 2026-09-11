@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login — Inventory &amp; Order Management</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-shell">
+    <div class="login-card" id="login-card">
+      <div class="logo-dot"></div>
+      <h1>Inventory &amp; Order Management</h1>
+      <p class="sub">Masuk menggunakan akun yang diberikan Admin.</p>
+
+      <div class="alert error" id="login-error" hidden></div>
+
+      <form class="data-form" id="login-form" novalidate>
+        <div class="field" id="field-email">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="nama@ioms.test" autocomplete="username" required>
+        </div>
+        <div class="field" id="field-password">
+          <label for="password">Password <span class="req">*</span></label>
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary btn-block" id="login-submit">Masuk</button>
+        </div>
+      </form>
+
+      <div class="demo-accounts">
+        <strong>Akun demo (data prototype, localStorage):</strong>
+        <table>
+          <tr><td>Admin</td><td><code>admin@ioms.test</code></td><td><code>admin123</code></td></tr>
+          <tr><td>Sales</td><td><code>sinta@ioms.test</code></td><td><code>sales123</code></td></tr>
+          <tr><td>Warehouse</td><td><code>rudi@ioms.test</code></td><td><code>gudang123</code></td></tr>
+        </table>
+        <p style="margin-top:10px;">
+          <a href="#" id="reset-data">Reset data demo ke kondisi awal</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

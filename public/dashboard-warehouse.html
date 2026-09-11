@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Warehouse Staff — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title">Dashboard Warehouse Staff</div>
+          <div class="page-subtitle">Antrean goods issue &amp; produk low-stock</div>
+        </div>
+        <div class="topbar-user">
+          <div>
+            <span class="name" data-user-name style="display:block; text-align:right;"></span>
+            <span class="role" data-user-role></span>
+          </div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="stat-grid stagger" id="stat-grid"></div>
+
+      <div class="panel animate-in">
+        <h3>Sales Order Approved — siap goods issue</h3>
+        <div class="table-wrap">
+          <table class="data-table" id="approved-so-table">
+            <thead><tr><th>No. SO</th><th>Customer</th><th>Gudang</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Produk low-stock</h3>
+        <div class="table-wrap">
+          <table class="data-table" id="low-stock-table">
+            <thead><tr><th>SKU</th><th>Produk</th><th class="num">Stok</th><th class="num">Reorder</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/dashboard-warehouse.js"></script>
+</body>
+</html>
