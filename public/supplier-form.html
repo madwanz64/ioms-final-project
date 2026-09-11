@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Supplier — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="form-title">Tambah Supplier</div>
+          <div class="page-subtitle">Master data supplier untuk Purchase Order</div>
+        </div>
+        <div class="topbar-user">
+          <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="alert error" id="form-error" hidden></div>
+
+      <form class="data-form animate-in" id="supplier-form" novalidate>
+        <input type="hidden" id="editing-id">
+        <div class="field" id="field-name">
+          <label for="name">Nama Supplier <span class="req">*</span></label>
+          <input type="text" id="name">
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field" id="field-contact">
+          <label for="contact">Kontak <span class="req">*</span></label>
+          <input type="text" id="contact" placeholder="021-xxxxxxx">
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field" id="field-address">
+          <label for="address">Alamat <span class="req">*</span></label>
+          <textarea id="address"></textarea>
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field" style="max-width:200px;">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="true">Aktif</option>
+            <option value="false">Nonaktif</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Simpan Supplier</button>
+          <a class="btn ghost" href="suppliers.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/supplier-form.js"></script>
+</body>
+</html>
