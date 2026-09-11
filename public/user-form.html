@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form User — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="form-title">Tambah User</div>
+          <div class="page-subtitle">Role hanya Admin, Sales, atau Warehouse Staff</div>
+        </div>
+        <div class="topbar-user">
+          <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="alert error" id="form-error" hidden></div>
+
+      <form class="data-form animate-in" id="user-form" novalidate>
+        <input type="hidden" id="editing-id">
+        <div class="field" id="field-name">
+          <label for="name">Nama <span class="req">*</span></label>
+          <input type="text" id="name">
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field" id="field-email">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email">
+          <span class="hint">Harus unik — dipakai untuk login.</span>
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field" id="field-password">
+          <label for="password">Password <span class="req" id="password-req">*</span></label>
+          <input type="password" id="password" autocomplete="new-password">
+          <span class="hint" id="password-hint">Minimal 6 karakter.</span>
+          <span class="error-msg" hidden></span>
+        </div>
+        <div class="field" id="field-role">
+          <label for="role">Role <span class="req">*</span></label>
+          <select id="role">
+            <option value="Admin">Admin</option>
+            <option value="Sales">Sales</option>
+            <option value="Warehouse Staff">Warehouse Staff</option>
+          </select>
+        </div>
+        <div class="field" style="max-width:200px;">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="true">Aktif</option>
+            <option value="false">Nonaktif</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Simpan User</button>
+          <a class="btn ghost" href="users.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/user-form.js"></script>
+</body>
+</html>
