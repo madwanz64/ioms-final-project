@@ -18,12 +18,7 @@
     order = IOMS.DataStore.findById('salesOrders', id);
 
     if (!order) {
-      document.querySelector('main').innerHTML = `
-        <div class="empty-state">
-          <div class="icon-box">❓</div>
-          <h3>Sales Order tidak ditemukan</h3>
-          <p><a href="sales-orders.html">Kembali ke daftar Sales Order</a>.</p>
-        </div>`;
+      window.location.href = 'error-404.html';
       return;
     }
     render();

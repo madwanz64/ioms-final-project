@@ -18,12 +18,7 @@
     order = IOMS.DataStore.findById('purchaseOrders', id);
 
     if (!order) {
-      document.querySelector('main').innerHTML = `
-        <div class="empty-state">
-          <div class="icon-box">❓</div>
-          <h3>Purchase Order tidak ditemukan</h3>
-          <p><a href="purchase-orders.html">Kembali ke daftar Purchase Order</a>.</p>
-        </div>`;
+      window.location.href = 'error-404.html';
       return;
     }
     render();
