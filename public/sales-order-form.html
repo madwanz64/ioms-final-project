@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buat Sales Order — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="form-title">Buat Sales Order</div>
+          <div class="page-subtitle">SO-01 — dibuat berdasarkan katalog &amp; stok tersedia di gudang asal</div>
+        </div>
+        <div class="topbar-user">
+          <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+          <div class="avatar" data-user-avatar></div>
+        </div>
+      </div>
+
+      <div class="alert error" id="form-error" hidden></div>
+
+      <form class="data-form wide animate-in" id="so-form" novalidate>
+        <input type="hidden" id="editing-id">
+
+        <div class="form-row">
+          <div class="field" id="field-customer">
+            <label for="customer">Customer <span class="req">*</span></label>
+            <select id="customer"></select>
+          </div>
+          <div class="field" id="field-warehouse">
+            <label for="warehouse">Gudang Asal <span class="req">*</span></label>
+            <select id="warehouse"></select>
+            <span class="hint">Mengganti gudang akan menghitung ulang ketersediaan stok tiap item.</span>
+          </div>
+        </div>
+
+        <h3>Item Order</h3>
+        <div class="line-items-scroll">
+          <table class="line-items" id="items-table">
+            <thead>
+              <tr><th>Produk</th><th style="width:90px;">Stok</th><th style="width:100px;">Qty</th><th style="width:150px;">Harga Jual</th><th style="width:130px;">Subtotal</th><th style="width:36px;"></th></tr>
+            </thead>
+            <tbody id="items-body"></tbody>
+          </table>
+        </div>
+        <button type="button" class="btn small ghost" id="add-item">+ Tambah Item</button>
+
+        <div class="panel" style="max-width:320px; margin-left:auto; margin-top:18px;">
+          <div style="display:flex; justify-content:space-between;"><span>Total</span><strong id="total-display">Rp 0</strong></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn ghost" id="save-draft-btn" data-action="draft">Simpan sebagai Draft</button>
+          <button type="submit" class="btn primary" id="submit-btn" data-action="submit">Ajukan untuk Approval</button>
+          <a class="btn ghost" href="sales-orders.html">Batal</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sales-order-form.js"></script>
+</body>
+</html>

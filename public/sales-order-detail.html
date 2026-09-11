@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Sales Order — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="so-title">Memuat...</div>
+          <div class="page-subtitle" id="so-meta"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div id="status-badge-holder" style="font-size:.95rem;"></div>
+          <div class="topbar-user">
+            <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+            <div class="avatar" data-user-avatar></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Status Flow</h3>
+        <p class="text-muted" style="font-size:.82rem;">
+          Draft &rarr; PendingApproval &rarr; Approved &rarr; Fulfilled <span class="text-muted">(atau Cancelled pada tahap manapun sebelum Fulfilled)</span>
+        </p>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Item Order</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Produk</th><th class="num">Qty</th><th class="num">Harga Jual</th><th class="num">Subtotal</th></tr></thead>
+            <tbody id="item-rows"></tbody>
+          </table>
+        </div>
+        <div style="text-align:right; margin-top:10px; font-weight:700;" id="total-line"></div>
+      </div>
+
+      <div class="panel animate-in" id="approval-panel" hidden>
+        <h3>Approval <span class="role-note">(khusus Admin)</span></h3>
+        <div id="approval-note"></div>
+        <div class="form-actions">
+          <button type="button" class="btn primary" id="btn-approve">Setujui Order</button>
+          <button type="button" class="btn danger" id="btn-reject">Tolak Order</button>
+        </div>
+      </div>
+
+      <div class="panel animate-in" id="issue-panel" hidden>
+        <h3>Goods Issue <span class="role-note">(khusus Warehouse Staff, status Approved)</span></h3>
+        <div class="line-items-scroll">
+          <table class="line-items" id="issue-table">
+            <thead><tr><th>Produk</th><th class="num">Qty Dipesan</th><th class="num">Stok Tersedia</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="hint">
+          Goods issue untuk Sales Order bersifat semua-atau-tidak-sama-sekali (tidak ada status
+          "PartiallyFulfilled" seperti pada PO) — seluruh item harus tercukupi qty pesanannya sebelum diproses.
+        </p>
+        <div id="issue-alert"></div>
+        <div class="form-actions">
+          <button type="button" class="btn primary" id="btn-issue">Proses Goods Issue</button>
+        </div>
+        <p class="hint" style="margin-top:8px;">
+          Aksi ini mengurangi ProductStock &amp; menulis StockLedger (tipe Issue) — pola cek-lalu-tulis yang nanti
+          dipindah ke transaksi database (beginTransaction/commit) saat backend PHP ada (ARCH-02).
+        </p>
+      </div>
+
+      <div class="panel animate-in" id="cancel-panel" hidden>
+        <h3>Aksi Lain</h3>
+        <button type="button" class="btn danger" id="btn-cancel">Batalkan Order</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sales-order-detail.js"></script>
+</body>
+</html>
