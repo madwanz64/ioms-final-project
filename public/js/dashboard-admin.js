@@ -14,6 +14,7 @@
     const products = IOMS.DataStore.get('products');
     const stock = IOMS.DataStore.get('productStock');
     const salesOrders = IOMS.DataStore.get('salesOrders');
+    const purchaseOrders = IOMS.DataStore.get('purchaseOrders');
 
     const stockBySku = {};
     stock.forEach((s) => {
@@ -31,20 +32,24 @@
     });
     lowStock.sort((a, b) => a.totalStock - b.totalStock);
 
-    const statusCount = {};
+    const soStatusCount = {};
     salesOrders.forEach((o) => {
-      statusCount[o.status] = (statusCount[o.status] || 0) + 1;
+      soStatusCount[o.status] = (soStatusCount[o.status] || 0) + 1;
+    });
+    const poStatusCount = {};
+    purchaseOrders.forEach((o) => {
+      poStatusCount[o.status] = (poStatusCount[o.status] || 0) + 1;
     });
 
-    renderStats(inventoryValue, lowStock.length, statusCount);
+    renderStats(inventoryValue, lowStock.length, soStatusCount, poStatusCount);
     renderLowStock(lowStock);
-    renderStatusTable(statusCount);
+    renderStatusTable(soStatusCount, poStatusCount);
   }
 
-  function renderStats(inventoryValue, lowStockCount, statusCount) {
+  function renderStats(inventoryValue, lowStockCount, soStatusCount, poStatusCount) {
     const grid = document.getElementById('stat-grid');
-    const pendingCount = statusCount['PendingApproval'] || 0;
-    const approvedCount = statusCount['Approved'] || 0;
+    const pendingCount = soStatusCount['PendingApproval'] || 0;
+    const poOpenCount = (poStatusCount['Ordered'] || 0) + (poStatusCount['PartiallyReceived'] || 0);
 
     grid.innerHTML = `
       <div class="stat-tile">
@@ -60,8 +65,8 @@
         <div class="label">Sales Order — Pending Approval</div>
       </div>
       <div class="stat-tile">
-        <div class="value">${approvedCount}</div>
-        <div class="label">Sales Order — Approved (siap issue)</div>
+        <div class="value">${poOpenCount}</div>
+        <div class="label">Purchase Order — menunggu diterima</div>
       </div>`;
   }
 
@@ -85,16 +90,23 @@
       .join('');
   }
 
-  function renderStatusTable(statusCount) {
-    const order = ['Draft', 'PendingApproval', 'Approved', 'Fulfilled', 'Cancelled'];
+  function renderStatusTable(soStatusCount, poStatusCount) {
+    const soOrder = ['Draft', 'PendingApproval', 'Approved', 'Fulfilled', 'Cancelled'];
+    const poOrder = ['Draft', 'Ordered', 'PartiallyReceived', 'Received', 'Cancelled'];
     const tbody = document.querySelector('#so-status-table tbody');
-    tbody.innerHTML = order
-      .filter((s) => statusCount[s])
+
+    const rows = [
+      ...soOrder.filter((s) => soStatusCount[s]).map((s) => ['Sales Order', s, soStatusCount[s]]),
+      ...poOrder.filter((s) => poStatusCount[s]).map((s) => ['Purchase Order', s, poStatusCount[s]]),
+    ];
+
+    tbody.innerHTML = rows
       .map(
-        (s, i) => `
+        ([type, status, count], i) => `
       <tr class="row-in" style="animation-delay:${i * 0.03}s">
-        <td>${badgeHtml(s)}</td>
-        <td class="num">${statusCount[s]}</td>
+        <td>${type}</td>
+        <td>${badgeHtml(status)}</td>
+        <td class="num">${count}</td>
       </tr>`
       )
       .join('');
