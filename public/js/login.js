@@ -16,8 +16,35 @@
     const session = IOMS.Auth.getSession();
     if (session) {
       window.location.href = ROLE_HOME[session.role] || 'login.html';
+      return;
     }
+    bindCopyableDemoAccounts();
   });
+
+  // Klik email/password akun demo -> salin ke clipboard, tanpa perlu blok manual.
+  function bindCopyableDemoAccounts() {
+    document.querySelectorAll('.copyable').forEach((el) => {
+      el.addEventListener('click', async () => {
+        const text = el.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (err) {
+          // Fallback untuk browser lama / konteks non-secure: textarea sementara + execCommand.
+          const temp = document.createElement('textarea');
+          temp.value = text;
+          temp.style.position = 'fixed';
+          temp.style.opacity = '0';
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          temp.remove();
+        }
+        IOMS.Utils.toast(`Disalin: ${text}`, 'success');
+        el.classList.add('copied');
+        setTimeout(() => el.classList.remove('copied'), 900);
+      });
+    });
+  }
 
   function setFieldError(hasError) {
     document.getElementById('field-email').classList.toggle('has-error', hasError);

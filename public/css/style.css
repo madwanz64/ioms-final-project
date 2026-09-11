@@ -399,6 +399,13 @@ table.line-items input, table.line-items select{width:100%; padding:7px 8px; bor
 .demo-accounts table{width:100%; border-collapse:collapse; margin-top:8px;}
 .demo-accounts td{padding:3px 0; font-size:.72rem;}
 .demo-accounts code{background:var(--surface-alt); padding:1px 5px; border-radius:4px;}
+.demo-accounts code.copyable{
+  cursor:pointer; border:1px solid transparent;
+  transition:background .15s var(--ease), border-color .15s var(--ease), transform .1s var(--ease);
+}
+.demo-accounts code.copyable:hover{background:var(--primary-soft); border-color:var(--primary); color:var(--primary-dark);}
+.demo-accounts code.copyable:active{transform:scale(.95);}
+.demo-accounts code.copyable.copied{background:var(--success-soft); border-color:var(--success); color:#15803d;}
 
 .btn-block{width:100%;}
 
