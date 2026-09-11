@@ -1,0 +1,314 @@
+[
+  {
+    "sku": "SKU-0001",
+    "warehouseId": 1,
+    "quantity": 3,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0001",
+    "warehouseId": 2,
+    "quantity": 1,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0002",
+    "warehouseId": 1,
+    "quantity": 1,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0002",
+    "warehouseId": 2,
+    "quantity": 1,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0003",
+    "warehouseId": 1,
+    "quantity": 34,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0003",
+    "warehouseId": 2,
+    "quantity": 20,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0004",
+    "warehouseId": 1,
+    "quantity": 5,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0004",
+    "warehouseId": 2,
+    "quantity": 3,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0005",
+    "warehouseId": 1,
+    "quantity": 48,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0005",
+    "warehouseId": 2,
+    "quantity": 30,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0006",
+    "warehouseId": 1,
+    "quantity": 2,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0006",
+    "warehouseId": 2,
+    "quantity": 0,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0007",
+    "warehouseId": 1,
+    "quantity": 62,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0007",
+    "warehouseId": 2,
+    "quantity": 40,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0008",
+    "warehouseId": 1,
+    "quantity": 69,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0008",
+    "warehouseId": 2,
+    "quantity": 45,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0009",
+    "warehouseId": 1,
+    "quantity": 1,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0009",
+    "warehouseId": 2,
+    "quantity": 0,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0010",
+    "warehouseId": 1,
+    "quantity": 23,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0010",
+    "warehouseId": 2,
+    "quantity": 15,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0011",
+    "warehouseId": 1,
+    "quantity": 30,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0011",
+    "warehouseId": 2,
+    "quantity": 20,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0012",
+    "warehouseId": 1,
+    "quantity": 37,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0012",
+    "warehouseId": 2,
+    "quantity": 25,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0013",
+    "warehouseId": 1,
+    "quantity": 44,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0013",
+    "warehouseId": 2,
+    "quantity": 30,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0014",
+    "warehouseId": 1,
+    "quantity": 51,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0014",
+    "warehouseId": 2,
+    "quantity": 35,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0015",
+    "warehouseId": 1,
+    "quantity": 58,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0015",
+    "warehouseId": 2,
+    "quantity": 40,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0016",
+    "warehouseId": 1,
+    "quantity": 65,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0016",
+    "warehouseId": 2,
+    "quantity": 45,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0017",
+    "warehouseId": 1,
+    "quantity": 72,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0017",
+    "warehouseId": 2,
+    "quantity": 10,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0018",
+    "warehouseId": 1,
+    "quantity": 79,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0018",
+    "warehouseId": 2,
+    "quantity": 15,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0019",
+    "warehouseId": 1,
+    "quantity": 26,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0019",
+    "warehouseId": 2,
+    "quantity": 20,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0020",
+    "warehouseId": 1,
+    "quantity": 33,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0020",
+    "warehouseId": 2,
+    "quantity": 25,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0021",
+    "warehouseId": 1,
+    "quantity": 40,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0021",
+    "warehouseId": 2,
+    "quantity": 30,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0022",
+    "warehouseId": 1,
+    "quantity": 47,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0022",
+    "warehouseId": 2,
+    "quantity": 35,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0023",
+    "warehouseId": 1,
+    "quantity": 54,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0023",
+    "warehouseId": 2,
+    "quantity": 40,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0024",
+    "warehouseId": 1,
+    "quantity": 61,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0024",
+    "warehouseId": 2,
+    "quantity": 45,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0025",
+    "warehouseId": 1,
+    "quantity": 68,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0025",
+    "warehouseId": 2,
+    "quantity": 10,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0026",
+    "warehouseId": 1,
+    "quantity": 75,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0026",
+    "warehouseId": 2,
+    "quantity": 15,
+    "updatedAt": "2026-09-01T09:00:00"
+  }
+]

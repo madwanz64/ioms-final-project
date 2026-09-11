@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Budi Santoso",
+    "email": "admin@ioms.test",
+    "password": "admin123",
+    "role": "Admin",
+    "active": true
+  },
+  {
+    "id": 2,
+    "name": "Sinta Wulandari",
+    "email": "sinta@ioms.test",
+    "password": "sales123",
+    "role": "Sales",
+    "active": true
+  },
+  {
+    "id": 3,
+    "name": "Doni Pratama",
+    "email": "doni@ioms.test",
+    "password": "sales123",
+    "role": "Sales",
+    "active": true
+  },
+  {
+    "id": 4,
+    "name": "Rudi Hartono",
+    "email": "rudi@ioms.test",
+    "password": "gudang123",
+    "role": "Warehouse Staff",
+    "active": true
+  },
+  {
+    "id": 5,
+    "name": "Agus Setiawan",
+    "email": "agus@ioms.test",
+    "password": "gudang123",
+    "role": "Warehouse Staff",
+    "active": false
+  }
+]

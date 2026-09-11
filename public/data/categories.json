@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Elektronik",
+    "description": "Perangkat dan aksesoris elektronik"
+  },
+  {
+    "id": 2,
+    "name": "ATK",
+    "description": "Alat tulis kantor"
+  },
+  {
+    "id": 3,
+    "name": "Aksesoris",
+    "description": "Aksesoris pendukung perangkat"
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "sku": "SKU-0001",
+    "warehouseId": 1,
+    "type": "Issue",
+    "quantity": -2,
+    "refType": "SO",
+    "refId": "SO-2026-0001",
+    "byUserId": 4,
+    "timestamp": "2026-08-21T14:00:00"
+  },
+  {
+    "id": 2,
+    "sku": "SKU-0002",
+    "warehouseId": 1,
+    "type": "Issue",
+    "quantity": -5,
+    "refType": "SO",
+    "refId": "SO-2026-0001",
+    "byUserId": 4,
+    "timestamp": "2026-08-21T14:00:00"
+  },
+  {
+    "id": 3,
+    "sku": "SKU-0003",
+    "warehouseId": 1,
+    "type": "Issue",
+    "quantity": -10,
+    "refType": "SO",
+    "refId": "SO-2026-0002",
+    "byUserId": 4,
+    "timestamp": "2026-08-22T14:00:00"
+  },
+  {
+    "id": 4,
+    "sku": "SKU-0004",
+    "warehouseId": 2,
+    "type": "Issue",
+    "quantity": -20,
+    "refType": "SO",
+    "refId": "SO-2026-0003",
+    "byUserId": 4,
+    "timestamp": "2026-08-23T14:00:00"
+  },
+  {
+    "id": 5,
+    "sku": "SKU-0006",
+    "warehouseId": 2,
+    "type": "Issue",
+    "quantity": -4,
+    "refType": "SO",
+    "refId": "SO-2026-0005",
+    "byUserId": 4,
+    "timestamp": "2026-08-25T14:00:00"
+  },
+  {
+    "id": 6,
+    "sku": "SKU-0013",
+    "warehouseId": 1,
+    "type": "Issue",
+    "quantity": -6,
+    "refType": "SO",
+    "refId": "SO-2026-0013",
+    "byUserId": 4,
+    "timestamp": "2026-08-26T14:00:00"
+  },
+  {
+    "id": 7,
+    "sku": "SKU-0014",
+    "warehouseId": 2,
+    "type": "Issue",
+    "quantity": -2,
+    "refType": "SO",
+    "refId": "SO-2026-0014",
+    "byUserId": 4,
+    "timestamp": "2026-08-27T14:00:00"
+  }
+]

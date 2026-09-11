@@ -1,0 +1,250 @@
+[
+  {
+    "id": 1,
+    "orderNo": "SO-2026-0001",
+    "customerId": 1,
+    "warehouseId": 1,
+    "createdBy": 2,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-21",
+    "items": [
+      {
+        "sku": "SKU-0001",
+        "qty": 2,
+        "price": 45000
+      },
+      {
+        "sku": "SKU-0002",
+        "qty": 5,
+        "price": 120000
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "orderNo": "SO-2026-0002",
+    "customerId": 2,
+    "warehouseId": 1,
+    "createdBy": 2,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-22",
+    "items": [
+      {
+        "sku": "SKU-0003",
+        "qty": 10,
+        "price": 650000
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "orderNo": "SO-2026-0003",
+    "customerId": 3,
+    "warehouseId": 2,
+    "createdBy": 3,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-23",
+    "items": [
+      {
+        "sku": "SKU-0004",
+        "qty": 20,
+        "price": 52000
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "orderNo": "SO-2026-0004",
+    "customerId": 1,
+    "warehouseId": 1,
+    "createdBy": 2,
+    "approvedBy": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-08-24",
+    "items": [
+      {
+        "sku": "SKU-0005",
+        "qty": 3,
+        "price": 5000
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "orderNo": "SO-2026-0005",
+    "customerId": 4,
+    "warehouseId": 2,
+    "createdBy": 3,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-25",
+    "items": [
+      {
+        "sku": "SKU-0006",
+        "qty": 4,
+        "price": 1850000
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "orderNo": "SO-2026-0006",
+    "customerId": 2,
+    "warehouseId": 1,
+    "createdBy": 2,
+    "approvedBy": 1,
+    "status": "Approved",
+    "createdAt": "2026-08-29",
+    "items": [
+      {
+        "sku": "SKU-0001",
+        "qty": 1,
+        "price": 45000
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "orderNo": "SO-2026-0007",
+    "customerId": 5,
+    "warehouseId": 1,
+    "createdBy": 3,
+    "approvedBy": 1,
+    "status": "Approved",
+    "createdAt": "2026-08-30",
+    "items": [
+      {
+        "sku": "SKU-0007",
+        "qty": 6,
+        "price": 135000
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "orderNo": "SO-2026-0008",
+    "customerId": 3,
+    "warehouseId": 2,
+    "createdBy": 2,
+    "approvedBy": null,
+    "status": "PendingApproval",
+    "createdAt": "2026-08-31",
+    "items": [
+      {
+        "sku": "SKU-0002",
+        "qty": 3,
+        "price": 120000
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "orderNo": "SO-2026-0009",
+    "customerId": 1,
+    "warehouseId": 1,
+    "createdBy": 3,
+    "approvedBy": null,
+    "status": "PendingApproval",
+    "createdAt": "2026-09-01",
+    "items": [
+      {
+        "sku": "SKU-0008",
+        "qty": 2,
+        "price": 80000
+      },
+      {
+        "sku": "SKU-0009",
+        "qty": 1,
+        "price": 1150000
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "orderNo": "SO-2026-0010",
+    "customerId": 4,
+    "warehouseId": 1,
+    "createdBy": 2,
+    "approvedBy": null,
+    "status": "PendingApproval",
+    "createdAt": "2026-09-02",
+    "items": [
+      {
+        "sku": "SKU-0010",
+        "qty": 15,
+        "price": 55000
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "orderNo": "SO-2026-0011",
+    "customerId": 2,
+    "warehouseId": 2,
+    "createdBy": 3,
+    "approvedBy": null,
+    "status": "Draft",
+    "createdAt": "2026-09-03",
+    "items": [
+      {
+        "sku": "SKU-0011",
+        "qty": 5,
+        "price": 4000
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "orderNo": "SO-2026-0012",
+    "customerId": 5,
+    "warehouseId": 1,
+    "createdBy": 2,
+    "approvedBy": null,
+    "status": "Draft",
+    "createdAt": "2026-09-03",
+    "items": [
+      {
+        "sku": "SKU-0012",
+        "qty": 10,
+        "price": 18000
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "orderNo": "SO-2026-0013",
+    "customerId": 3,
+    "warehouseId": 1,
+    "createdBy": 3,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-26",
+    "items": [
+      {
+        "sku": "SKU-0013",
+        "qty": 6,
+        "price": 7000
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "orderNo": "SO-2026-0014",
+    "customerId": 1,
+    "warehouseId": 2,
+    "createdBy": 2,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-27",
+    "items": [
+      {
+        "sku": "SKU-0014",
+        "qty": 2,
+        "price": 38000
+      }
+    ]
+  }
+]

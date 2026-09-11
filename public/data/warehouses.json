@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Gudang Jakarta",
+    "location": "Jl. Industri No. 12, Jakarta Utara",
+    "active": true
+  },
+  {
+    "id": 2,
+    "name": "Gudang Surabaya",
+    "location": "Jl. Rungkut Industri No. 5, Surabaya",
+    "active": true
+  }
+]

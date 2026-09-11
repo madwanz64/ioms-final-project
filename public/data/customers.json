@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "PT Sumber Makmur",
+    "contact": "021-7778899",
+    "address": "Jakarta Selatan",
+    "active": true
+  },
+  {
+    "id": 2,
+    "name": "Toko Jaya Abadi",
+    "contact": "0812-1122-3344",
+    "address": "Surabaya",
+    "active": true
+  },
+  {
+    "id": 3,
+    "name": "CV Berkah",
+    "contact": "0819-5566-7788",
+    "address": "Bandung",
+    "active": true
+  },
+  {
+    "id": 4,
+    "name": "UD Makmur Sentosa",
+    "contact": "0857-1234-5678",
+    "address": "Semarang",
+    "active": true
+  },
+  {
+    "id": 5,
+    "name": "Toko Elektronik Cahaya",
+    "contact": "0813-9900-1122",
+    "address": "Jakarta Barat",
+    "active": true
+  }
+]
