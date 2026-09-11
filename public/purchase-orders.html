@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Purchase Order — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title">Purchase Order</div>
+          <div class="page-subtitle">PO-01, FIND-01</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <a class="btn primary" href="purchase-order-form.html">+ Buat PO</a>
+          <div class="topbar-user">
+            <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+            <div class="avatar" data-user-avatar></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar animate-in">
+        <input type="text" id="f-search" placeholder="Cari nomor PO / supplier...">
+        <select id="f-status">
+          <option value="">Semua Status</option>
+          <option value="Draft">Draft</option>
+          <option value="Ordered">Ordered</option>
+          <option value="PartiallyReceived">PartiallyReceived</option>
+          <option value="Received">Received</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <span class="spacer"></span>
+        <select id="f-sort">
+          <option value="date-desc">Urutkan: Tanggal Terbaru</option>
+          <option value="date-asc">Tanggal Terlama</option>
+        </select>
+      </div>
+
+      <div class="table-wrap animate-in">
+        <table class="data-table">
+          <thead>
+            <tr><th>No. PO</th><th>Supplier</th><th>Gudang Tujuan</th><th>Tanggal</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="po-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/purchase-orders.js"></script>
+</body>
+</html>

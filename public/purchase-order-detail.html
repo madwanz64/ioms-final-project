@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detail Purchase Order — IOMS</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar></aside>
+
+    <main class="main">
+      <div class="topbar animate-in">
+        <div>
+          <div class="page-title" id="po-title">Memuat...</div>
+          <div class="page-subtitle" id="po-meta"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div id="status-badge-holder" style="font-size:.95rem;"></div>
+          <div class="topbar-user">
+            <div><span class="name" data-user-name style="display:block; text-align:right;"></span><span class="role" data-user-role></span></div>
+            <div class="avatar" data-user-avatar></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Status Flow</h3>
+        <p class="text-muted" style="font-size:.82rem;">
+          Draft &rarr; Ordered &rarr; PartiallyReceived / Received <span class="text-muted">(atau Cancelled sebelum Received)</span>
+        </p>
+      </div>
+
+      <div class="panel animate-in" id="draft-panel" hidden>
+        <h3>Order ke Supplier</h3>
+        <p class="text-muted" style="font-size:.85rem;">PO ini masih Draft dan belum dikirim ke supplier.</p>
+        <button type="button" class="btn primary" id="btn-send-order">Kirim ke Supplier</button>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Item Pesanan</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Produk</th><th class="num">Qty Dipesan</th><th class="num">Qty Diterima</th><th class="num">Sisa</th><th class="num">Harga Beli</th><th class="num">Subtotal</th></tr></thead>
+            <tbody id="item-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel animate-in" id="receipt-panel" hidden>
+        <h3>Proses Goods Receipt <span class="role-note">(khusus Admin &amp; Warehouse Staff)</span></h3>
+        <p class="hint">Penerimaan sebagian (partial) diperbolehkan; sisa qty yang belum diterima tetap tercatat pada PO.</p>
+        <div class="line-items-scroll">
+          <table class="line-items" id="receipt-table">
+            <thead><tr><th>Produk</th><th>Sisa</th><th>Qty Diterima Sekarang</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn primary" id="btn-receive">Konfirmasi Goods Receipt</button>
+        </div>
+        <p class="hint" style="margin-top:8px;">
+          Aksi ini menambah ProductStock &amp; menulis StockLedger (tipe Receipt) — pola yang sama akan dibungkus
+          transaksi database (beginTransaction/commit) saat backend PHP ada (ARCH-02).
+        </p>
+      </div>
+
+      <div class="panel animate-in" id="cancel-panel" hidden>
+        <h3>Aksi Lain</h3>
+        <button type="button" class="btn danger" id="btn-cancel">Batalkan Order</button>
+      </div>
+
+      <div class="panel animate-in">
+        <h3>Riwayat Penerimaan (StockLedger terkait)</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Tanggal</th><th>Produk</th><th class="num">Qty Diterima</th><th>Oleh</th></tr></thead>
+            <tbody id="ledger-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data-store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/purchase-order-detail.js"></script>
+</body>
+</html>
