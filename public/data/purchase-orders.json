@@ -170,5 +170,37 @@
         "buyPrice": 480000
       }
     ]
+  },
+  {
+    "id": 11,
+    "orderNo": "PO-2026-0011",
+    "supplierId": 4,
+    "warehouseId": 1,
+    "status": "Ordered",
+    "createdAt": "2026-09-01",
+    "items": [
+      {
+        "sku": "SKU-0028",
+        "qty": 20,
+        "receivedQty": 0,
+        "buyPrice": 85000
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "orderNo": "PO-2026-0012",
+    "supplierId": 2,
+    "warehouseId": 2,
+    "status": "Draft",
+    "createdAt": "2026-09-03",
+    "items": [
+      {
+        "sku": "SKU-0029",
+        "qty": 50,
+        "receivedQty": 0,
+        "buyPrice": 8000
+      }
+    ]
   }
 ]

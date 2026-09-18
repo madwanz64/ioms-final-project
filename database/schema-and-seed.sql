@@ -312,7 +312,13 @@ INSERT INTO products (sku, name, category_id, unit, buy_price, sell_price, reord
   ('SKU-0023', 'Kalkulator Scientific', 2, 'pcs', 65000, 95000, 10, NULL, 1),
   ('SKU-0024', 'Ordner Arsip', 2, 'pcs', 15000, 22000, 20, NULL, 1),
   ('SKU-0025', 'Mousepad Gaming', 3, 'pcs', 25000, 40000, 15, NULL, 1),
-  ('SKU-0026', 'Hardisk Eksternal 1TB', 1, 'pcs', 520000, 690000, 5, NULL, 1);
+  ('SKU-0026', 'Hardisk Eksternal 1TB', 1, 'pcs', 520000, 690000, 5, NULL, 1),
+  ('SKU-0027', 'Proyektor Mini', 1, 'pcs', 650000, 850000, 4, NULL, 1),
+  ('SKU-0028', 'Lampu Meja LED', 1, 'pcs', 85000, 125000, 8, NULL, 1),
+  ('SKU-0029', 'Cutter Kertas', 2, 'pcs', 8000, 14000, 15, NULL, 1),
+  ('SKU-0030', 'Rak Arsip Kecil', 2, 'pcs', 95000, 140000, 6, NULL, 1),
+  ('SKU-0031', 'Charger Wireless', 3, 'pcs', 120000, 175000, 10, NULL, 1),
+  ('SKU-0032', 'Baterai AA (4pcs)', 3, 'pack', 15000, 25000, 20, NULL, 1);
 
 INSERT INTO product_stock (product_sku, warehouse_id, quantity) VALUES
   ('SKU-0001', 1, 3),
@@ -366,7 +372,19 @@ INSERT INTO product_stock (product_sku, warehouse_id, quantity) VALUES
   ('SKU-0025', 1, 68),
   ('SKU-0025', 2, 10),
   ('SKU-0026', 1, 75),
-  ('SKU-0026', 2, 15);
+  ('SKU-0026', 2, 15),
+  ('SKU-0027', 1, 22),
+  ('SKU-0027', 2, 20),
+  ('SKU-0028', 1, 29),
+  ('SKU-0028', 2, 25),
+  ('SKU-0029', 1, 36),
+  ('SKU-0029', 2, 30),
+  ('SKU-0030', 1, 43),
+  ('SKU-0030', 2, 35),
+  ('SKU-0031', 1, 50),
+  ('SKU-0031', 2, 40),
+  ('SKU-0032', 1, 57),
+  ('SKU-0032', 2, 45);
 
 INSERT INTO purchase_orders (id, order_no, supplier_id, warehouse_id, status, order_date) VALUES
   (1, 'PO-2026-0001', 1, 1, 'Received', '2026-08-15'),
@@ -378,7 +396,9 @@ INSERT INTO purchase_orders (id, order_no, supplier_id, warehouse_id, status, or
   (7, 'PO-2026-0007', 4, 2, 'Ordered', '2026-08-31'),
   (8, 'PO-2026-0008', 3, 2, 'Draft', '2026-09-02'),
   (9, 'PO-2026-0009', 2, 1, 'Draft', '2026-09-03'),
-  (10, 'PO-2026-0010', 1, 1, 'Cancelled', '2026-08-23');
+  (10, 'PO-2026-0010', 1, 1, 'Cancelled', '2026-08-23'),
+  (11, 'PO-2026-0011', 4, 1, 'Ordered', '2026-09-01'),
+  (12, 'PO-2026-0012', 2, 2, 'Draft', '2026-09-03');
 
 INSERT INTO purchase_order_items (purchase_order_id, product_sku, qty, received_qty, buy_price) VALUES
   (1, 'SKU-0006', 5, 5, 1450000),
@@ -392,7 +412,9 @@ INSERT INTO purchase_order_items (purchase_order_id, product_sku, qty, received_
   (7, 'SKU-0005', 50, 0, 3000),
   (8, 'SKU-0007', 10, 0, 95000),
   (9, 'SKU-0011', 100, 0, 2500),
-  (10, 'SKU-0003', 5, 0, 480000);
+  (10, 'SKU-0003', 5, 0, 480000),
+  (11, 'SKU-0028', 20, 0, 85000),
+  (12, 'SKU-0029', 50, 0, 8000);
 
 INSERT INTO sales_orders (id, order_no, customer_id, warehouse_id, created_by, approved_by, status, order_date) VALUES
   (1, 'SO-2026-0001', 1, 1, 2, 1, 'Fulfilled', '2026-08-21'),
@@ -408,7 +430,9 @@ INSERT INTO sales_orders (id, order_no, customer_id, warehouse_id, created_by, a
   (11, 'SO-2026-0011', 2, 2, 3, NULL, 'Draft', '2026-09-03'),
   (12, 'SO-2026-0012', 5, 1, 2, NULL, 'Draft', '2026-09-03'),
   (13, 'SO-2026-0013', 3, 1, 3, 1, 'Fulfilled', '2026-08-26'),
-  (14, 'SO-2026-0014', 1, 2, 2, 1, 'Fulfilled', '2026-08-27');
+  (14, 'SO-2026-0014', 1, 2, 2, 1, 'Fulfilled', '2026-08-27'),
+  (15, 'SO-2026-0015', 3, 1, 3, 1, 'Fulfilled', '2026-08-28'),
+  (16, 'SO-2026-0016', 4, 2, 2, NULL, 'PendingApproval', '2026-09-03');
 
 INSERT INTO sales_order_items (sales_order_id, product_sku, qty, price) VALUES
   (1, 'SKU-0001', 2, 45000),
@@ -426,7 +450,9 @@ INSERT INTO sales_order_items (sales_order_id, product_sku, qty, price) VALUES
   (11, 'SKU-0011', 5, 4000),
   (12, 'SKU-0012', 10, 18000),
   (13, 'SKU-0013', 6, 7000),
-  (14, 'SKU-0014', 2, 38000);
+  (14, 'SKU-0014', 2, 38000),
+  (15, 'SKU-0015', 2, 290000),
+  (16, 'SKU-0027', 1, 850000);
 
 INSERT INTO stock_ledger (product_sku, warehouse_id, movement_type, quantity, ref_type, ref_id, performed_by, created_at) VALUES
   ('SKU-0001', 1, 'Issue', -2, 'SO', 'SO-2026-0001', 4, '2026-08-21 14:00:00'),
@@ -436,6 +462,7 @@ INSERT INTO stock_ledger (product_sku, warehouse_id, movement_type, quantity, re
   ('SKU-0006', 2, 'Issue', -4, 'SO', 'SO-2026-0005', 4, '2026-08-25 14:00:00'),
   ('SKU-0013', 1, 'Issue', -6, 'SO', 'SO-2026-0013', 4, '2026-08-26 14:00:00'),
   ('SKU-0014', 2, 'Issue', -2, 'SO', 'SO-2026-0014', 4, '2026-08-27 14:00:00'),
+  ('SKU-0015', 1, 'Issue', -2, 'SO', 'SO-2026-0015', 4, '2026-08-28 14:00:00'),
   ('SKU-0006', 1, 'Receipt', 5, 'PO', 'PO-2026-0001', 4, '2026-08-15 10:00:00'),
   ('SKU-0004', 1, 'Receipt', 50, 'PO', 'PO-2026-0002', 4, '2026-08-17 10:00:00'),
   ('SKU-0005', 1, 'Receipt', 100, 'PO', 'PO-2026-0002', 4, '2026-08-17 10:00:00'),

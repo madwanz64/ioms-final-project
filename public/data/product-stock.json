@@ -310,5 +310,77 @@
     "warehouseId": 2,
     "quantity": 15,
     "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0027",
+    "warehouseId": 1,
+    "quantity": 22,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0027",
+    "warehouseId": 2,
+    "quantity": 20,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0028",
+    "warehouseId": 1,
+    "quantity": 29,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0028",
+    "warehouseId": 2,
+    "quantity": 25,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0029",
+    "warehouseId": 1,
+    "quantity": 36,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0029",
+    "warehouseId": 2,
+    "quantity": 30,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0030",
+    "warehouseId": 1,
+    "quantity": 43,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0030",
+    "warehouseId": 2,
+    "quantity": 35,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0031",
+    "warehouseId": 1,
+    "quantity": 50,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0031",
+    "warehouseId": 2,
+    "quantity": 40,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0032",
+    "warehouseId": 1,
+    "quantity": 57,
+    "updatedAt": "2026-09-01T09:00:00"
+  },
+  {
+    "sku": "SKU-0032",
+    "warehouseId": 2,
+    "quantity": 45,
+    "updatedAt": "2026-09-01T09:00:00"
   }
 ]

@@ -246,5 +246,39 @@
         "price": 38000
       }
     ]
+  },
+  {
+    "id": 15,
+    "orderNo": "SO-2026-0015",
+    "customerId": 3,
+    "warehouseId": 1,
+    "createdBy": 3,
+    "approvedBy": 1,
+    "status": "Fulfilled",
+    "createdAt": "2026-08-28",
+    "items": [
+      {
+        "sku": "SKU-0015",
+        "qty": 2,
+        "price": 290000
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "orderNo": "SO-2026-0016",
+    "customerId": 4,
+    "warehouseId": 2,
+    "createdBy": 2,
+    "approvedBy": null,
+    "status": "PendingApproval",
+    "createdAt": "2026-09-03",
+    "items": [
+      {
+        "sku": "SKU-0027",
+        "qty": 1,
+        "price": 850000
+      }
+    ]
   }
 ]

@@ -88,6 +88,12 @@ const productDefs = [
   ['Ordner Arsip', 2, 'pcs', 15000, 22000, 20],
   ['Mousepad Gaming', 3, 'pcs', 25000, 40000, 15],
   ['Hardisk Eksternal 1TB', 1, 'pcs', 520000, 690000, 5],
+  ['Proyektor Mini', 1, 'pcs', 650000, 850000, 4],
+  ['Lampu Meja LED', 1, 'pcs', 85000, 125000, 8],
+  ['Cutter Kertas', 2, 'pcs', 8000, 14000, 15],
+  ['Rak Arsip Kecil', 2, 'pcs', 95000, 140000, 6],
+  ['Charger Wireless', 3, 'pcs', 120000, 175000, 10],
+  ['Baterai AA (4pcs)', 3, 'pack', 15000, 25000, 20],
 ];
 
 const products = productDefs.map((p, idx) => ({
@@ -140,6 +146,8 @@ const soDefs = [
   [5, 2, null, 1, 'Draft', 1, [[12, 10]]],
   [3, 3, 1, 1, 'Fulfilled', 9, [[13, 6]]],
   [1, 2, 1, 2, 'Fulfilled', 8, [[14, 2]]],
+  [3, 3, 1, 1, 'Fulfilled', 7, [[15, 2]]],
+  [4, 2, null, 2, 'PendingApproval', 1, [[27, 1]]],
 ];
 
 const productBySkuIdx = (i) => products[i - 1];
@@ -181,6 +189,8 @@ const poDefs = [
   [3, 2, 'Draft', 2, [[7, 10, 0]]],
   [2, 1, 'Draft', 1, [[11, 100, 0]]],
   [1, 1, 'Cancelled', 12, [[3, 5, 0]]],
+  [4, 1, 'Ordered', 3, [[28, 20, 0]]],
+  [2, 2, 'Draft', 1, [[29, 50, 0]]],
 ];
 
 let poId = 1;

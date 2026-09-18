@@ -284,5 +284,71 @@
     "reorderPoint": 5,
     "imageUrl": null,
     "active": true
+  },
+  {
+    "sku": "SKU-0027",
+    "name": "Proyektor Mini",
+    "categoryId": 1,
+    "unit": "pcs",
+    "buyPrice": 650000,
+    "sellPrice": 850000,
+    "reorderPoint": 4,
+    "imageUrl": null,
+    "active": true
+  },
+  {
+    "sku": "SKU-0028",
+    "name": "Lampu Meja LED",
+    "categoryId": 1,
+    "unit": "pcs",
+    "buyPrice": 85000,
+    "sellPrice": 125000,
+    "reorderPoint": 8,
+    "imageUrl": null,
+    "active": true
+  },
+  {
+    "sku": "SKU-0029",
+    "name": "Cutter Kertas",
+    "categoryId": 2,
+    "unit": "pcs",
+    "buyPrice": 8000,
+    "sellPrice": 14000,
+    "reorderPoint": 15,
+    "imageUrl": null,
+    "active": true
+  },
+  {
+    "sku": "SKU-0030",
+    "name": "Rak Arsip Kecil",
+    "categoryId": 2,
+    "unit": "pcs",
+    "buyPrice": 95000,
+    "sellPrice": 140000,
+    "reorderPoint": 6,
+    "imageUrl": null,
+    "active": true
+  },
+  {
+    "sku": "SKU-0031",
+    "name": "Charger Wireless",
+    "categoryId": 3,
+    "unit": "pcs",
+    "buyPrice": 120000,
+    "sellPrice": 175000,
+    "reorderPoint": 10,
+    "imageUrl": null,
+    "active": true
+  },
+  {
+    "sku": "SKU-0032",
+    "name": "Baterai AA (4pcs)",
+    "categoryId": 3,
+    "unit": "pack",
+    "buyPrice": 15000,
+    "sellPrice": 25000,
+    "reorderPoint": 20,
+    "imageUrl": null,
+    "active": true
   }
 ]
