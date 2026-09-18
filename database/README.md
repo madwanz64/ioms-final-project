@@ -32,11 +32,23 @@ setiap kali dijalankan, jadi selalu mulai dari kondisi bersih.
 | Warehouse Staff | rudi@ioms.test | gudang123 |
 | Warehouse Staff (nonaktif, untuk uji AUTH-01) | agus@ioms.test | gudang123 |
 
-## Yang belum bisa diverifikasi
+## Status verifikasi
 
-Belum ada MySQL/Docker terpasang di lingkungan pengembangan saat file ini
-dibuat, jadi skema ini **belum pernah benar-benar dijalankan** terhadap
-MySQL sungguhan — hanya ditinjau manual (sintaks, urutan dependency antar
-tabel, penanganan NULL, kecocokan tipe data dengan `public/data/*.json`).
-Wajib diverifikasi dengan `mysql -u root -p < database/schema-and-seed.sql`
-begitu MySQL tersedia, sebelum dianggap final.
+Sudah diuji terhadap MySQL 8.0.46 sungguhan (2026-09-18):
+
+- Import bersih tanpa error (`mysql -u root -p < database/schema-and-seed.sql`).
+- Jumlah baris tiap tabel cocok 100% dengan `public/data/*.json`.
+- FK, `CHECK` constraint (`quantity >= 0`, `received_qty <= qty`), dan
+  `UNIQUE` (email) terbukti **menolak** data tidak valid saat dicoba
+  langsung (bukan cuma diterima sintaksnya).
+- Pola transaksi multi-tabel di komentar (ARCH-02) diuji dengan
+  `START TRANSACTION` + `SELECT ... FOR UPDATE` + `UPDATE` + `INSERT` +
+  `ROLLBACK` — `product_stock` dan `stock_ledger` sama-sama batal berubah
+  setelah rollback, sesuai perilaku atomik yang diharapkan.
+- Index terbukti benar-benar dipakai query planner (`EXPLAIN` menunjukkan
+  `key: idx_products_category`, bukan cuma ada tapi tidak terpakai).
+- Query JOIN realistis (produk low-stock lintas 3 tabel, detail Sales
+  Order lintas 4 tabel) menghasilkan data yang sesuai ekspektasi.
+
+Belum diuji: menjalankan skema ini di dalam container Docker (menyusul
+saat minggu Docker/backend PHP tiba).
