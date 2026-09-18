@@ -25,6 +25,12 @@
     });
   }
 
+  // accept="image/png,image/jpeg" pada <input> hanya penyaring tampilan dialog
+  // pemilih file — bisa dilewati user (pilih "All Files"), jadi tipe file tetap
+  // wajib dicek ulang di sini. Tetap bukan validasi final: server (PHP) nanti
+  // wajib memeriksa ulang tipe file sungguhan (bukan cuma percaya input client).
+  const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg'];
+
   function bindImageUpload() {
     const input = document.getElementById('image-input');
     const preview = document.getElementById('img-preview');
@@ -33,6 +39,11 @@
     input.addEventListener('change', () => {
       const file = input.files[0];
       if (!file) return;
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        toast('Format file tidak didukung. Gunakan JPG atau PNG.', 'error');
+        input.value = '';
+        return;
+      }
       if (file.size > 2 * 1024 * 1024) {
         toast('Ukuran gambar maksimal 2MB.', 'error');
         input.value = '';
