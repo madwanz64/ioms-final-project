@@ -14,3 +14,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# PHP runtime
+public/uploads/
+.phpunit.cache/
+.phpstan.cache/
