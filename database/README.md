@@ -9,7 +9,7 @@ node scripts/generate-sql-seed.js
 ```
 
 Seed data-nya sengaja dikonversi dari file yang sama dengan prototype JS
-(`public/data/*.json`) supaya keduanya tetap konsisten — kecuali kolom
+(`prototype/data/*.json`) supaya keduanya tetap konsisten — kecuali kolom
 `password` pada `users`, yang di sini sudah berupa hash bcrypt asli (bukan
 plaintext seperti di prototype JS), siap dipakai `password_verify()` PHP.
 
@@ -37,7 +37,7 @@ setiap kali dijalankan, jadi selalu mulai dari kondisi bersih.
 Sudah diuji terhadap MySQL 8.0.46 sungguhan (2026-09-18):
 
 - Import bersih tanpa error (`mysql -u root -p < database/schema-and-seed.sql`).
-- Jumlah baris tiap tabel cocok 100% dengan `public/data/*.json`.
+- Jumlah baris tiap tabel cocok 100% dengan `prototype/data/*.json`.
 - FK, `CHECK` constraint (`quantity >= 0`, `received_qty <= qty`), dan
   `UNIQUE` (email) terbukti **menolak** data tidak valid saat dicoba
   langsung (bukan cuma diterima sintaksnya).

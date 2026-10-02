@@ -1,10 +1,10 @@
-// Generator sekali-pakai untuk data seed prototype (public/data/*.json).
+// Generator sekali-pakai untuk data seed prototype (prototype/data/*.json).
 // Dijalankan manual: node scripts/generate-seed.js
 // Data ini akan digantikan oleh database/schema-and-seed.sql saat backend PHP+MySQL dibangun (DB-01).
 const fs = require('fs');
 const path = require('path');
 
-const OUT = path.join(__dirname, '..', 'public', 'data');
+const OUT = path.join(__dirname, '..', 'prototype', 'data');
 fs.mkdirSync(OUT, { recursive: true });
 
 function write(name, data) {

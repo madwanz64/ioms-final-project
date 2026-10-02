@@ -1,5 +1,5 @@
 // Static file server sederhana (tanpa dependency) untuk menjalankan prototype
-// public/ secara lokal. Diperlukan karena fetch() ke file .json gagal di
+// prototype/ secara lokal. Diperlukan karena fetch() ke file .json gagal di
 // bawah protokol file:// (kebijakan CORS browser) — harus lewat http://.
 // Pakai: node scripts/static-server.js [port]
 //
@@ -7,7 +7,7 @@
 //   GET /api/products/:sku/availability?token=<userId>
 // CATATAN JUJUR soal keterbatasan endpoint ini (dicatat di ai-usage-log.md juga):
 // - Server Node ini TIDAK punya akses ke localStorage browser (itu sepenuhnya
-//   sisi client), jadi endpoint membaca dari public/data/*.json (seed),
+//   sisi client), jadi endpoint membaca dari prototype/data/*.json (seed),
 //   bukan data runtime yang sudah diubah lewat UI. Demo mengasumsikan data seed.
 // - `token` di sini HANYA userId polos yang dicocokkan ke users.json — ini
 //   BUKAN autentikasi sungguhan (tidak ada session/JWT), sekadar simulasi agar
@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.argv[2] || 5173;
-const ROOT = path.join(__dirname, '..', 'public');
+const ROOT = path.join(__dirname, '..', 'prototype');
 const DATA_DIR = path.join(ROOT, 'data');
 
 const MIME = {
@@ -72,7 +72,7 @@ function handleProductAvailability(req, res, sku) {
     name: product.name,
     totalStock: perWarehouse.reduce((sum, w) => sum + w.quantity, 0),
     stock: perWarehouse,
-    _note: 'Data dari seed public/data/*.json, bukan localStorage runtime browser.',
+    _note: 'Data dari seed prototype/data/*.json, bukan localStorage runtime browser.',
   });
 }
 

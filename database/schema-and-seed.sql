@@ -253,7 +253,7 @@ CREATE TABLE stock_ledger (
 -- =============================================================================
 
 -- =============================================================================
--- SEED DATA (dikonversi dari public/data/*.json — lihat scripts/generate-sql-seed.js)
+-- SEED DATA (dikonversi dari prototype/data/*.json — lihat scripts/generate-sql-seed.js)
 -- =============================================================================
 
 INSERT INTO categories (id, name, description) VALUES

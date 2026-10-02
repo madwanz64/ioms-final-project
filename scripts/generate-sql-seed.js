@@ -1,17 +1,17 @@
 // Generator database/schema-and-seed.sql dari:
 //  - DDL yang ditulis manual di bawah (SCHEMA_SQL)
-//  - data seed yang SAMA dengan public/data/*.json (dikonversi jadi INSERT),
+//  - data seed yang SAMA dengan prototype/data/*.json (dikonversi jadi INSERT),
 //    supaya prototype JS dan seed MySQL tetap konsisten satu sama lain.
 // Pakai: node scripts/generate-sql-seed.js
 //
-// CATATAN: password di public/data/users.json masih plaintext (khusus demo
-// client-side, lihat komentar di public/js/auth.js). Untuk seed SQL ini,
+// CATATAN: password di prototype/data/users.json masih plaintext (khusus demo
+// client-side, lihat komentar di prototype/js/auth.js). Untuk seed SQL ini,
 // password digantikan hash bcrypt asli (dibuat sekali lewat bcryptjs) supaya
 // baris user siap diverifikasi dengan password_verify() PHP yang sesungguhnya.
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', 'public', 'data');
+const DATA_DIR = path.join(__dirname, '..', 'prototype', 'data');
 const OUT_FILE = path.join(__dirname, '..', 'database', 'schema-and-seed.sql');
 
 function readJson(file) {
@@ -303,11 +303,11 @@ CREATE TABLE stock_ledger (
 `;
 
 // ===========================================================================
-// Seed — dikonversi dari public/data/*.json
+// Seed — dikonversi dari prototype/data/*.json
 // ===========================================================================
 function buildSeedSql() {
   let sql = '-- =============================================================================\n';
-  sql += '-- SEED DATA (dikonversi dari public/data/*.json — lihat scripts/generate-sql-seed.js)\n';
+  sql += '-- SEED DATA (dikonversi dari prototype/data/*.json — lihat scripts/generate-sql-seed.js)\n';
   sql += '-- =============================================================================\n\n';
 
   // --- categories ---
