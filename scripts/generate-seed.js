@@ -37,6 +37,7 @@ const users = [
   { id: 3, name: 'Doni Pratama', email: 'doni@ioms.test', password: 'sales123', role: 'Sales', active: true },
   { id: 4, name: 'Rudi Hartono', email: 'rudi@ioms.test', password: 'gudang123', role: 'Warehouse Staff', active: true },
   { id: 5, name: 'Agus Setiawan', email: 'agus@ioms.test', password: 'gudang123', role: 'Warehouse Staff', active: false },
+  { id: 6, name: 'Wulan Sari', email: 'wulan@ioms.test', password: 'gudang123', role: 'Warehouse Staff', active: true },
 ];
 write('users.json', users);
 
@@ -217,10 +218,10 @@ const purchaseOrders = poDefs.map((d) => {
 write('purchase-orders.json', purchaseOrders);
 
 // ===== Stock Ledger (dari SO Fulfilled + PO yang sudah menerima barang) =====
-// CATATAN: angka di product-stock.json TIDAK secara matematis direplay dari
-// ledger ini (keduanya diisi manual agar demo terlihat masuk akal). Saat
-// backend MySQL sungguhan dibangun (DB-01), ProductStock wajib selalu berasal
-// dari akumulasi StockLedger, bukan diisi terpisah seperti pada seed prototype ini.
+// Setelah baris Receipt/Issue dari order dibuat, ledger direkonsiliasi (lihat
+// reconcileLedger di bawah) supaya SUM(quantity) ledger per produk+gudang
+// SAMA PERSIS dengan product-stock.json — brief §1.3: setiap angka stok harus
+// bisa ditelusuri ke baris ledger.
 let ledgerId = 1;
 const stockLedger = [];
 salesOrders.filter((o) => o.status === 'Fulfilled').forEach((o) => {
@@ -254,6 +255,42 @@ purchaseOrders.forEach((o) => {
       });
     }
   });
+});
+// ===== Rekonsiliasi ledger <-> product stock =====
+// Untuk setiap produk+gudang:
+//  1. Saldo awal (Adjustment, ref OPENING) secukupnya agar saldo berjalan
+//     tidak pernah negatif saat movement order direplay urut waktu.
+//  2. Jika total masih berbeda dari product-stock.json, tambahkan koreksi
+//     stock opname (Adjustment, ref OPNAME-2026-09) di akhir periode.
+// Hasilnya: SUM(ledger.quantity) == product_stock.quantity untuk semua baris.
+function reconcileLedger() {
+  const adjustments = [];
+  productStock.forEach((stock) => {
+    const movements = stockLedger
+      .filter((l) => l.sku === stock.sku && l.warehouseId === stock.warehouseId)
+      .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    let running = 0;
+    let minRunning = 0;
+    movements.forEach((m) => {
+      running += m.quantity;
+      minRunning = Math.min(minRunning, running);
+    });
+    const opening = Math.max(stock.quantity - running, -minRunning, 0);
+    const base = { sku: stock.sku, warehouseId: stock.warehouseId, type: 'Adjustment', refType: 'ADJ', byUserId: 1 };
+    if (opening > 0) {
+      adjustments.push({ ...base, quantity: opening, refId: 'OPENING', timestamp: '2026-08-01T08:00:00' });
+    }
+    const correction = stock.quantity - (opening + running);
+    if (correction !== 0) {
+      adjustments.push({ ...base, quantity: correction, refId: 'OPNAME-2026-09', timestamp: '2026-09-01T09:00:00' });
+    }
+  });
+  adjustments.forEach((a) => stockLedger.push({ id: ledgerId++, ...a }));
+}
+reconcileLedger();
+stockLedger.sort((a, b) => a.timestamp.localeCompare(b.timestamp) || a.id - b.id);
+stockLedger.forEach((l, i) => {
+  l.id = i + 1;
 });
 write('stock-ledger.json', stockLedger);
 

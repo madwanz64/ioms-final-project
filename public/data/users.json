@@ -38,5 +38,13 @@
     "password": "gudang123",
     "role": "Warehouse Staff",
     "active": false
+  },
+  {
+    "id": 6,
+    "name": "Wulan Sari",
+    "email": "wulan@ioms.test",
+    "password": "gudang123",
+    "role": "Warehouse Staff",
+    "active": true
   }
 ]

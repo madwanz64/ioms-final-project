@@ -29,7 +29,7 @@ setiap kali dijalankan, jadi selalu mulai dari kondisi bersih.
 |---|---|---|
 | Admin | admin@ioms.test | admin123 |
 | Sales | sinta@ioms.test / doni@ioms.test | sales123 |
-| Warehouse Staff | rudi@ioms.test | gudang123 |
+| Warehouse Staff | rudi@ioms.test / wulan@ioms.test | gudang123 |
 | Warehouse Staff (nonaktif, untuk uji AUTH-01) | agus@ioms.test | gudang123 |
 
 ## Status verifikasi
@@ -45,6 +45,11 @@ Sudah diuji terhadap MySQL 8.0.46 sungguhan (2026-09-18):
   `START TRANSACTION` + `SELECT ... FOR UPDATE` + `UPDATE` + `INSERT` +
   `ROLLBACK` — `product_stock` dan `stock_ledger` sama-sama batal berubah
   setelah rollback, sesuai perilaku atomik yang diharapkan.
+- Konsistensi ledger (2026-10-02): `SUM(stock_ledger.quantity)` per produk+gudang
+  sama persis dengan `product_stock.quantity` untuk seluruh 64 baris, dan saldo
+  berjalan per produk+gudang tidak pernah negatif. Selisih yang tidak berasal dari
+  order dicatat sebagai `Adjustment` (saldo awal `OPENING` dan koreksi
+  `OPNAME-2026-09`), bukan diisi langsung ke `product_stock`.
 - Index terbukti benar-benar dipakai query planner (`EXPLAIN` menunjukkan
   `key: idx_products_category`, bukan cuma ada tapi tidak terpakai).
 - Query JOIN realistis (produk low-stock lintas 3 tabel, detail Sales
