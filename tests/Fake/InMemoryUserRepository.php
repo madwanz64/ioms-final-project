@@ -32,4 +32,29 @@ final class InMemoryUserRepository implements UserRepositoryInterface
 
         return null;
     }
+
+    public function all(): array
+    {
+        return array_values($this->users);
+    }
+
+    public function emailExists(string $email, ?int $exceptId = null): bool
+    {
+        $user = $this->findByEmail($email);
+
+        return $user !== null && $user->id !== $exceptId;
+    }
+
+    public function create(User $user): int
+    {
+        $id = $this->users === [] ? 1 : max(array_keys($this->users)) + 1;
+        $this->users[$id] = new User($id, $user->name, $user->email, $user->passwordHash, $user->role, $user->active);
+
+        return $id;
+    }
+
+    public function update(User $user): void
+    {
+        $this->users[$user->id] = $user;
+    }
 }
