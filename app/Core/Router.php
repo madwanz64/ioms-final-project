@@ -14,6 +14,8 @@ use App\Entity\User;
  */
 final class Router
 {
+    public const LOGIN_PATH = '/login';
+
     /**
      * @var list<array{method: string, regex: string, handler: callable, roles: list<Role>, public: bool}>
      */
@@ -51,33 +53,56 @@ final class Router
                 continue;
             }
             $pathMatched = true;
-            if ($route['method'] !== $request->method) {
-                continue;
+            if ($route['method'] === $request->method) {
+                return $this->handle($route, $request, $matches);
             }
-
-            if ($request->method === 'POST' && !$this->csrf->isValid($request->input(Csrf::FIELD))) {
-                throw new HttpException(403, 'Sesi formulir sudah kedaluwarsa. Muat ulang halaman lalu coba lagi.');
-            }
-
-            $user = $this->auth->user();
-            if (!$route['public']) {
-                if ($user === null) {
-                    // API-01: klien API mendapat kode status yang tepat, bukan redirect ke halaman HTML.
-                    return $request->isApi()
-                        ? Response::json(['error' => 'unauthenticated', 'message' => 'Silakan login terlebih dahulu.'], 401)
-                        : Response::redirect('/login');
-                }
-                if ($route['roles'] !== [] && !$user->hasRole(...$route['roles'])) {
-                    throw HttpException::forbidden();
-                }
-            }
-
-            $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-
-            return ($route['handler'])($request, $user, array_map('rawurldecode', $params));
         }
 
         throw $pathMatched ? new HttpException(405, 'Metode request tidak didukung untuk URL ini.') : HttpException::notFound();
+    }
+
+    /**
+     * @param array{method: string, regex: string, handler: callable, roles: list<Role>, public: bool} $route
+     * @param array<int|string, string> $matches
+     */
+    private function handle(array $route, Request $request, array $matches): Response
+    {
+        if ($request->method === 'POST' && !$this->csrf->isValid($request->input(Csrf::FIELD))) {
+            throw new HttpException(403, 'Sesi formulir sudah kedaluwarsa. Muat ulang halaman lalu coba lagi.');
+        }
+
+        $user = $this->auth->user();
+        $denied = $this->authorize($route, $user, $request);
+        if ($denied !== null) {
+            return $denied;
+        }
+
+        $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+
+        return ($route['handler'])($request, $user, array_map('rawurldecode', $params));
+    }
+
+    /**
+     * Guard route: null = boleh lanjut; Response = jawaban untuk tamu; 403 dilempar bila role tidak cocok.
+     *
+     * @param array{method: string, regex: string, handler: callable, roles: list<Role>, public: bool} $route
+     */
+    private function authorize(array $route, ?User $user, Request $request): ?Response
+    {
+        if ($route['public']) {
+            return null;
+        }
+        if ($user === null) {
+            // API-01: klien API mendapat kode status yang tepat, bukan redirect ke halaman HTML.
+            return $request->isApi()
+                ? Response::json(['error' => 'unauthenticated', 'message' => 'Silakan login terlebih dahulu.'], 401)
+                : Response::redirect(self::LOGIN_PATH);
+        }
+        if ($route['roles'] !== [] && !$user->hasRole(...$route['roles'])) {
+            throw HttpException::forbidden();
+        }
+
+        return null;
     }
 
     /**

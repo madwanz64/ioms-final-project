@@ -65,7 +65,7 @@ if (PHP_SAPI === 'cli-server') {
     }
 }
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // ERR-01: error PHP & stack trace tidak pernah tampil ke user, hanya ke log server.
 ini_set('display_errors', '0');
@@ -175,9 +175,9 @@ try {
     );
 
     $router = new Router($auth, $csrf);
-    $router->get('/', fn (Request $r, $user) => Response::redirect($user === null ? '/login' : '/dashboard'), public: true);
-    $router->get('/login', [$authController, 'showLogin'], public: true);
-    $router->post('/login', [$authController, 'login'], public: true);
+    $router->get('/', fn (Request $r, $user) => Response::redirect($user === null ? Router::LOGIN_PATH : '/dashboard'), public: true);
+    $router->get(Router::LOGIN_PATH, [$authController, 'showLogin'], public: true);
+    $router->post(Router::LOGIN_PATH, [$authController, 'login'], public: true);
     $router->post('/logout', [$authController, 'logout']);
     $router->get('/dashboard', [$dashboardController, 'index']);
 
