@@ -77,13 +77,9 @@ final class ProductService
      */
     public function create(array $input, ?UploadedFile $image): Product
     {
-        $sku = strtoupper(trim($input['sku'] ?? ''));
-        $errors = $this->validateSku($sku) + $this->validateFields($input) + $this->validateImage($image);
-        if ($errors !== []) {
-            throw new ValidationException($errors);
-        }
-
-        $product = $this->buildProduct($sku, $input, $image === null ? null : $this->images->store($image));
+        $validator = new InputValidator($input);
+        $sku = $this->validateNewSku($validator);
+        $product = $this->validatedProduct($validator, $sku, $image, null);
         $this->products->create($product);
 
         return $product;
@@ -98,124 +94,53 @@ final class ProductService
      */
     public function update(Product $existing, array $input, ?UploadedFile $image): Product
     {
-        $errors = $this->validateFields($input) + $this->validateImage($image);
-        if ($errors !== []) {
-            throw new ValidationException($errors);
-        }
-
-        $imageUrl = $image === null ? $existing->imageUrl : $this->images->store($image);
-        $product = $this->buildProduct($existing->sku, $input, $imageUrl);
+        $product = $this->validatedProduct(new InputValidator($input), $existing->sku, $image, $existing->imageUrl);
         $this->products->update($product);
 
         return $product;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    private function validateSku(string $sku): array
+    private function validateNewSku(InputValidator $validator): string
     {
+        $sku = strtoupper($validator->raw('sku'));
         if ($sku === '') {
-            return ['sku' => 'SKU wajib diisi.'];
-        }
-        if (preg_match(self::SKU_PATTERN, $sku) !== 1) {
-            return ['sku' => 'SKU 3–20 karakter, hanya huruf, angka, dan tanda minus.'];
-        }
-        if ($this->products->skuExists($sku)) {
-            return ['sku' => 'SKU sudah dipakai produk lain.'];
+            $validator->addError('sku', 'SKU wajib diisi.');
+        } elseif (preg_match(self::SKU_PATTERN, $sku) !== 1) {
+            $validator->addError('sku', 'SKU 3–20 karakter, hanya huruf, angka, dan tanda minus.');
+        } elseif ($this->products->skuExists($sku)) {
+            $validator->addError('sku', 'SKU sudah dipakai produk lain.');
         }
 
-        return [];
+        return $sku;
     }
 
     /**
-     * @param array<string, string> $input
-     * @return array<string, string>
+     * Validasi seluruh field (termasuk gambar) lalu bangun Product. Gambar
+     * baru hanya disimpan setelah SEMUA validasi lolos, supaya tidak ada file
+     * tertinggal untuk produk yang ditolak.
+     *
+     * @throws ValidationException
      */
-    private function validateFields(array $input): array
+    private function validatedProduct(InputValidator $validator, string $sku, ?UploadedFile $image, ?string $currentImageUrl): Product
     {
-        $errors = [];
-
-        $name = trim($input['name'] ?? '');
-        if ($name === '') {
-            $errors['name'] = 'Nama produk wajib diisi.';
-        } elseif (mb_strlen($name) > 150) {
-            $errors['name'] = 'Nama produk maksimal 150 karakter.';
+        $name = $validator->requiredText('name', 'Nama produk', 150);
+        $categoryId = $validator->positiveId('category_id');
+        if ($categoryId === null || $this->categories->findById($categoryId) === null) {
+            $validator->addError('category_id', 'Pilih kategori yang valid.');
         }
-
-        $categoryId = $input['category_id'] ?? '';
-        if (!ctype_digit($categoryId) || $this->categories->findById((int) $categoryId) === null) {
-            $errors['category_id'] = 'Pilih kategori yang valid.';
+        $unit = $validator->requiredText('unit', 'Unit', 20);
+        $buyPrice = $validator->wholeNumber('buy_price', 'Harga beli', self::MAX_PRICE);
+        $sellPrice = $validator->wholeNumber('sell_price', 'Harga jual', self::MAX_PRICE);
+        $reorderPoint = $validator->wholeNumber('reorder_point', 'Reorder point', self::MAX_REORDER_POINT);
+        $active = $validator->activeFlag();
+        $imageError = $image === null ? null : $this->images->validate($image);
+        if ($imageError !== null) {
+            $validator->addError('image', $imageError);
         }
+        $validator->throwIfInvalid();
 
-        $unit = trim($input['unit'] ?? '');
-        if ($unit === '') {
-            $errors['unit'] = 'Unit wajib diisi.';
-        } elseif (mb_strlen($unit) > 20) {
-            $errors['unit'] = 'Unit maksimal 20 karakter.';
-        }
+        $imageUrl = $image === null ? $currentImageUrl : $this->images->store($image);
 
-        $numbers = [
-            'buy_price' => ['Harga beli', self::MAX_PRICE],
-            'sell_price' => ['Harga jual', self::MAX_PRICE],
-            'reorder_point' => ['Reorder point', self::MAX_REORDER_POINT],
-        ];
-        foreach ($numbers as $field => [$label, $max]) {
-            $error = $this->validateWholeNumber($input[$field] ?? '', $label, $max);
-            if ($error !== null) {
-                $errors[$field] = $error;
-            }
-        }
-
-        if (!in_array($input['active'] ?? '', ['0', '1'], true)) {
-            $errors['active'] = 'Status tidak valid.';
-        }
-
-        return $errors;
-    }
-
-    private function validateWholeNumber(string $value, string $label, int $max): ?string
-    {
-        $value = trim($value);
-        if ($value === '') {
-            return $label . ' wajib diisi.';
-        }
-        // ctype_digit menolak "-5", "1.5", "1e3", dan spasi — jadi hanya bilangan bulat >= 0 yang lolos.
-        if (!ctype_digit($value)) {
-            return $label . ' harus bilangan bulat >= 0.';
-        }
-        if (strlen(ltrim($value, '0')) > strlen((string) $max) || (int) $value > $max) {
-            return sprintf('%s maksimal %s.', $label, number_format($max, 0, ',', '.'));
-        }
-
-        return null;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function validateImage(?UploadedFile $image): array
-    {
-        $error = $image === null ? null : $this->images->validate($image);
-
-        return $error === null ? [] : ['image' => $error];
-    }
-
-    /**
-     * @param array<string, string> $input sudah lolos validasi
-     */
-    private function buildProduct(string $sku, array $input, ?string $imageUrl): Product
-    {
-        return new Product(
-            $sku,
-            trim($input['name']),
-            (int) $input['category_id'],
-            trim($input['unit']),
-            (int) $input['buy_price'],
-            (int) $input['sell_price'],
-            (int) $input['reorder_point'],
-            $imageUrl,
-            $input['active'] === '1',
-        );
+        return new Product($sku, $name, (int) $categoryId, $unit, $buyPrice, $sellPrice, $reorderPoint, $imageUrl, $active);
     }
 }
