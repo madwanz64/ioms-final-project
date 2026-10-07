@@ -14,7 +14,15 @@
 use App\Entity\Role;
 
 $navItems = match ($currentUser->role) {
-    Role::Admin => [['/dashboard', 'Dashboard', 'dashboard'], ['/products', 'Produk', 'box']],
+    Role::Admin => [
+        ['/dashboard', 'Dashboard', 'dashboard'],
+        ['/products', 'Produk', 'box'],
+        ['/categories', 'Kategori', 'tag'],
+        ['/warehouses', 'Gudang', 'warehouse'],
+        ['/suppliers', 'Supplier', 'building'],
+        ['/customers', 'Customer', 'building'],
+        ['/users', 'User', 'users'],
+    ],
     Role::Sales => [['/dashboard', 'Dashboard', 'dashboard'], ['/products', 'Katalog Produk', 'box']],
     Role::WarehouseStaff => [['/dashboard', 'Dashboard', 'dashboard'], ['/products', 'Produk & Stok', 'box']],
 };

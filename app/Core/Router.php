@@ -78,6 +78,21 @@ final class Router
     }
 
     /**
+     * Parameter route numerik (mis. {id}); selain angka positif dianggap 404.
+     *
+     * @param array<string, string> $params
+     */
+    public static function intParam(array $params, string $key): int
+    {
+        $value = $params[$key] ?? '';
+        if (!ctype_digit($value) || (int) $value < 1) {
+            throw HttpException::notFound();
+        }
+
+        return (int) $value;
+    }
+
+    /**
      * @param list<Role> $roles
      */
     private function add(string $method, string $pattern, callable $handler, array $roles, bool $public): void

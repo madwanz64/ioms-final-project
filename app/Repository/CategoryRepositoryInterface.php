@@ -14,4 +14,16 @@ interface CategoryRepositoryInterface
     public function all(): array;
 
     public function findById(int $id): ?Category;
+
+    /**
+     * Nama sudah dipakai kategori lain (case-insensitive), kecuali $exceptId.
+     */
+    public function nameExists(string $name, ?int $exceptId = null): bool;
+
+    /**
+     * @return int id kategori baru
+     */
+    public function create(Category $category): int;
+
+    public function update(Category $category): void;
 }

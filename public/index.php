@@ -8,8 +8,12 @@ declare(strict_types=1);
  */
 
 use App\Controller\AuthController;
+use App\Controller\CategoryController;
 use App\Controller\DashboardController;
+use App\Controller\PartyController;
 use App\Controller\ProductController;
+use App\Controller\UserController;
+use App\Controller\WarehouseController;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Database;
@@ -19,14 +23,21 @@ use App\Core\Response;
 use App\Core\Router;
 use App\Core\Session;
 use App\Core\View;
+use App\Entity\PartyType;
 use App\Entity\Role;
 use App\Repository\MySqlCategoryRepository;
+use App\Repository\MySqlPartyRepository;
 use App\Repository\MySqlProductRepository;
 use App\Repository\MySqlUserRepository;
+use App\Repository\MySqlWarehouseRepository;
 use App\Service\AuthService;
+use App\Service\CategoryService;
 use App\Service\DashboardService;
 use App\Service\LocalImageStorage;
+use App\Service\PartyService;
 use App\Service\ProductService;
+use App\Service\UserService;
+use App\Service\WarehouseService;
 
 // Built-in server PHP (`composer serve`): biarkan file statis dilayani langsung.
 if (PHP_SAPI === 'cli-server') {
@@ -78,6 +89,21 @@ try {
     $authController = new AuthController(new AuthService($users), $auth, $session, $view);
     $dashboardController = new DashboardController(new DashboardService($productRepository), $view);
     $productController = new ProductController($productService, $session, $view);
+    $categoryController = new CategoryController(new CategoryService($categories), $session, $view);
+    $warehouseController = new WarehouseController(new WarehouseService(new MySqlWarehouseRepository($pdo)), $session, $view);
+    $supplierController = new PartyController(
+        PartyType::Supplier,
+        new PartyService(new MySqlPartyRepository($pdo, PartyType::Supplier)),
+        $session,
+        $view,
+    );
+    $customerController = new PartyController(
+        PartyType::Customer,
+        new PartyService(new MySqlPartyRepository($pdo, PartyType::Customer)),
+        $session,
+        $view,
+    );
+    $userController = new UserController(new UserService($users), $session, $view);
 
     $router = new Router($auth, $csrf);
     $router->get('/', fn (Request $r, $user) => Response::redirect($user === null ? '/login' : '/dashboard'), public: true);
@@ -93,6 +119,20 @@ try {
     $router->get('/products/{sku}', [$productController, 'show']);
     $router->get('/products/{sku}/edit', [$productController, 'edit'], [Role::Admin]);
     $router->post('/products/{sku}', [$productController, 'update'], [Role::Admin]);
+
+    // Master data & user: seluruhnya khusus Admin (§1.2). Pola route sama untuk tiap modul.
+    $adminCrud = static function (string $base, CategoryController|WarehouseController|PartyController|UserController $controller) use ($router): void {
+        $router->get($base, [$controller, 'index'], [Role::Admin]);
+        $router->get($base . '/create', [$controller, 'create'], [Role::Admin]);
+        $router->post($base, [$controller, 'store'], [Role::Admin]);
+        $router->get($base . '/{id}/edit', [$controller, 'edit'], [Role::Admin]);
+        $router->post($base . '/{id}', [$controller, 'update'], [Role::Admin]);
+    };
+    $adminCrud('/categories', $categoryController);
+    $adminCrud('/warehouses', $warehouseController);
+    $adminCrud(PartyType::Supplier->path(), $supplierController);
+    $adminCrud(PartyType::Customer->path(), $customerController);
+    $adminCrud('/users', $userController);
 
     $response = $router->dispatch($request);
 } catch (HttpException $e) {

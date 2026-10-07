@@ -30,6 +30,29 @@ final class MySqlCategoryRepository implements CategoryRepositoryInterface
         return is_array($row) ? $this->hydrate($row) : null;
     }
 
+    public function nameExists(string $name, ?int $exceptId = null): bool
+    {
+        // Collation utf8mb4 default MySQL 8 bersifat case-insensitive.
+        $stmt = $this->pdo->prepare('SELECT 1 FROM categories WHERE name = :name AND id <> :except_id');
+        $stmt->execute(['name' => $name, 'except_id' => $exceptId ?? 0]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function create(Category $category): int
+    {
+        $stmt = $this->pdo->prepare('INSERT INTO categories (name, description) VALUES (:name, :description)');
+        $stmt->execute(['name' => $category->name, 'description' => $category->description]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function update(Category $category): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE categories SET name = :name, description = :description WHERE id = :id');
+        $stmt->execute(['id' => $category->id, 'name' => $category->name, 'description' => $category->description]);
+    }
+
     /**
      * @param array<string, mixed> $row
      */
