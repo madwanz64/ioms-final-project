@@ -1,0 +1,12 @@
+# Tidak ikut ke image: dependency (dipasang ulang di image), secret lokal, dan artefak dev.
+.git
+.env
+vendor/
+node_modules/
+public/uploads/
+.phpunit.cache/
+.phpstan.cache/
+prototype/
+docs/
+*.log
+Project Brief - Programmer.pdf
