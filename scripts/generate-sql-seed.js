@@ -8,8 +8,8 @@
 // client-side, lihat komentar di prototype/js/auth.js). Untuk seed SQL ini,
 // password digantikan hash bcrypt asli (dibuat sekali lewat bcryptjs) supaya
 // baris user siap diverifikasi dengan password_verify() PHP yang sesungguhnya.
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const DATA_DIR = path.join(__dirname, '..', 'prototype', 'data');
 const OUT_FILE = path.join(__dirname, '..', 'database', 'schema-and-seed.sql');
@@ -28,7 +28,7 @@ const PASSWORD_HASHES = {
 
 function sqlStr(value) {
   if (value === null || value === undefined) return 'NULL';
-  return "'" + String(value).replace(/\\/g, '\\\\').replace(/'/g, "''") + "'";
+  return "'" + String(value).replaceAll('\\', '\\\\').replaceAll("'", "''") + "'";
 }
 function sqlBool(value) {
   return value ? 1 : 0;

@@ -13,9 +13,9 @@
 //   BUKAN autentikasi sungguhan (tidak ada session/JWT), sekadar simulasi agar
 //   perilaku 200/401/404 + Content-Type sesuai kontrak API-01 bisa didemokan
 //   sebelum backend PHP+MySQL (dengan session PHP asli) menggantikannya.
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const PORT = process.argv[2] || 5173;
 const ROOT = path.join(__dirname, '..', 'prototype');
@@ -46,8 +46,8 @@ function handleProductAvailability(req, res, sku) {
   const token = url.searchParams.get('token');
 
   const users = readJson('users.json');
-  const user = users.find((u) => String(u.id) === String(token) && u.active);
-  if (!user) {
+  const authorized = users.some((u) => String(u.id) === String(token) && u.active);
+  if (!authorized) {
     sendJson(res, 401, { error: 'Unauthorized', message: 'Token tidak valid atau tidak disertakan.' });
     return;
   }

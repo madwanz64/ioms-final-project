@@ -1,8 +1,8 @@
 // Generator sekali-pakai untuk data seed prototype (prototype/data/*.json).
 // Dijalankan manual: node scripts/generate-seed.js
 // Data ini akan digantikan oleh database/schema-and-seed.sql saat backend PHP+MySQL dibangun (DB-01).
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const OUT = path.join(__dirname, '..', 'prototype', 'data');
 fs.mkdirSync(OUT, { recursive: true });
@@ -125,8 +125,10 @@ products.forEach((p, idx) => {
   const override = stockOverrides[p.sku];
   const qtyWarehouse1 = override ? override[0] : 20 + ((idx * 7) % 60);
   const qtyWarehouse2 = override ? override[1] : 10 + ((idx * 5) % 40);
-  productStock.push({ sku: p.sku, warehouseId: 1, quantity: qtyWarehouse1, updatedAt: '2026-09-01T09:00:00' });
-  productStock.push({ sku: p.sku, warehouseId: 2, quantity: qtyWarehouse2, updatedAt: '2026-09-01T09:00:00' });
+  productStock.push(
+    { sku: p.sku, warehouseId: 1, quantity: qtyWarehouse1, updatedAt: '2026-09-01T09:00:00' },
+    { sku: p.sku, warehouseId: 2, quantity: qtyWarehouse2, updatedAt: '2026-09-01T09:00:00' },
+  );
 });
 write('product-stock.json', productStock);
 
