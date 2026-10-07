@@ -6,10 +6,13 @@ namespace App\Service;
 
 use App\Core\UploadedFile;
 use App\Entity\Category;
+use App\Entity\PriceChange;
+use App\Entity\PriceHistoryEntry;
 use App\Entity\Product;
 use App\Entity\ProductSummary;
 use App\Entity\StockLevel;
 use App\Entity\StockMovement;
+use App\Entity\User;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\PaginatedResult;
 use App\Repository\ProductRepositoryInterface;
@@ -26,6 +29,7 @@ final class ProductService
     private const MAX_PRICE = 999_999_999_999; // batas DECIMAL(14,2)
     private const MAX_REORDER_POINT = 1_000_000;
     private const RECENT_MOVEMENTS = 10;
+    private const RECENT_PRICE_CHANGES = 10;
 
     public function __construct(
         private readonly ProductRepositoryInterface $products,
@@ -72,30 +76,47 @@ final class ProductService
     }
 
     /**
+     * Tanpa $includeBuyPrice (role Sales), baris yang hanya mengubah harga beli
+     * dibuang: harga beli tidak boleh terlihat, jadi baris itu tidak bermakna.
+     *
+     * @return list<PriceHistoryEntry>
+     */
+    public function priceHistory(string $sku, bool $includeBuyPrice): array
+    {
+        $entries = $this->products->priceHistory($sku, self::RECENT_PRICE_CHANGES);
+        if ($includeBuyPrice) {
+            return $entries;
+        }
+
+        return array_values(array_filter($entries, static fn (PriceHistoryEntry $entry): bool => $entry->sellPriceChanged()));
+    }
+
+    /**
      * @param array<string, string> $input
      * @throws ValidationException
      */
-    public function create(array $input, ?UploadedFile $image): Product
+    public function create(array $input, ?UploadedFile $image, User $actor): Product
     {
         $validator = new InputValidator($input);
         $sku = $this->validateNewSku($validator);
         $product = $this->validatedProduct($validator, $sku, $image, null);
-        $this->products->create($product);
+        $this->products->create($product, PriceChange::initial($product, $actor->id));
 
         return $product;
     }
 
     /**
      * SKU tidak bisa diubah: SKU adalah primary key yang direferensikan
-     * riwayat order dan stock ledger.
+     * riwayat order dan stock ledger. Perubahan harga beli/jual dicatat ke
+     * riwayat harga beserta siapa yang mengubahnya.
      *
      * @param array<string, string> $input
      * @throws ValidationException
      */
-    public function update(Product $existing, array $input, ?UploadedFile $image): Product
+    public function update(Product $existing, array $input, ?UploadedFile $image, User $actor): Product
     {
         $product = $this->validatedProduct(new InputValidator($input), $existing->sku, $image, $existing->imageUrl);
-        $this->products->update($product);
+        $this->products->update($product, PriceChange::between($existing, $product, $actor->id));
 
         return $product;
     }

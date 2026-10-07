@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Fake;
 
+use App\Entity\PriceChange;
+use App\Entity\PriceHistoryEntry;
 use App\Entity\Product;
 use App\Entity\ProductSummary;
 use App\Entity\StockLevel;
@@ -29,6 +31,9 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
 
     /** Jumlah pemanggilan create() + update(), untuk memastikan data gagal validasi tidak tersimpan. */
     public int $writes = 0;
+
+    /** @var list<PriceChange> urutan dicatat (lama → baru) */
+    public array $priceChanges = [];
 
     /**
      * @param list<int> $warehouseIds
@@ -92,17 +97,40 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
         return isset($this->products[$sku]);
     }
 
-    public function create(Product $product): void
+    public function create(Product $product, PriceChange $initialPrice): void
     {
         $this->writes++;
         $this->products[$product->sku] = $product;
         $this->stock[$product->sku] = array_fill_keys($this->warehouseIds, 0);
+        $this->priceChanges[] = $initialPrice;
     }
 
-    public function update(Product $product): void
+    public function update(Product $product, ?PriceChange $priceChange): void
     {
         $this->writes++;
         $this->products[$product->sku] = $product;
+        if ($priceChange !== null) {
+            $this->priceChanges[] = $priceChange;
+        }
+    }
+
+    public function priceHistory(string $sku, int $limit): array
+    {
+        $entries = [];
+        foreach (array_reverse($this->priceChanges) as $change) {
+            if ($change->sku === $sku) {
+                $entries[] = new PriceHistoryEntry(
+                    '2026-01-01 00:00:00',
+                    'User ' . $change->changedBy,
+                    $change->oldBuyPrice,
+                    $change->newBuyPrice,
+                    $change->oldSellPrice,
+                    $change->newSellPrice,
+                );
+            }
+        }
+
+        return array_slice($entries, 0, $limit);
     }
 
     public function stockLevels(string $sku): array

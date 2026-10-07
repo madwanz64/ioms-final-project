@@ -28,6 +28,8 @@ erDiagram
     USERS ||--o{ STOCK_TRANSFERS : "melakukan"
     STOCK_TRANSFERS ||--o{ STOCK_TRANSFER_ITEMS : "berisi"
     PRODUCTS ||--o{ STOCK_TRANSFER_ITEMS : "dipindah sebagai"
+    PRODUCTS ||--o{ PRODUCT_PRICE_HISTORY : "riwayat harga"
+    USERS ||--o{ PRODUCT_PRICE_HISTORY : "mengubah (changed_by)"
 
     USERS {
         int id PK
@@ -140,6 +142,16 @@ erDiagram
         int performed_by FK
         timestamp created_at
     }
+    PRODUCT_PRICE_HISTORY {
+        int id PK
+        varchar product_sku FK
+        decimal old_buy_price "NULL = harga awal"
+        decimal new_buy_price
+        decimal old_sell_price "NULL = harga awal"
+        decimal new_sell_price
+        int changed_by FK
+        timestamp changed_at
+    }
 ```
 
 ## Keputusan desain
@@ -169,3 +181,9 @@ erDiagram
   `stock_transfer_items` (qty > 0, satu baris per produk per transfer). Perubahan stoknya tetap
   hanya lewat `stock_ledger`: `Issue` di gudang asal + `Receipt` di gudang tujuan dengan
   `ref_type = TRF`, sehingga nilai tetap tipe pergerakan §1.3 (Receipt/Issue/Adjustment) tidak berubah.
+- **Riwayat harga produk:** tabel `product_price_history` mencatat setiap perubahan harga
+  beli/jual **master** produk (lama → baru, siapa, kapan); baris dengan harga lama `NULL` adalah
+  harga awal saat produk dibuat. Ditulis dalam transaksi yang sama dengan `INSERT`/`UPDATE products`.
+  Harga di `purchase_order_items`/`sales_order_items` tetap salinan per transaksi dan tidak
+  bergantung pada tabel ini. Nilai inventori dashboard tetap `stok × harga beli terbaru`
+  (lihat tech-debt).

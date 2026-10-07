@@ -23,6 +23,13 @@ Skrip ini aman dijalankan berulang kali — otomatis membuat database `ioms`
 kalau belum ada, dan **menimpa ulang** semua tabel (`DROP TABLE IF EXISTS`)
 setiap kali dijalankan, jadi selalu mulai dari kondisi bersih.
 
+### Menambah tabel baru ke database yang sudah berisi data
+
+Container MySQL hanya mengimpor file ini saat volume masih kosong. Untuk tabel yang
+ditambahkan belakangan (mis. `product_price_history`, 2026-10-07) pada volume yang sudah
+ada, jalankan blok `CREATE TABLE` tabel itu saja dari file ini, atau reset volume
+(`ioms reset` / `docker compose down -v`, **menghapus semua data**).
+
 ## Akun demo (setelah seed masuk)
 
 | Role | Email | Password |

@@ -7,6 +7,8 @@ namespace Tests\Unit;
 use App\Core\UploadedFile;
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Role;
+use App\Entity\User;
 use App\Service\ProductService;
 use App\Service\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -20,9 +22,11 @@ final class ProductServiceTest extends TestCase
     private InMemoryProductRepository $products;
     private FakeImageStorage $images;
     private ProductService $service;
+    private User $admin;
 
     protected function setUp(): void
     {
+        $this->admin = new User(7, 'Budi Admin', 'admin@ioms.test', 'x', Role::Admin, true);
         $this->products = new InMemoryProductRepository([1, 2]);
         $categories = new InMemoryCategoryRepository();
         $categories->add(new Category(1, 'Elektronik', null));
@@ -34,7 +38,7 @@ final class ProductServiceTest extends TestCase
 
     public function testCreateNormalisesSkuAndCreatesZeroStockInEveryWarehouse(): void
     {
-        $product = $this->service->create($this->validInput(['sku' => ' new-01 ']), null);
+        $product = $this->service->create($this->validInput(['sku' => ' new-01 ']), null, $this->admin);
 
         self::assertSame('NEW-01', $product->sku);
         self::assertSame(45000, $product->sellPrice);
@@ -46,7 +50,7 @@ final class ProductServiceTest extends TestCase
     {
         try {
             $this->service->create(['sku' => 'SKU-0001', 'name' => '', 'category_id' => '99', 'unit' => '',
-                'buy_price' => '', 'sell_price' => '-1', 'reorder_point' => '2.5', 'active' => 'yes'], null);
+                'buy_price' => '', 'sell_price' => '-1', 'reorder_point' => '2.5', 'active' => 'yes'], null, $this->admin);
             self::fail('ValidationException seharusnya dilempar.');
         } catch (ValidationException $e) {
             self::assertSame(
@@ -64,7 +68,7 @@ final class ProductServiceTest extends TestCase
     {
         $this->expectException(ValidationException::class);
 
-        $this->service->create($this->validInput([$field => $value]), null);
+        $this->service->create($this->validInput([$field => $value]), null, $this->admin);
     }
 
     /**
@@ -85,7 +89,7 @@ final class ProductServiceTest extends TestCase
 
     public function testZeroIsAValidPriceAndReorderPoint(): void
     {
-        $product = $this->service->create($this->validInput(['buy_price' => '0', 'sell_price' => '0', 'reorder_point' => '0']), null);
+        $product = $this->service->create($this->validInput(['buy_price' => '0', 'sell_price' => '0', 'reorder_point' => '0']), null, $this->admin);
 
         self::assertSame(0, $product->reorderPoint);
     }
@@ -94,7 +98,7 @@ final class ProductServiceTest extends TestCase
     public function testSkuFormatIsValidated(string $sku): void
     {
         try {
-            $this->service->create($this->validInput(['sku' => $sku]), null);
+            $this->service->create($this->validInput(['sku' => $sku]), null, $this->admin);
             self::fail('ValidationException seharusnya dilempar.');
         } catch (ValidationException $e) {
             self::assertArrayHasKey('sku', $e->errors);
@@ -114,7 +118,7 @@ final class ProductServiceTest extends TestCase
         $image = new UploadedFile('/tmp/x', 'invalid.png', 100, UPLOAD_ERR_OK);
 
         try {
-            $this->service->create($this->validInput(), $image);
+            $this->service->create($this->validInput(), $image, $this->admin);
             self::fail('ValidationException seharusnya dilempar.');
         } catch (ValidationException $e) {
             self::assertSame(['image'], array_keys($e->errors));
@@ -126,7 +130,7 @@ final class ProductServiceTest extends TestCase
 
     public function testValidImageIsStoredAndLinkedToProduct(): void
     {
-        $product = $this->service->create($this->validInput(), new UploadedFile('/tmp/x', 'foto.png', 100, UPLOAD_ERR_OK));
+        $product = $this->service->create($this->validInput(), new UploadedFile('/tmp/x', 'foto.png', 100, UPLOAD_ERR_OK), $this->admin);
 
         self::assertSame('/uploads/products/fake-0.png', $product->imageUrl);
     }
@@ -136,7 +140,7 @@ final class ProductServiceTest extends TestCase
         $existing = new Product('SKU-0002', 'Mouse', 1, 'pcs', 80000, 120000, 15, '/uploads/products/lama.png', true);
         $this->products->seed($existing, [1 => 5]);
 
-        $updated = $this->service->update($existing, $this->validInput(['sku' => 'GANTI-SKU', 'name' => 'Mouse Wireless', 'active' => '0']), null);
+        $updated = $this->service->update($existing, $this->validInput(['sku' => 'GANTI-SKU', 'name' => 'Mouse Wireless', 'active' => '0']), null, $this->admin);
 
         self::assertSame('SKU-0002', $updated->sku);
         self::assertSame('/uploads/products/lama.png', $updated->imageUrl);
@@ -149,9 +153,63 @@ final class ProductServiceTest extends TestCase
         $existing = $this->products->findBySku('SKU-0001');
         self::assertNotNull($existing);
 
-        $updated = $this->service->update($existing, $this->validInput(['reorder_point' => '20']), null);
+        $updated = $this->service->update($existing, $this->validInput(['reorder_point' => '20']), null, $this->admin);
 
         self::assertSame(20, $updated->reorderPoint);
+    }
+
+    public function testCreateRecordsInitialPriceByActor(): void
+    {
+        $this->service->create($this->validInput(), null, $this->admin);
+
+        $history = $this->service->priceHistory('NEW-01', includeBuyPrice: true);
+        self::assertCount(1, $history);
+        self::assertTrue($history[0]->isInitial());
+        self::assertSame([30000, 45000], [$history[0]->newBuyPrice, $history[0]->newSellPrice]);
+        self::assertSame(7, $this->products->priceChanges[0]->changedBy);
+    }
+
+    public function testUpdateRecordsOldAndNewPriceOnlyWhenAPriceChanges(): void
+    {
+        $existing = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($existing);
+
+        $this->service->update($existing, $this->validInput(['name' => 'Kabel HDMI 2m']), null, $this->admin);
+        self::assertCount(0, $this->service->priceHistory('SKU-0001', includeBuyPrice: true), 'harga sama: tidak ada riwayat');
+
+        $this->service->update($existing, $this->validInput(['sell_price' => '50000']), null, $this->admin);
+        $history = $this->service->priceHistory('SKU-0001', includeBuyPrice: true);
+        self::assertCount(1, $history);
+        self::assertSame([30000, 30000, 45000, 50000], [$history[0]->oldBuyPrice, $history[0]->newBuyPrice, $history[0]->oldSellPrice, $history[0]->newSellPrice]);
+    }
+
+    public function testFailedValidationRecordsNoPriceChange(): void
+    {
+        $existing = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($existing);
+
+        try {
+            $this->service->update($existing, $this->validInput(['sell_price' => '99000', 'name' => '']), null, $this->admin);
+            self::fail('ValidationException seharusnya dilempar.');
+        } catch (ValidationException) {
+        }
+
+        self::assertSame([], $this->products->priceChanges);
+    }
+
+    public function testSalesDoesNotSeeRowsThatOnlyChangeBuyPrice(): void
+    {
+        $existing = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($existing);
+        $this->service->update($existing, $this->validInput(['buy_price' => '32000']), null, $this->admin);
+        $afterBuy = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($afterBuy);
+        $this->service->update($afterBuy, $this->validInput(['buy_price' => '32000', 'sell_price' => '48000']), null, $this->admin);
+
+        self::assertCount(2, $this->service->priceHistory('SKU-0001', includeBuyPrice: true));
+        $forSales = $this->service->priceHistory('SKU-0001', includeBuyPrice: false);
+        self::assertCount(1, $forSales);
+        self::assertSame(48000, $forSales[0]->newSellPrice);
     }
 
     /**

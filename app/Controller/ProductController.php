@@ -50,6 +50,7 @@ final class ProductController
         if (!$product->active && $user->role === Role::Sales) {
             throw HttpException::notFound();
         }
+        $canSeeBuyPrice = $user->hasRole(Role::Admin, Role::WarehouseStaff);
 
         return Response::html($this->view->render('products/show', [
             'title' => $product->name,
@@ -57,7 +58,8 @@ final class ProductController
             'category' => $this->categoryName($product->categoryId),
             'stockLevels' => $this->products->stockLevels($product->sku),
             'movements' => $this->products->recentMovements($product->sku),
-            'canSeeBuyPrice' => $user->hasRole(Role::Admin, Role::WarehouseStaff),
+            'priceHistory' => $this->products->priceHistory($product->sku, $canSeeBuyPrice),
+            'canSeeBuyPrice' => $canSeeBuyPrice,
         ]));
     }
 
@@ -66,10 +68,10 @@ final class ProductController
         return $this->form(null, ['active' => '1']);
     }
 
-    public function store(Request $request): Response
+    public function store(Request $request, User $user): Response
     {
         try {
-            $product = $this->products->create($request->allInput(), $request->file('image'));
+            $product = $this->products->create($request->allInput(), $request->file('image'), $user);
         } catch (ValidationException $e) {
             return $this->form(null, $request->allInput(), $e->errors);
         }
@@ -104,7 +106,7 @@ final class ProductController
     {
         $product = $this->findOr404($params['sku']);
         try {
-            $this->products->update($product, $request->allInput(), $request->file('image'));
+            $this->products->update($product, $request->allInput(), $request->file('image'), $user);
         } catch (ValidationException $e) {
             return $this->form($product, $request->allInput(), $e->errors);
         }

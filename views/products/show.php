@@ -6,12 +6,19 @@
  * @var string $category
  * @var list<App\Entity\StockLevel> $stockLevels
  * @var list<App\Entity\StockMovement> $movements
+ * @var list<App\Entity\PriceHistoryEntry> $priceHistory
  * @var bool $canSeeBuyPrice
  */
 
 use App\Entity\Role;
 
 $totalStock = array_sum(array_map(static fn ($level): int => $level->quantity, $stockLevels));
+// "Rp lama → Rp baru" bila berubah; harga yang tidak berubah ditampilkan redup.
+$priceCell = static fn (?int $old, int $new): string => match (true) {
+    $old === null => e(rupiah($new)),
+    $old === $new => '<span class="text-muted">' . e(rupiah($new)) . '</span>',
+    default => e(rupiah($old)) . ' → <strong>' . e(rupiah($new)) . '</strong>',
+};
 $isLow = $totalStock < $product->reorderPoint;
 $actions = $currentUser->role === Role::Admin
     ? '<a class="btn primary" href="/products/' . e(rawurlencode($product->sku)) . '/edit">Edit Produk</a>'
@@ -100,6 +107,42 @@ $actions = $currentUser->role === Role::Admin
               <td><span class="badge <?= e(strtolower($movement->type)) ?>"><?= e($movement->type) ?></span></td>
               <td class="num"><?= e(($movement->quantity > 0 ? '+' : '') . $movement->quantity) ?></td>
               <td><?= e($movement->refId) ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  <?php endif; ?>
+</section>
+
+<section class="panel animate-in">
+  <h3>Riwayat Harga — 10 perubahan terbaru</h3>
+  <?php if ($priceHistory === []): ?>
+    <div class="empty-state">
+      <div class="icon-box" aria-hidden="true">🏷</div>
+      <h3>Belum ada riwayat harga</h3>
+      <p>Perubahan harga beli/jual tercatat otomatis setiap produk disimpan dengan harga baru.</p>
+    </div>
+  <?php else: ?>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tanggal</th><th>Diubah oleh</th>
+            <?php if ($canSeeBuyPrice): ?><th class="num">Harga Beli</th><?php endif; ?>
+            <th class="num">Harga Jual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($priceHistory as $entry): ?>
+            <tr>
+              <td>
+                <?= e(date('d M Y H:i', (int) strtotime($entry->changedAt))) ?>
+                <?php if ($entry->isInitial()): ?><span class="badge draft">Harga awal</span><?php endif; ?>
+              </td>
+              <td><?= e($entry->changedByName) ?></td>
+              <?php if ($canSeeBuyPrice): ?><td class="num"><?= $priceCell($entry->oldBuyPrice, $entry->newBuyPrice) ?></td><?php endif; ?>
+              <td class="num"><?= $priceCell($entry->oldSellPrice, $entry->newSellPrice) ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

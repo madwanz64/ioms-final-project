@@ -12,6 +12,7 @@ USE ioms;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS product_price_history;
 DROP TABLE IF EXISTS stock_transfer_items;
 DROP TABLE IF EXISTS stock_transfers;
 DROP TABLE IF EXISTS stock_ledger;
@@ -125,6 +126,26 @@ CREATE TABLE product_stock (
   CONSTRAINT fk_stock_product FOREIGN KEY (product_sku) REFERENCES products (sku),
   CONSTRAINT fk_stock_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses (id),
   UNIQUE KEY uq_stock_product_warehouse (product_sku, warehouse_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -----------------------------------------------------------------------------
+-- product_price_history — riwayat harga standar produk. Satu baris per
+-- perubahan harga beli/jual (harga lama NULL = harga awal saat produk dibuat),
+-- ditulis dalam satu transaksi bersama INSERT/UPDATE products. Harga di
+-- PO/SO tetap salinan per transaksi; tabel ini hanya untuk harga master.
+-- -----------------------------------------------------------------------------
+CREATE TABLE product_price_history (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_sku VARCHAR(20) NOT NULL,
+  old_buy_price DECIMAL(14, 2) NULL,
+  new_buy_price DECIMAL(14, 2) NOT NULL,
+  old_sell_price DECIMAL(14, 2) NULL,
+  new_sell_price DECIMAL(14, 2) NOT NULL,
+  changed_by INT UNSIGNED NOT NULL,
+  changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_price_history_product FOREIGN KEY (product_sku) REFERENCES products (sku),
+  CONSTRAINT fk_price_history_user FOREIGN KEY (changed_by) REFERENCES users (id),
+  INDEX idx_price_history_product (product_sku, changed_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- -----------------------------------------------------------------------------

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use App\Entity\PriceChange;
 use App\Entity\Product;
 use App\Entity\ProductSummary;
 use App\Repository\MySqlProductRepository;
 use App\Repository\ProductSearchCriteria;
+use PDOException;
 
 final class MySqlProductRepositoryTest extends IntegrationTestCase
 {
@@ -59,7 +61,8 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
 
     public function testCreateInsertsProductWithZeroStockRowPerWarehouse(): void
     {
-        $this->repo->create(new Product('INT-0001', 'Produk Integrasi', 1, 'pcs', 1000, 1500, 5, null, true));
+        $product = new Product('INT-0001', 'Produk Integrasi', 1, 'pcs', 1000, 1500, 5, null, true);
+        $this->repo->create($product, PriceChange::initial($product, 1));
 
         $stored = $this->repo->findBySku('INT-0001');
         self::assertNotNull($stored);
@@ -74,7 +77,8 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
         $product = $this->repo->findBySku('SKU-0001');
         self::assertNotNull($product);
 
-        $this->repo->update(new Product($product->sku, 'Kabel HDMI 3m', $product->categoryId, $product->unit, $product->buyPrice, 47000, 12, null, false));
+        $changed = new Product($product->sku, 'Kabel HDMI 3m', $product->categoryId, $product->unit, $product->buyPrice, 47000, 12, null, false);
+        $this->repo->update($changed, PriceChange::between($product, $changed, 1));
 
         $reloaded = $this->repo->findBySku('SKU-0001');
         self::assertNotNull($reloaded);
@@ -97,6 +101,42 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
         $stmt = $this->pdo->query("SELECT warehouse_id, SUM(quantity) FROM stock_ledger WHERE product_sku = 'SKU-0001' GROUP BY warehouse_id ORDER BY warehouse_id");
         self::assertNotFalse($stmt);
         self::assertSame([1 => 3, 2 => 1], array_map('intval', $stmt->fetchAll(\PDO::FETCH_KEY_PAIR)));
+    }
+
+    public function testPriceHistoryRecordsInitialAndChangedPricesNewestFirst(): void
+    {
+        $product = new Product('INT-0002', 'Produk Harga', 1, 'pcs', 1000, 1500, 5, null, true);
+        $this->repo->create($product, PriceChange::initial($product, 1));
+        $repriced = new Product('INT-0002', 'Produk Harga', 1, 'pcs', 1200, 1800, 5, null, true);
+        $this->repo->update($repriced, PriceChange::between($product, $repriced, 4));
+
+        $history = $this->repo->priceHistory('INT-0002', 10);
+
+        self::assertCount(2, $history);
+        self::assertSame('Rudi Hartono', $history[0]->changedByName);
+        self::assertSame([1000, 1200, 1500, 1800], [$history[0]->oldBuyPrice, $history[0]->newBuyPrice, $history[0]->oldSellPrice, $history[0]->newSellPrice]);
+        self::assertTrue($history[1]->isInitial());
+        self::assertSame('Budi Santoso', $history[1]->changedByName);
+        self::assertCount(1, $this->repo->priceHistory('INT-0002', 1));
+    }
+
+    public function testFailedPriceHistoryInsertRollsBackProductUpdate(): void
+    {
+        $product = $this->repo->findBySku('SKU-0001');
+        self::assertNotNull($product);
+        $changed = new Product($product->sku, $product->name, $product->categoryId, $product->unit, $product->buyPrice, 99000, $product->reorderPoint, null, true);
+
+        try {
+            // User 999 tidak ada: FK riwayat harga gagal -> UPDATE products ikut dibatalkan.
+            $this->repo->update($changed, PriceChange::between($product, $changed, 999));
+            self::fail('PDOException seharusnya dilempar.');
+        } catch (PDOException) {
+        }
+
+        $reloaded = $this->repo->findBySku('SKU-0001');
+        self::assertNotNull($reloaded);
+        self::assertSame($product->sellPrice, $reloaded->sellPrice);
+        self::assertSame([], $this->repo->priceHistory('SKU-0001', 10));
     }
 
     /**

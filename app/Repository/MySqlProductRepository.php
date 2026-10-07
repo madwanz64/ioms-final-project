@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Core\Database;
+use App\Entity\PriceChange;
+use App\Entity\PriceHistoryEntry;
 use App\Entity\Product;
 use App\Entity\ProductSummary;
 use App\Entity\StockLevel;
@@ -114,9 +116,9 @@ final class MySqlProductRepository implements ProductRepositoryInterface
         return $stmt->fetchColumn() !== false;
     }
 
-    public function create(Product $product): void
+    public function create(Product $product, PriceChange $initialPrice): void
     {
-        Database::transactional($this->pdo, function () use ($product): void {
+        Database::transactional($this->pdo, function () use ($product, $initialPrice): void {
             $stmt = $this->pdo->prepare(
                 'INSERT INTO products (' . self::PRODUCT_COLUMNS . ')
                  VALUES (:sku, :name, :category_id, :unit, :buy_price, :sell_price, :reorder_point, :image_url, :active)'
@@ -130,18 +132,67 @@ final class MySqlProductRepository implements ProductRepositoryInterface
                  SELECT :sku, id, 0 FROM warehouses'
             );
             $stock->execute(['sku' => $product->sku]);
+
+            $this->insertPriceChange($initialPrice);
         });
     }
 
-    public function update(Product $product): void
+    public function update(Product $product, ?PriceChange $priceChange): void
+    {
+        Database::transactional($this->pdo, function () use ($product, $priceChange): void {
+            $stmt = $this->pdo->prepare(
+                'UPDATE products
+                 SET name = :name, category_id = :category_id, unit = :unit, buy_price = :buy_price,
+                     sell_price = :sell_price, reorder_point = :reorder_point, image_url = :image_url, active = :active
+                 WHERE sku = :sku'
+            );
+            $stmt->execute($this->productParams($product));
+
+            if ($priceChange !== null) {
+                $this->insertPriceChange($priceChange);
+            }
+        });
+    }
+
+    public function priceHistory(string $sku, int $limit): array
     {
         $stmt = $this->pdo->prepare(
-            'UPDATE products
-             SET name = :name, category_id = :category_id, unit = :unit, buy_price = :buy_price,
-                 sell_price = :sell_price, reorder_point = :reorder_point, image_url = :image_url, active = :active
-             WHERE sku = :sku'
+            'SELECT h.changed_at, u.name AS changed_by_name, h.old_buy_price, h.new_buy_price, h.old_sell_price, h.new_sell_price
+             FROM product_price_history h
+             JOIN users u ON u.id = h.changed_by
+             WHERE h.product_sku = :sku
+             ORDER BY h.changed_at DESC, h.id DESC
+             LIMIT :limit'
         );
-        $stmt->execute($this->productParams($product));
+        $stmt->bindValue('sku', $sku);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_values(array_map(static fn (array $row): PriceHistoryEntry => new PriceHistoryEntry(
+            (string) $row['changed_at'],
+            (string) $row['changed_by_name'],
+            $row['old_buy_price'] === null ? null : RowMapper::money($row['old_buy_price']),
+            RowMapper::money($row['new_buy_price']),
+            $row['old_sell_price'] === null ? null : RowMapper::money($row['old_sell_price']),
+            RowMapper::money($row['new_sell_price']),
+        ), $stmt->fetchAll()));
+    }
+
+    private function insertPriceChange(PriceChange $change): void
+    {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO product_price_history
+                 (product_sku, old_buy_price, new_buy_price, old_sell_price, new_sell_price, changed_by)
+             VALUES (:sku, :old_buy_price, :new_buy_price, :old_sell_price, :new_sell_price, :changed_by)'
+        );
+        $stmt->execute([
+            'sku' => $change->sku,
+            'old_buy_price' => $change->oldBuyPrice,
+            'new_buy_price' => $change->newBuyPrice,
+            'old_sell_price' => $change->oldSellPrice,
+            'new_sell_price' => $change->newSellPrice,
+            'changed_by' => $change->changedBy,
+        ]);
     }
 
     public function stockLevels(string $sku): array

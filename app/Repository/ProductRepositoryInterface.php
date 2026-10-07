@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\PriceChange;
+use App\Entity\PriceHistoryEntry;
 use App\Entity\Product;
 use App\Entity\ProductSummary;
 use App\Entity\StockLevel;
@@ -35,11 +37,16 @@ interface ProductRepositoryInterface
     public function allActive(): array;
 
     /**
-     * Simpan produk baru sekaligus membuat baris stok 0 di setiap gudang (WH-01).
+     * Simpan produk baru sekaligus membuat baris stok 0 di setiap gudang (WH-01)
+     * dan mencatat harga awalnya, dalam satu transaksi.
      */
-    public function create(Product $product): void;
+    public function create(Product $product, PriceChange $initialPrice): void;
 
-    public function update(Product $product): void;
+    /**
+     * Simpan perubahan produk; bila $priceChange tidak null, riwayat harganya
+     * ditulis dalam transaksi yang sama.
+     */
+    public function update(Product $product, ?PriceChange $priceChange): void;
 
     /**
      * @return list<StockLevel>
@@ -50,4 +57,11 @@ interface ProductRepositoryInterface
      * @return list<StockMovement>
      */
     public function recentMovements(string $sku, int $limit): array;
+
+    /**
+     * Perubahan harga terbaru lebih dulu.
+     *
+     * @return list<PriceHistoryEntry>
+     */
+    public function priceHistory(string $sku, int $limit): array;
 }

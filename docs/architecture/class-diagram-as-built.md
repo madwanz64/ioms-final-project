@@ -45,6 +45,8 @@ classDiagram
     class Product
     class ProductSummary
     class StockLevel
+    class PriceChange
+    class PriceHistoryEntry
 
     ProductController --> ProductService
     ProductService ..> ProductRepositoryInterface
@@ -59,11 +61,19 @@ classDiagram
     ProductRepositoryInterface ..> Product : mengembalikan
     ProductRepositoryInterface ..> ProductSummary : mengembalikan
     ProductRepositoryInterface ..> StockLevel : mengembalikan
+    ProductService ..> PriceChange : membuat bila harga berubah
+    ProductRepositoryInterface ..> PriceChange : menyimpan bersama produk
+    ProductRepositoryInterface ..> PriceHistoryEntry : mengembalikan
 ```
 
 `MySql*` dipakai aplikasi & integration test; `InMemory*`/`Fake*` (di `tests/Fake/`) dipakai
 unit test, sehingga aturan bisnis diuji tanpa database (ARCH-01). Pola yang sama berlaku di
 semua modul berikut.
+
+Riwayat harga mengikuti pola `StockChange`/`StockMovement`: `PriceChange` adalah write model
+yang dibuat `ProductService` (harga awal saat create, atau hanya bila harga beli/jual berubah
+saat update), lalu `create()`/`update()` repository menulisnya dalam transaksi yang sama dengan
+baris `products`. `PriceHistoryEntry` adalah read model untuk halaman detail produk.
 
 ---
 
