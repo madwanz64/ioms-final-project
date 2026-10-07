@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Core\Database;
-use App\Entity\OrderSummary;
 use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\PurchaseOrderStatus;
@@ -62,16 +61,7 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
         $stmt->bindValue('offset', ($page - 1) * $criteria->perPage, PDO::PARAM_INT);
         $stmt->execute();
 
-        $items = array_map(static fn (array $row): OrderSummary => new OrderSummary(
-            (int) $row['id'],
-            (string) $row['order_no'],
-            (string) $row['party_name'],
-            (string) $row['warehouse_name'],
-            (string) $row['status'],
-            (string) $row['order_date'],
-            (int) $row['item_count'],
-            (int) round((float) $row['total']),
-        ), $stmt->fetchAll());
+        $items = array_map([RowMapper::class, 'orderSummary'], $stmt->fetchAll());
 
         return new PaginatedResult(array_values($items), $total, $page, $criteria->perPage);
     }
@@ -173,7 +163,7 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
             (string) $item['unit'],
             (int) $item['qty'],
             (int) $item['received_qty'],
-            (int) round((float) $item['buy_price']),
+            RowMapper::money($item['buy_price']),
         ), $itemsStmt->fetchAll());
 
         return new PurchaseOrder(

@@ -35,7 +35,7 @@ final class MySqlReportRepository implements ReportRepositoryInterface
              WHERE p.active = 1'
         );
 
-        return $stmt === false ? 0 : (int) round((float) $stmt->fetchColumn());
+        return $stmt === false ? 0 : RowMapper::money($stmt->fetchColumn());
     }
 
     public function orderStatusCounts(string $orderType, ?DateRange $range = null, ?int $createdBy = null): array
@@ -71,7 +71,7 @@ final class MySqlReportRepository implements ReportRepositoryInterface
             $orderType,
             (string) $row['status'],
             (int) $row['order_count'],
-            (int) round((float) $row['total']),
+            RowMapper::money($row['total']),
         ), $stmt->fetchAll()));
     }
 
@@ -160,15 +160,6 @@ final class MySqlReportRepository implements ReportRepositoryInterface
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 
-        return array_values(array_map(static fn (array $row): OrderSummary => new OrderSummary(
-            (int) $row['id'],
-            (string) $row['order_no'],
-            (string) $row['party_name'],
-            (string) $row['warehouse_name'],
-            (string) $row['status'],
-            (string) $row['order_date'],
-            (int) $row['item_count'],
-            (int) round((float) $row['total']),
-        ), $stmt->fetchAll()));
+        return array_values(array_map([RowMapper::class, 'orderSummary'], $stmt->fetchAll()));
     }
 }

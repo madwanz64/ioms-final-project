@@ -80,7 +80,7 @@ final class MySqlProductRepository implements ProductRepositoryInterface
             (string) $row['sku'],
             (string) $row['name'],
             (string) $row['category_name'],
-            self::money($row['sell_price']),
+            RowMapper::money($row['sell_price']),
             (int) $row['reorder_point'],
             (int) $row['total_stock'],
             (bool) $row['active'],
@@ -222,19 +222,11 @@ final class MySqlProductRepository implements ProductRepositoryInterface
             (string) $row['name'],
             (int) $row['category_id'],
             (string) $row['unit'],
-            self::money($row['buy_price']),
-            self::money($row['sell_price']),
+            RowMapper::money($row['buy_price']),
+            RowMapper::money($row['sell_price']),
             (int) $row['reorder_point'],
             $row['image_url'] === null ? null : (string) $row['image_url'],
             (bool) $row['active'],
         );
-    }
-
-    /**
-     * Kolom harga DECIMAL(14,2) dikembalikan PDO sebagai string ("45000.00").
-     */
-    private static function money(mixed $value): int
-    {
-        return (int) round((float) $value);
     }
 }

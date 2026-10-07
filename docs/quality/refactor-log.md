@@ -148,3 +148,59 @@ di `PurchaseOrderServiceTest`. Signature konstruktor `PurchaseOrderService` seng
 dipertahankan. Smoke test form PO: halaman 200, tanggal `2026-02-30` tetap ditolak.
 
 **Commit:** `refactor: ekstrak OrderLineValidator & validasi tanggal untuk dipakai PO dan SO`.
+
+---
+
+## R-03 · Extract Class `RowMapper` untuk konversi baris PDO yang tersalin (2026-10-07)
+
+Kode yang diperbaiki adalah kode lama dari slice PO/SO/laporan, bukan fitur yang sedang
+dikerjakan (Boy Scout Rule).
+
+**Smell:**
+- **Duplicate Code.** Mapping baris SQL menjadi `OrderSummary` (8 field) tersalin identik di
+  `MySqlPurchaseOrderRepository::search`, `MySqlSalesOrderRepository::search`, dan
+  `MySqlReportRepository::queue`.
+- **Shotgun Surgery (risiko).** Konversi kolom `DECIMAL(14,2)` → rupiah `int`
+  (`(int) round((float) …)`) tertulis di 9 tempat pada 4 kelas. Hanya
+  `MySqlProductRepository` yang punya method `money()`, dan itu pun `private`. Mengubah
+  aturan pembulatan berarti mengubah 9 tempat.
+
+**Teknik:** Extract Class (`App\Repository\RowMapper`, fungsi murni statis) + Replace
+Inline Code with Function Call. Method `money()` privat di `MySqlProductRepository`
+dipindahkan (Move Method) ke `RowMapper`.
+
+**Sebelum** (sama persis di tiga kelas):
+
+```php
+$items = array_map(static fn (array $row): OrderSummary => new OrderSummary(
+    (int) $row['id'],
+    (string) $row['order_no'],
+    (string) $row['party_name'],
+    (string) $row['warehouse_name'],
+    (string) $row['status'],
+    (string) $row['order_date'],
+    (int) $row['item_count'],
+    (int) round((float) $row['total']),
+), $stmt->fetchAll());
+
+// ... dan di tempat lain
+(int) round((float) $item['buy_price']),
+```
+
+**Sesudah:**
+
+```php
+$items = array_map([RowMapper::class, 'orderSummary'], $stmt->fetchAll());
+
+RowMapper::money($item['buy_price']),
+```
+
+**Hasil:** 4 file repository −47 / +10 baris; aturan konversi uang kini ada di satu tempat.
+
+**Bukti perilaku tidak berubah:** 160 test lulus sebelum & sesudah tanpa test diubah.
+Integration test yang mencakup jalur ini: pencarian PO & SO (`PurchaseOrderReceiptTest`,
+`SalesOrderFulfillmentTest`), total order = SUM(qty × harga) dan nilai inventori
+(`ReportRepositoryTest`), serta harga produk (`MySqlProductRepositoryTest`).
+PHPStan level 6 tetap 0 error.
+
+**Commit:** `refactor: ekstrak RowMapper untuk konversi DECIMAL & OrderSummary yang tersalin`.

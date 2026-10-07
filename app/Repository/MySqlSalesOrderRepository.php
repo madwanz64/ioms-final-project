@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Core\Database;
-use App\Entity\OrderSummary;
 use App\Entity\SalesOrder;
 use App\Entity\SalesOrderItem;
 use App\Entity\SalesOrderStatus;
@@ -74,16 +73,7 @@ final class MySqlSalesOrderRepository implements SalesOrderRepositoryInterface
         $stmt->bindValue('offset', ($page - 1) * $criteria->perPage, PDO::PARAM_INT);
         $stmt->execute();
 
-        $items = array_map(static fn (array $row): OrderSummary => new OrderSummary(
-            (int) $row['id'],
-            (string) $row['order_no'],
-            (string) $row['party_name'],
-            (string) $row['warehouse_name'],
-            (string) $row['status'],
-            (string) $row['order_date'],
-            (int) $row['item_count'],
-            (int) round((float) $row['total']),
-        ), $stmt->fetchAll());
+        $items = array_map([RowMapper::class, 'orderSummary'], $stmt->fetchAll());
 
         return new PaginatedResult(array_values($items), $total, $page, $criteria->perPage);
     }
@@ -178,7 +168,7 @@ final class MySqlSalesOrderRepository implements SalesOrderRepositoryInterface
             (string) $item['name'],
             (string) $item['unit'],
             (int) $item['qty'],
-            (int) round((float) $item['price']),
+            RowMapper::money($item['price']),
         ), $itemsStmt->fetchAll());
 
         return new SalesOrder(
