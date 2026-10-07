@@ -4,5 +4,6 @@ parameters:
         - app
         - config
         - public/index.php
+        - scripts/check-low-stock.php
         - tests
     tmpDir: .phpstan.cache

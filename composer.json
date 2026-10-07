@@ -32,7 +32,8 @@
         "test": "phpunit",
         "test:unit": "phpunit --testsuite Unit",
         "test:integration": "phpunit --testsuite Integration",
-        "analyse": "phpstan analyse --memory-limit=512M"
+        "analyse": "phpstan analyse --memory-limit=512M",
+        "low-stock": "php scripts/check-low-stock.php"
     },
     "config": {
         "sort-packages": true
