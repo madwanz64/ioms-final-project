@@ -15,6 +15,7 @@ final class StockMovement
         public readonly string $type,
         public readonly int $quantity,
         public readonly string $refId,
+        public readonly string $sku = '',
     ) {
     }
 }

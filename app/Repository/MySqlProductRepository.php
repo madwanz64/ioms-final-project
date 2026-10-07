@@ -94,21 +94,16 @@ final class MySqlProductRepository implements ProductRepositoryInterface
         $stmt = $this->pdo->prepare('SELECT ' . self::PRODUCT_COLUMNS . ' FROM products WHERE sku = :sku');
         $stmt->execute(['sku' => $sku]);
         $row = $stmt->fetch();
-        if (!is_array($row)) {
-            return null;
-        }
 
-        return new Product(
-            (string) $row['sku'],
-            (string) $row['name'],
-            (int) $row['category_id'],
-            (string) $row['unit'],
-            self::money($row['buy_price']),
-            self::money($row['sell_price']),
-            (int) $row['reorder_point'],
-            $row['image_url'] === null ? null : (string) $row['image_url'],
-            (bool) $row['active'],
-        );
+        return is_array($row) ? $this->hydrate($row) : null;
+    }
+
+    public function allActive(): array
+    {
+        $stmt = $this->pdo->query('SELECT ' . self::PRODUCT_COLUMNS . ' FROM products WHERE active = 1 ORDER BY name');
+        $rows = $stmt === false ? [] : $stmt->fetchAll();
+
+        return array_values(array_map(fn (array $row): Product => $this->hydrate($row), $rows));
     }
 
     public function skuExists(string $sku): bool
@@ -215,6 +210,24 @@ final class MySqlProductRepository implements ProductRepositoryInterface
             'image_url' => $product->imageUrl,
             'active' => $product->active ? 1 : 0,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function hydrate(array $row): Product
+    {
+        return new Product(
+            (string) $row['sku'],
+            (string) $row['name'],
+            (int) $row['category_id'],
+            (string) $row['unit'],
+            self::money($row['buy_price']),
+            self::money($row['sell_price']),
+            (int) $row['reorder_point'],
+            $row['image_url'] === null ? null : (string) $row['image_url'],
+            (bool) $row['active'],
+        );
     }
 
     /**

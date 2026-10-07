@@ -28,6 +28,13 @@ interface ProductRepositoryInterface
     public function skuExists(string $sku): bool;
 
     /**
+     * Semua produk aktif, urut nama (pilihan item pada form order).
+     *
+     * @return list<Product>
+     */
+    public function allActive(): array;
+
+    /**
      * Simpan produk baru sekaligus membuat baris stok 0 di setiap gudang (WH-01).
      */
     public function create(Product $product): void;

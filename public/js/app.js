@@ -48,6 +48,66 @@
     });
   });
 
+  // Konfirmasi sebelum aksi yang tidak bisa dibatalkan (mis. batalkan PO).
+  document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+    });
+  });
+
+  // Baris item order: tambah/hapus baris, isi harga default dari produk terpilih.
+  document.querySelectorAll('table[data-line-items]').forEach(function (table) {
+    const body = table.tBodies[0];
+    const maxLines = Number(table.dataset.maxLines) || 50;
+    const addButton = table.closest('fieldset').querySelector('[data-add-line]');
+
+    function reindex() {
+      Array.prototype.forEach.call(body.rows, function (row, index) {
+        row.querySelectorAll('[name]').forEach(function (field) {
+          field.name = field.name.replace(/items\[\d+\]/, 'items[' + index + ']');
+          field.id = field.id.replace(/item-\d+-/, 'item-' + index + '-');
+        });
+        row.querySelectorAll('label[for]').forEach(function (label) {
+          label.htmlFor = label.htmlFor.replace(/item-\d+-/, 'item-' + index + '-');
+        });
+      });
+      if (addButton) addButton.disabled = body.rows.length >= maxLines;
+    }
+
+    body.addEventListener('change', function (event) {
+      if (!event.target.matches('[data-line-product]')) return;
+      const option = event.target.selectedOptions[0];
+      const price = event.target.closest('tr').querySelector('[data-line-price]');
+      if (option && option.dataset.price && price && price.value === '') price.value = option.dataset.price;
+    });
+
+    body.addEventListener('click', function (event) {
+      const remove = event.target.closest('[data-remove-line]');
+      if (!remove) return;
+      if (body.rows.length === 1) {
+        remove.closest('tr').querySelectorAll('input, select').forEach(function (f) { f.value = ''; });
+        return;
+      }
+      remove.closest('tr').remove();
+      reindex();
+    });
+
+    if (addButton) {
+      addButton.addEventListener('click', function () {
+        const row = body.rows[body.rows.length - 1].cloneNode(true);
+        row.querySelectorAll('input, select').forEach(function (field) {
+          field.value = '';
+          field.removeAttribute('aria-invalid');
+        });
+        row.querySelectorAll('.error-msg').forEach(function (msg) { msg.remove(); });
+        body.appendChild(row);
+        reindex();
+        row.querySelector('select').focus();
+      });
+    }
+    reindex();
+  });
+
   // Upload gambar: cek ukuran & tipe lebih awal + preview. Server tetap memeriksa ulang dari isi file.
   document.querySelectorAll('input[type="file"][data-max-bytes]').forEach(function (input) {
     const preview = document.querySelector('[data-image-preview]');

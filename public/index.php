@@ -12,6 +12,7 @@ use App\Controller\CategoryController;
 use App\Controller\DashboardController;
 use App\Controller\PartyController;
 use App\Controller\ProductController;
+use App\Controller\PurchaseOrderController;
 use App\Controller\UserController;
 use App\Controller\WarehouseController;
 use App\Core\Auth;
@@ -28,14 +29,19 @@ use App\Entity\Role;
 use App\Repository\MySqlCategoryRepository;
 use App\Repository\MySqlPartyRepository;
 use App\Repository\MySqlProductRepository;
+use App\Repository\MySqlPurchaseOrderRepository;
+use App\Repository\MySqlStockRepository;
 use App\Repository\MySqlUserRepository;
 use App\Repository\MySqlWarehouseRepository;
+use App\Repository\PdoTransactionManager;
 use App\Service\AuthService;
 use App\Service\CategoryService;
 use App\Service\DashboardService;
 use App\Service\LocalImageStorage;
 use App\Service\PartyService;
 use App\Service\ProductService;
+use App\Service\PurchaseOrderService;
+use App\Service\StockService;
 use App\Service\UserService;
 use App\Service\WarehouseService;
 
@@ -89,14 +95,13 @@ try {
     $authController = new AuthController(new AuthService($users), $auth, $session, $view);
     $dashboardController = new DashboardController(new DashboardService($productRepository), $view);
     $productController = new ProductController($productService, $session, $view);
+    $warehouseRepository = new MySqlWarehouseRepository($pdo);
+    $supplierRepository = new MySqlPartyRepository($pdo, PartyType::Supplier);
+    $stockRepository = new MySqlStockRepository($pdo);
+
     $categoryController = new CategoryController(new CategoryService($categories), $session, $view);
-    $warehouseController = new WarehouseController(new WarehouseService(new MySqlWarehouseRepository($pdo)), $session, $view);
-    $supplierController = new PartyController(
-        PartyType::Supplier,
-        new PartyService(new MySqlPartyRepository($pdo, PartyType::Supplier)),
-        $session,
-        $view,
-    );
+    $warehouseController = new WarehouseController(new WarehouseService($warehouseRepository), $session, $view);
+    $supplierController = new PartyController(PartyType::Supplier, new PartyService($supplierRepository), $session, $view);
     $customerController = new PartyController(
         PartyType::Customer,
         new PartyService(new MySqlPartyRepository($pdo, PartyType::Customer)),
@@ -104,6 +109,20 @@ try {
         $view,
     );
     $userController = new UserController(new UserService($users), $session, $view);
+    $purchaseOrderController = new PurchaseOrderController(
+        new PurchaseOrderService(
+            new MySqlPurchaseOrderRepository($pdo),
+            $supplierRepository,
+            $warehouseRepository,
+            $productRepository,
+            $stockRepository,
+            new StockService($stockRepository),
+            new PdoTransactionManager($pdo),
+            new DateTimeImmutable('today'),
+        ),
+        $session,
+        $view,
+    );
 
     $router = new Router($auth, $csrf);
     $router->get('/', fn (Request $r, $user) => Response::redirect($user === null ? '/login' : '/dashboard'), public: true);
@@ -133,6 +152,17 @@ try {
     $adminCrud(PartyType::Supplier->path(), $supplierController);
     $adminCrud(PartyType::Customer->path(), $customerController);
     $adminCrud('/users', $userController);
+
+    // Purchase Order (§1.2): Admin & Warehouse Staff membuat (Warehouse = mengusulkan Draft)
+    // dan menerima barang; menandai Ordered dan membatalkan khusus Admin. Sales: tidak ada akses.
+    $poRoles = [Role::Admin, Role::WarehouseStaff];
+    $router->get('/purchase-orders', [$purchaseOrderController, 'index'], $poRoles);
+    $router->get('/purchase-orders/create', [$purchaseOrderController, 'create'], $poRoles);
+    $router->post('/purchase-orders', [$purchaseOrderController, 'store'], $poRoles);
+    $router->get('/purchase-orders/{id}', [$purchaseOrderController, 'show'], $poRoles);
+    $router->post('/purchase-orders/{id}/order', [$purchaseOrderController, 'markOrdered'], [Role::Admin]);
+    $router->post('/purchase-orders/{id}/cancel', [$purchaseOrderController, 'cancel'], [Role::Admin]);
+    $router->post('/purchase-orders/{id}/receive', [$purchaseOrderController, 'receive'], $poRoles);
 
     $response = $router->dispatch($request);
 } catch (HttpException $e) {

@@ -63,6 +63,45 @@ final class Request
     }
 
     /**
+     * Baris berulang dari form, mis. items[0][sku], items[0][qty], ...
+     * Nilai non-string diabaikan; urutan baris dipertahankan.
+     *
+     * @return list<array<string, string>>
+     */
+    public function inputRows(string $key): array
+    {
+        $rows = $this->body[$key] ?? null;
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $result[] = self::stringsOnly($row);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Peta satu tingkat dari form, mis. receive[12]=5 -> [12 => '5'].
+     * PHP mengubah key numerik menjadi int, jadi key bisa int atau string.
+     *
+     * @return array<array-key, string>
+     */
+    public function inputMap(string $key): array
+    {
+        $map = $this->body[$key] ?? null;
+        if (!is_array($map)) {
+            return [];
+        }
+
+        return array_filter(array_map(static fn (mixed $v): ?string => is_string($v) ? trim($v) : null, $map), 'is_string');
+    }
+
+    /**
      * File yang diunggah, atau null bila field tidak diisi sama sekali.
      */
     public function file(string $key): ?UploadedFile
@@ -85,7 +124,7 @@ final class Request
     }
 
     /**
-     * @param array<string, mixed> $values
+     * @param array<array-key, mixed> $values
      * @return array<string, string>
      */
     private static function stringsOnly(array $values): array

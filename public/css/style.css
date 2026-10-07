@@ -493,3 +493,12 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, summary:focus-visible
 .badge.receipt{background:var(--success-soft); color:#15803d;}
 .badge.issue{background:var(--danger-soft); color:#b91c1c;}
 .badge.adjustment{background:var(--info-soft); color:#1d4ed8;}
+
+/* Baris item order (PO/SO) */
+fieldset.line-items{border:none; padding:0; margin:0 0 16px; min-width:0;}
+fieldset.line-items legend{font-size:.8rem; font-weight:700; margin-bottom:8px;}
+fieldset.line-items .data-table select{min-width:220px;}
+fieldset.line-items .data-table input{max-width:140px;}
+fieldset.line-items .data-table .error-msg{display:block; font-size:.72rem; color:var(--danger); font-weight:600; margin-top:4px;}
+fieldset.line-items [aria-invalid="true"], .data-table input[aria-invalid="true"]{border-color:var(--danger);}
+.form-actions form{display:inline;}
