@@ -88,3 +88,49 @@ Refactor R-01 (`InputValidator`): 42 test lama lulus sebelum & sesudah tanpa tes
 | 11 | Tambah "Gudang Medan" | 32 baris `product_stock` qty 0 (= jumlah produk) | ✅ |
 | 12 | Tambah supplier aktif & customer nonaktif | tersimpan di tabel masing-masing, badge status benar | ✅ |
 | 13 | Nama kategori `<img src=x onerror=alert(1)>` | tampil ter-escape di flash & tabel | ✅ |
+
+---
+
+## Slice 3 — Purchase Order, goods receipt & anti-oversell (2026-10-07)
+
+### Otomatis
+
+| Suite | Hasil |
+|---|---|
+| Unit | 71 test (+24), lulus |
+| Integration | 18 test (+4 file baru: 7 test), lulus — termasuk dua koneksi MySQL bersamaan |
+| Semua | 89 test, 228 assertion, lulus |
+
+Area logic baru: validasi tanggal PO, transisi status PO, perhitungan goods receipt
+(sisa qty, status hasil), dan aturan stok/anti-oversell (StockService).
+
+**Bukti ARCH-02** (`tests/Integration/StockConcurrencyTest.php`, penjelasan di ADR-001):
+
+| Skenario | Hasil |
+|---|---|
+| Transaksi A mengunci SKU-0001@gudang 1; koneksi B mencoba `FOR UPDATE NOWAIT` pada baris yang sama | B ditolak dengan error MySQL 3572 (tanpa NOWAIT, B menunggu A selesai); baris SKU-0002 tetap bisa dikunci B |
+| Issue 3 unit (stok 3) lalu issue 1 unit | Issue kedua ditolak "tersedia 0, dibutuhkan 1"; stok 0 = SUM(ledger); ledger issue kedua tidak tertulis |
+| `recordMovement()` langsung -4 tanpa lock | Ditolak guard SQL (`InsufficientStockException`), stok tetap 3 |
+| `UPDATE` langsung -100 tanpa guard | Ditolak `CHECK (quantity >= 0)` |
+
+**Mutation check:**
+- `FOR UPDATE` dihapus → test lock gagal.
+- Guard SQL dilonggarkan → test guard gagal, dan pesan error-nya menunjukkan CHECK constraint (lapis ketiga) yang menolak.
+- Kode dikembalikan → 89 lulus.
+
+### Skenario manual (smoke test `php -S` + curl, Admin + Warehouse + Sales)
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | Sales membuka `/purchase-orders` | 403 | ✅ |
+| 2 | Daftar PO (12 seed), filter Ordered + sort terlama, cari "kertas" | 10 per halaman; PO-0006, 0007, 0011; 4 hasil | ✅ |
+| 3 | Warehouse membuat PO: supplier nonaktif, tanggal 2099, qty 0, harga -1, SKU ganda | 422 dengan 5 pesan, tidak tersimpan | ✅ |
+| 4 | Warehouse membuat PO valid (baris kosong diabaikan) | PO-2026-0013 Draft, 2 item | ✅ |
+| 5 | Warehouse mencoba "Tandai Ordered" | 403 | ✅ |
+| 6 | Terima barang saat Draft | ditolak dengan pesan status | ✅ |
+| 7 | Admin menandai Ordered | status Ordered | ✅ |
+| 8 | Terima 11 dari sisa 10 / qty "abc" / semua kosong | 422 per item / "minimal satu item" | ✅ |
+| 9 | Terima 4 dari 10 | PartiallyReceived, stok SKU-0001 3 → 7, sisa 6 | ✅ |
+| 10 | Admin membatalkan PO PartiallyReceived | ditolak | ✅ |
+| 11 | Terima sisa (6 + 5) | Received; 3 baris ledger Receipt, `performed_by` = Rudi; stok = SUM(ledger) (13 dan 6) | ✅ |
+| 12 | Terima lagi setelah Received | ditolak; form penerimaan tidak tampil | ✅ |

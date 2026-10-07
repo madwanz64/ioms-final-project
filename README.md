@@ -6,7 +6,7 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 (Admin, Sales, Warehouse Staff).
 
 > **Status: dalam pengerjaan.** Sudah jalan: login/logout, guard role, produk,
-> master data (kategori, gudang, supplier, customer), dan manajemen user. PO, SO, ledger transaksional,
+> master data, manajemen user, serta Purchase Order + goods receipt transaksional. SO,
 > dashboard lengkap, laporan CSV, API JSON, script terjadwal, dan Docker
 > belum dibuat (lihat [Known limitations](#known-limitations)).
 
@@ -24,7 +24,9 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 | DASH-01 | ⏳ Sebagian: Admin & Warehouse melihat jumlah produk aktif dan produk di bawah reorder point (dari query) |
 | ERR-01 | ✅ Tanpa login → redirect, tanpa hak akses → 403, tidak ditemukan → 404, error server → 500 tanpa stack trace |
 | VAL-01 | ✅ untuk form yang sudah ada: HTML5 di frontend, semua aturan diulang di backend, input lama dipertahankan (kecuali password) |
-| PO-01, SO-01, ARCH-02, REPORT-01, API-01, JOB-01 | ⏳ Belum |
+| PO-01 Purchase Order | ✅ Draft → Ordered → PartiallyReceived/Received, batal sebelum ada penerimaan; goods receipt penuh/sebagian menambah stok + ledger Receipt dalam satu transaksi; cari/filter status/sort tanggal/pagination |
+| ARCH-02 Anti-oversell | ✅ Mekanisme siap & teruji ([ADR-001](docs/architecture/adr-001-mekanisme-anti-oversell.md)): FOR UPDATE berurutan + guard SQL + CHECK constraint; dipakai goods receipt, goods issue menyusul bersama SO |
+| SO-01, REPORT-01, API-01, JOB-01 | ⏳ Belum |
 
 ## Struktur
 
@@ -83,8 +85,9 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 ## Known limitations
 
 - Docker Compose belum tersedia; aplikasi & test baru diuji pada PHP 8.3 + MySQL 8.0 lokal.
-- Modul PO, SO, goods receipt/issue (ARCH-02), laporan CSV, API JSON, dan script
-  low-stock belum dibangun.
+- Modul Sales Order (approval & goods issue), dashboard order, laporan CSV, API JSON,
+  dan script low-stock belum dibangun.
+- Interpretasi requirement yang ambigu (mis. arti "mengusulkan" PO): [docs/planning/catatan-keputusan.md](docs/planning/catatan-keputusan.md).
 - Daftar lengkap jalan pintas: [docs/quality/tech-debt.md](docs/quality/tech-debt.md).
 
 ## Penggunaan AI
