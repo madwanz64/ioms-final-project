@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use App\Entity\Category;
 use App\Entity\Party;
 use App\Entity\PartyType;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Warehouse;
+use App\Repository\MySqlCategoryRepository;
 use App\Repository\MySqlPartyRepository;
 use App\Repository\MySqlUserRepository;
 use App\Repository\MySqlWarehouseRepository;
@@ -39,6 +41,23 @@ final class MasterDataRepositoryTest extends IntegrationTestCase
 
         self::assertTrue($repo->nameExists('GUDANG JAKARTA'));
         self::assertFalse($repo->nameExists('Gudang Jakarta', 1));
+    }
+
+    public function testCategoryRoundTripAndCaseInsensitiveNameCheck(): void
+    {
+        $repo = new MySqlCategoryRepository($this->pdo);
+        $before = count($repo->all());
+
+        $id = $repo->create(new Category(0, 'Furnitur', null));
+        $repo->update(new Category($id, 'Furnitur Kantor', 'Meja & kursi'));
+
+        $stored = $repo->findById($id);
+        self::assertNotNull($stored);
+        self::assertSame(['Furnitur Kantor', 'Meja & kursi'], [$stored->name, $stored->description]);
+        self::assertCount($before + 1, $repo->all());
+        self::assertTrue($repo->nameExists('ELEKTRONIK'));
+        self::assertFalse($repo->nameExists('Furnitur Kantor', $id));
+        self::assertNull($repo->findById(999_999));
     }
 
     public function testSupplierAndCustomerAreStoredInTheirOwnTables(): void
