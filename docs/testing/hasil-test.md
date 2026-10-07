@@ -50,3 +50,41 @@ Cek bahwa test benar-benar menguji logic: kondisi `isLowStock()` sengaja diubah 
 ## Known bugs
 
 Belum ada yang diketahui pada slice ini.
+
+---
+
+## Slice 2 — Master data & manajemen user (2026-10-07)
+
+Lingkungan sama (PHP 8.3.16, MySQL 8.0.46 lokal, belum Docker).
+
+### Otomatis
+
+| Suite | Hasil |
+|---|---|
+| Unit | 47 test (+15), lulus |
+| Integration | 14 test (+4), lulus |
+| Semua (`composer test`) | 61 test, 149 assertion, lulus |
+
+Area logic baru: manajemen user (UserService), nama unik master data
+(CategoryService, WarehouseService). Mutation check: guard "Admin tidak bisa
+menonaktifkan/mengubah role akun sendiri" dimatikan → 1 test gagal → dikembalikan.
+
+Refactor R-01 (`InputValidator`): 42 test lama lulus sebelum & sesudah tanpa test diubah.
+
+### Skenario manual (smoke test `php -S` + curl)
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | Admin membuka 5 daftar + form tambah/edit | 200 | ✅ |
+| 2 | Sales & Warehouse membuka `/categories`, `/warehouses`, `/suppliers`, `/customers`, `/users` | 403 untuk ke-10 kombinasi | ✅ |
+| 3 | Sales POST `/users` (mencoba membuat Admin) | 403 | ✅ |
+| 4 | `/users/999/edit`, `/users/abc/edit` | 404, 404 | ✅ |
+| 5 | Tambah kategori "elektronik" (sudah ada "Elektronik") | 422 "Nama kategori sudah dipakai." | ✅ |
+| 6 | Tambah user: nama kosong, email `SINTA@ioms.test`, role "Boss", password "123" | 422 dengan 4 pesan; password tidak dikirim balik ke form | ✅ |
+| 7 | Konfirmasi password berbeda | 422 "Konfirmasi password tidak sama." | ✅ |
+| 8 | Admin mengubah dirinya jadi Sales + nonaktif | 422, dua pesan penolakan | ✅ |
+| 9 | Tambah user `TARI@ioms.test` | tersimpan `tari@ioms.test`, hash `$2y$10$`; user bisa login | ✅ |
+| 10 | Admin menonaktifkan Tari saat sesi Tari masih aktif | request Tari berikutnya → 302 `/login` | ✅ |
+| 11 | Tambah "Gudang Medan" | 32 baris `product_stock` qty 0 (= jumlah produk) | ✅ |
+| 12 | Tambah supplier aktif & customer nonaktif | tersimpan di tabel masing-masing, badge status benar | ✅ |
+| 13 | Nama kategori `<img src=x onerror=alert(1)>` | tampil ter-escape di flash & tabel | ✅ |
