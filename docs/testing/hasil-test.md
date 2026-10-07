@@ -218,3 +218,50 @@ mutasi diulang memakai edit yang diverifikasi.
 | 8 | Sales unduh ledger / Warehouse unduh status order | 403 / 403 | ✅ |
 | 9 | Jenis laporan tidak dikenal / tanpa login | 404 / 302 ke login | ✅ |
 | 10 | Rentang: awal > akhir, 2026-02-30, > 366 hari, akhir di masa depan | 422 dengan pesan yang sesuai | ✅ |
+
+---
+
+## Slice 6 — API JSON & script terjadwal (2026-10-07)
+
+### Otomatis
+
+| Suite | Hasil |
+|---|---|
+| Semua (`composer test`) | 151 test, 371 assertion, lulus (+4 unit, +2 integration) |
+
+Mutation check: `LowStockReportService` hanya membaca halaman pertama → test 130 produk gagal → dikembalikan.
+
+### API-01 (curl, sesuai bukti yang diminta brief)
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | Tanpa session login | 401 `application/json` `{"error":"unauthenticated"}` (bukan redirect HTML) | ✅ |
+| 2 | Dengan login (Sales), SKU-0001 | 200 JSON: total 4, Jakarta 3, Surabaya 1, `lowStock: true` | ✅ |
+| 3 | SKU tidak ada | 404 JSON `not_found` | ✅ |
+| 4 | SKU huruf kecil `sku-0006` | 200, dinormalisasi ke SKU-0006; karakter `"` pada nama ter-escape JSON | ✅ |
+| 5 | POST ke endpoint GET | 405 JSON `method_not_allowed` | ✅ |
+| 6 | URL `/api/...` tak dikenal | 404 JSON (bukan halaman HTML) | ✅ |
+| 7 | Produk nonaktif: Sales / Admin | 404 / 200 dengan `"active": false` | ✅ |
+
+### JOB-01
+
+| # | Skenario | Hasil |
+|---|---|---|
+| 1 | `php scripts/check-low-stock.php` | 5 produk, urut kekurangan (SKU-0002 kurang 13 di atas), rincian per gudang, exit 0 ✅ |
+| 2 | Dijalankan dari folder lain (`cd /c && php Projects/training/scripts/...`) | sama, exit 0 ✅ |
+| 3 | Password DB salah | pesan ke STDERR, exit 1 ✅ |
+| 4 | Dipanggil lewat web server | 404 (bukan di document root; ada juga penjaga `PHP_SAPI`) ✅ |
+
+### Belum diuji
+
+- Perilaku Fetch API di **browser sungguhan** (petunjuk stok di form SO dan tombol "Muat
+  ulang stok") belum diuji dengan klik langsung karena sesi ini tidak memiliki browser.
+  Yang sudah diverifikasi: endpoint yang dipanggil (curl), markup `data-*` yang dibaca script
+  ada di halaman, dan `node --check public/js/app.js` lolos. **Perlu dicek manual di browser
+  sebelum demo.**
+
+### Perbaikan yang ditemukan di slice ini
+
+- Zona waktu: output script mencetak 03:13 padahal 10:13 WIB. PHP berjalan di UTC, sehingga
+  pukul 00:00–07:00 WIB tanggal hari ini akan ditolak sebagai "masa depan". Diperbaiki dengan
+  `APP_TIMEZONE` (PHP & sesi MySQL); diverifikasi `date()` PHP = `NOW()` MySQL = 10:14 WIB.

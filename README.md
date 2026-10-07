@@ -5,10 +5,9 @@ Aplikasi web PHP 8.2+ native (tanpa framework) + MySQL 8 untuk mengelola produk,
 stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 (Admin, Sales, Warehouse Staff).
 
-> **Status: dalam pengerjaan.** Sudah jalan: login/logout, guard role, produk,
-> master data, manajemen user, Purchase Order + goods receipt, serta Sales Order + approval + goods issue. API JSON,
-> dashboard lengkap, laporan CSV, API JSON, script terjadwal, dan Docker
-> belum dibuat (lihat [Known limitations](#known-limitations)).
+> **Status: dalam pengerjaan.** Seluruh fitur aplikasi §2 sudah jalan (login, master data,
+> PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal). Yang belum:
+> Docker Compose dan sebagian dokumen bukti (lihat [Known limitations](#known-limitations)).
 
 ## Fitur yang sudah tersedia
 
@@ -28,7 +27,8 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 | ARCH-02 Anti-oversell | ✅ Mekanisme siap & teruji ([ADR-001](docs/architecture/adr-001-mekanisme-anti-oversell.md)): FOR UPDATE berurutan + guard SQL + CHECK constraint; dipakai goods receipt & goods issue |
 | SO-01 Sales Order | ✅ Draft → PendingApproval → Approved → Fulfilled / Cancelled; approve hanya Admin yang bukan pembuat order (ditegakkan di server, [ADR-002](docs/architecture/adr-002-otorisasi-sales-order.md)); goods issue ditolak bila stok kurang; Sales hanya melihat order miliknya |
 | REPORT-01 Laporan CSV | ✅ Detail stock ledger, rekap stok per produk+gudang, dan status order dalam rentang tanggal; query sama dengan dashboard; hak unduh per role; aman dari CSV injection |
-| API-01, JOB-01 | ⏳ Belum |
+| API-01 Endpoint JSON | ✅ `GET /api/products/{sku}/availability` — 200/401/404 JSON; dipakai form SO & detail produk lewat Fetch API |
+| JOB-01 Script terjadwal | ✅ `php scripts/check-low-stock.php` (`composer low-stock`) — ringkasan produk di bawah reorder point |
 
 ## Struktur
 
@@ -59,6 +59,26 @@ mysql -u root -p < database/schema-and-seed.sql
 composer serve                    # http://localhost:8000
 ```
 
+## Endpoint JSON (API-01)
+
+```
+GET /api/products/{sku}/availability      (butuh session login, sama seperti halaman)
+
+200 {"sku":"SKU-0001","name":"Kabel HDMI 2m","unit":"pcs","active":true,"reorderPoint":10,
+     "totalStock":4,"lowStock":true,"warehouses":[{"id":1,"name":"Gudang Jakarta","quantity":3}, ...]}
+401 {"error":"unauthenticated","message":"..."}   tanpa login
+404 {"error":"not_found","message":"..."}         SKU tidak ada (atau produk nonaktif untuk Sales)
+```
+
+## Script terjadwal (JOB-01)
+
+```bash
+php scripts/check-low-stock.php      # atau: composer low-stock
+```
+
+Mencetak produk aktif di bawah reorder point (kekurangan terbesar dulu, rincian per gudang).
+Exit code 0 = berhasil, 1 = gagal (mis. database). Tidak bisa dipanggil lewat web server.
+
 ## Akun demo
 
 | Role | Email | Password |
@@ -87,7 +107,6 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 ## Known limitations
 
 - Docker Compose belum tersedia; aplikasi & test baru diuji pada PHP 8.3 + MySQL 8.0 lokal.
-- API JSON dan script low-stock belum dibangun.
 - Interpretasi requirement yang ambigu (mis. arti "mengusulkan" PO): [docs/planning/catatan-keputusan.md](docs/planning/catatan-keputusan.md).
 - Daftar lengkap jalan pintas: [docs/quality/tech-debt.md](docs/quality/tech-debt.md).
 
