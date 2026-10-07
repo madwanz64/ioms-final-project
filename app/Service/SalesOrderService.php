@@ -93,12 +93,12 @@ final class SalesOrderService
     }
 
     /**
-     * Buat SO berstatus Draft milik $actor. Harga diambil dari harga jual katalog
-     * (tidak bisa diisi pengguna). Qty dicek terhadap stok gudang asal saat ini;
+     * Buat SO berstatus Draft milik $actor. Harga jual per item diambil dari form
+     * (default terisi harga katalog, boleh diubah — K-07). Qty dicek terhadap stok gudang asal saat ini;
      * pengecekan final yang mengikat terjadi saat goods issue (dengan lock).
      *
      * @param array<string, string> $input customer_id, warehouse_id, order_date
-     * @param list<array<string, string>> $lines sku, qty
+     * @param list<array<string, string>> $lines sku, qty, price
      * @throws ValidationException|AuthorizationException
      */
     public function create(array $input, array $lines, User $actor): int
@@ -117,7 +117,7 @@ final class SalesOrderService
             $validator->addError('warehouse_id', 'Pilih gudang asal yang aktif.');
         }
         $orderDate = $validator->dateNotAfter('order_date', 'Tanggal order', $this->today);
-        $orderLines = $this->lineValidator->validate($validator, $lines, null);
+        $orderLines = $this->lineValidator->validate($validator, $lines, 'price', 'Harga jual');
 
         if ($warehouse !== null && $warehouse->active) {
             foreach ($orderLines as $index => $line) {

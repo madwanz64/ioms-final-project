@@ -19,6 +19,7 @@ use App\Service\SalesOrderService;
 use App\Service\StockService;
 use App\Service\ValidationException;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Fake\ImmediateTransactionManager;
 use Tests\Fake\InMemoryPartyRepository;
@@ -70,15 +71,40 @@ final class SalesOrderServiceTest extends TestCase
         );
     }
 
-    public function testCreateUsesCatalogPriceAndRecordsCreator(): void
+    public function testCreateUsesPriceFromFormAndRecordsCreator(): void
     {
-        $id = $this->createOrder($this->sinta, 3, ['price' => '1']);
+        // K-07 (dikonfirmasi trainer): harga jual yang dikirim dari form diproses,
+        // walau berbeda dari harga katalog (2.500).
+        $id = $this->createOrder($this->sinta, 3, ['price' => '2300']);
 
         $order = $this->orders->findById($id);
         self::assertNotNull($order);
         self::assertSame(SalesOrderStatus::Draft, $order->status);
         self::assertSame($this->sinta->id, $order->createdBy);
-        self::assertSame(2500, $order->items[0]->price, 'Harga dari katalog, bukan dari input pengguna');
+        self::assertSame(2300, $order->items[0]->price);
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function invalidPrices(): array
+    {
+        return [
+            'kosong' => ['', 'Harga jual wajib diisi.'],
+            'negatif' => ['-100', 'Harga jual harus bilangan bulat >= 0.'],
+            'desimal' => ['2500.50', 'Harga jual harus bilangan bulat >= 0.'],
+        ];
+    }
+
+    #[DataProvider('invalidPrices')]
+    public function testPriceFromFormIsValidated(string $price, string $message): void
+    {
+        try {
+            $this->createOrder($this->sinta, 1, ['price' => $price]);
+            self::fail('ValidationException seharusnya dilempar.');
+        } catch (ValidationException $e) {
+            self::assertSame($message, $e->errors['items.0.price']);
+        }
     }
 
     public function testCreateRejectsQtyAboveAvailableStockInChosenWarehouse(): void
@@ -213,7 +239,7 @@ final class SalesOrderServiceTest extends TestCase
     {
         return $this->service->create(
             ['customer_id' => '1', 'warehouse_id' => '1', 'order_date' => '2026-10-07'],
-            [['sku' => 'SKU-A', 'qty' => (string) $qty] + $extra],
+            [$extra + ['sku' => 'SKU-A', 'qty' => (string) $qty, 'price' => '2500']],
             $actor,
         );
     }

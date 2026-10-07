@@ -8,8 +8,8 @@ use App\Entity\NewOrderLine;
 use App\Repository\ProductRepositoryInterface;
 
 /**
- * Validasi baris item order, dipakai bersama oleh Purchase Order dan Sales
- * Order (refactor R-02). Error ditulis ke validator form dengan key
+ * Validasi baris item, dipakai bersama oleh Purchase Order, Sales Order, dan
+ * transfer stok (refactor R-02). Error ditulis ke validator form dengan key
  * "items.{n}.{field}" dan "items".
  */
 final class OrderLineValidator
@@ -24,9 +24,8 @@ final class OrderLineValidator
 
     /**
      * @param list<array<string, string>> $lines baris mentah: sku, qty, (opsional) field harga
-     * @param string|null $priceField nama field harga dari input (PO: "buy_price"); null =
-     *                                harga diambil dari harga jual produk di katalog (SO), tidak
-     *                                bisa diubah pengguna
+     * @param string|null $priceField nama field harga dari input (PO: "buy_price", SO: "price");
+     *                                null = baris tanpa harga (transfer stok), price diisi 0
      * @return list<NewOrderLine>
      */
     public function validate(InputValidator $validator, array $lines, ?string $priceField, string $priceLabel = 'Harga'): array
@@ -58,7 +57,7 @@ final class OrderLineValidator
                 $lineValidator->addError('qty', 'Qty minimal 1.');
             }
             $price = $priceField === null
-                ? (int) $product?->sellPrice
+                ? 0
                 : $lineValidator->wholeNumber($priceField, $priceLabel, self::MAX_PRICE);
             foreach ($lineValidator->errors() as $field => $message) {
                 $validator->addError($prefix . $field, $message);

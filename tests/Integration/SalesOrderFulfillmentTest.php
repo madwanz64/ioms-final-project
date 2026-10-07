@@ -76,7 +76,7 @@ final class SalesOrderFulfillmentTest extends IntegrationTestCase
     public function testSalesCannotApproveOwnOrderAndApprovalRecordsApprover(): void
     {
         $sinta = $this->user(2, Role::Sales);
-        $id = $this->service->create($this->header(), [['sku' => 'SKU-0010', 'qty' => '1']], $sinta);
+        $id = $this->service->create($this->header(), [['sku' => 'SKU-0010', 'qty' => '1', 'price' => '55000']], $sinta);
         $this->service->submit($id, $sinta);
 
         try {
@@ -104,7 +104,7 @@ final class SalesOrderFulfillmentTest extends IntegrationTestCase
     private function approvedOrder(int $qty): int
     {
         $sinta = $this->user(2, Role::Sales);
-        $id = $this->service->create($this->header(), [['sku' => 'SKU-0006', 'qty' => (string) $qty]], $sinta);
+        $id = $this->service->create($this->header(), [['sku' => 'SKU-0006', 'qty' => (string) $qty, 'price' => '1850000']], $sinta);
         $this->service->submit($id, $sinta);
         $this->service->approve($id, $this->user(1, Role::Admin));
 

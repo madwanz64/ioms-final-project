@@ -42,8 +42,10 @@ foreach ($options['warehouses'] as $warehouse) {
       'lines' => $lines,
       'errors' => $errors,
       'products' => $options['products'],
-      'priceField' => null,
-      'priceLabel' => 'Harga Jual',
+      'priceField' => 'price',
+      'priceLabel' => 'Harga Jual (Rp)',
+      'defaultPrice' => 'sell',
+      'showStock' => true,
       'maxLines' => OrderLineValidator::MAX_LINES,
   ]) ?>
 
