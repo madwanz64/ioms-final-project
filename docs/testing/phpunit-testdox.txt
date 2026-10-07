@@ -1,0 +1,221 @@
+# Output mentah: docker compose exec app composer test (PHPUnit --testdox)
+# Tanggal: 2026-10-07 11:21 WIB | commit: f1401dd
+# Lingkungan: container app (php:8.3-apache) + db (mysql:8.0) dari compose.yaml
+
+PHPUnit 11.5.56 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.35
+Configuration: /var/www/html/phpunit.xml.dist
+Random Seed:   1791346909
+
+...............................................................  63 / 160 ( 39%)
+............................................................... 126 / 160 ( 78%)
+..................................                              160 / 160 (100%)
+
+Time: 00:02.799, Memory: 12.00 MB
+
+Auth Integration (Tests\Integration\AuthIntegration)
+ ✔ Seed accounts can login with password verify
+ ✔ Inactive seed account is rejected
+ ✔ Passwords are stored as hashes not plaintext
+
+Auth Service (Tests\Unit\AuthService)
+ ✔ Valid credentials return user
+ ✔ Email is case insensitive and trimmed
+ ✔ Failed login returns null with data set "akun nonaktif walau password benar"
+ ✔ Failed login returns null with data set "email kosong"
+ ✔ Failed login returns null with data set "password salah"
+ ✔ Failed login returns null with data set "email tidak terdaftar"
+ ✔ Failed login returns null with data set "password kosong"
+
+Csv Response (Tests\Unit\CsvResponse)
+ ✔ Cells that excel would evaluate are escaped with data set "diawali @"
+ ✔ Cells that excel would evaluate are escaped with data set "teks biasa tidak diubah"
+ ✔ Cells that excel would evaluate are escaped with data set "diawali plus"
+ ✔ Cells that excel would evaluate are escaped with data set "angka negatif tetap angka"
+ ✔ Cells that excel would evaluate are escaped with data set "rumus Excel dinetralkan"
+ ✔ Cells that excel would evaluate are escaped with data set "diawali minus (teks)"
+ ✔ Csv has utf 8 bom quotes and download headers
+
+Env (Tests\Unit\Env)
+ ✔ Parses key value lines ignoring comments and quotes
+ ✔ Real environment variables win even without env file
+
+Json Response (Tests\Unit\JsonResponse)
+ ✔ Json response has content type status and readable unicode
+
+Low Stock (Tests\Unit\LowStock)
+ ✔ Low stock boundary with data set "di bawah reorder point"
+ ✔ Low stock boundary with data set "reorder point 0 tidak pernah low"
+ ✔ Low stock boundary with data set "di atas reorder point"
+ ✔ Low stock boundary with data set "tepat sama dengan reorder point bukan low"
+ ✔ Dashboard counts only active low stock products across warehouses
+ ✔ Search criteria whitelists user input
+
+Low Stock Report (Tests\Integration\LowStockReport)
+ ✔ Summary matches independent sql and is sorted by shortage
+ ✔ Deactivated product disappears from summary
+
+Low Stock Report Service (Tests\Unit\LowStockReportService)
+ ✔ Lists only active low stock products with largest shortage first
+ ✔ Empty when nothing is below reorder point
+ ✔ Reads every page not only the first hundred
+
+Master Data Repository (Tests\Integration\MasterDataRepository)
+ ✔ New warehouse gets zero stock row for every product
+ ✔ Warehouse name check is case insensitive and excludes itself
+ ✔ Supplier and customer are stored in their own tables
+ ✔ User round trip and database rejects duplicate email
+
+Master Data Service (Tests\Unit\MasterDataService)
+ ✔ Category name must be unique case insensitive
+ ✔ Category can be saved with its own name and empty description becomes null
+ ✔ Warehouse requires name location and valid status
+ ✔ Warehouse name must be unique but rename to free name works
+
+My Sql Product Repository (Tests\Integration\MySqlProductRepository)
+ ✔ Low stock filter uses total across warehouses
+ ✔ Pagination ten per page and out of range page is clamped
+ ✔ Search category and sort combine across pages
+ ✔ Like wildcards in search are treated literally
+ ✔ Create inserts product with zero stock row per warehouse
+ ✔ Update persists changes and deactivation
+ ✔ Stock per warehouse matches ledger history
+
+Product Service (Tests\Unit\ProductService)
+ ✔ Create normalises sku and creates zero stock in every warehouse
+ ✔ Create collects all errors at once and saves nothing
+ ✔ Numbers must be whole and non negative with data set "reorder point melebihi batas"
+ ✔ Numbers must be whole and non negative with data set "reorder point notasi ilmiah"
+ ✔ Numbers must be whole and non negative with data set "reorder point desimal"
+ ✔ Numbers must be whole and non negative with data set "reorder point negatif"
+ ✔ Numbers must be whole and non negative with data set "harga jual bukan angka"
+ ✔ Numbers must be whole and non negative with data set "harga beli negatif"
+ ✔ Numbers must be whole and non negative with data set "harga jual overflow"
+ ✔ Zero is a valid price and reorder point
+ ✔ Sku format is validated with data set "terlalu pendek"
+ ✔ Sku format is validated with data set "karakter ilegal"
+ ✔ Sku format is validated with data set "terlalu panjang"
+ ✔ Sku format is validated with data set "kosong"
+ ✔ Sku format is validated with data set "ada spasi"
+ ✔ Invalid image rejects whole product and stores no file
+ ✔ Valid image is stored and linked to product
+ ✔ Update keeps sku and existing image and can deactivate
+ ✔ Update does not require unique sku check against itself
+
+Purchase Order Receipt (Tests\Integration\PurchaseOrderReceipt)
+ ✔ Partial then full receipt updates stock ledger and status
+ ✔ Order numbers are unique and search finds by supplier name
+ ✔ Order list paginates ten per page and sorts by date
+
+Purchase Order Service (Tests\Unit\PurchaseOrderService)
+ ✔ Create valid draft ignores blank rows and normalises sku
+ ✔ Order date validation with data set "kosong"
+ ✔ Order date validation with data set "tanggal tidak ada di kalender"
+ ✔ Order date validation with data set "format lain"
+ ✔ Order date validation with data set "besok (masa depan)"
+ ✔ Today is a valid order date
+ ✔ Line and header rules are collected together and nothing is saved
+ ✔ At least one item is required
+ ✔ Partial receipt adds stock keeps remainder and marks partially received
+ ✔ Receiving all remaining qty marks received
+ ✔ Receiving more than remaining is rejected and stock untouched
+ ✔ Receipt is rejected for statuses other than ordered or partial with data set "cancelled"
+ ✔ Receipt is rejected for statuses other than ordered or partial with data set "draft"
+ ✔ Receipt is rejected for statuses other than ordered or partial with data set "received"
+ ✔ Status transitions
+ ✔ Partially received order cannot be cancelled
+
+Report Repository (Tests\Integration\ReportRepository)
+ ✔ Inventory value is stock times buy price of active products
+ ✔ Order status counts respect date range and creator
+ ✔ Order totals are sum of item qty times price
+ ✔ Stock summary net matches ledger and range is inclusive
+ ✔ Ledger entries and queues
+
+Report Service (Tests\Unit\ReportService)
+ ✔ Default range is last ninety days including today
+ ✔ Invalid ranges are rejected with data set "hanya satu diisi"
+ ✔ Invalid ranges are rejected with data set "awal setelah akhir"
+ ✔ Invalid ranges are rejected with data set "akhir di masa depan"
+ ✔ Invalid ranges are rejected with data set "tanggal tidak ada"
+ ✔ Invalid ranges are rejected with data set "lebih dari 366 hari"
+ ✔ Exactly 366 days is allowed
+ ✔ Download permissions follow role table with data set "Sales rekap stok"
+ ✔ Download permissions follow role table with data set "Admin ledger"
+ ✔ Download permissions follow role table with data set "Sales ledger"
+ ✔ Download permissions follow role table with data set "Admin status order"
+ ✔ Download permissions follow role table with data set "Sales status order"
+ ✔ Download permissions follow role table with data set "Warehouse rekap stok"
+ ✔ Download permissions follow role table with data set "Warehouse status order"
+ ✔ Download permissions follow role table with data set "Warehouse ledger"
+ ✔ Unknown report type is not found
+ ✔ Sales order status is limited to own sales orders and has no purchase orders
+ ✔ Status recap lists every status including zero
+ ✔ Stock summary csv has header and net column
+
+Sales Order Fulfillment (Tests\Integration\SalesOrderFulfillment)
+ ✔ Second goods issue is rejected after first uses up the stock
+ ✔ Sales cannot approve own order and approval records approver
+ ✔ List scoping is applied in the query
+
+Sales Order Policy (Tests\Unit\SalesOrderPolicy)
+ ✔ Only admin can approve or reject and sales never can with data set "Warehouse Staff menyetujui"
+ ✔ Only admin can approve or reject and sales never can with data set "Admin menyetujui order buatannya sendiri"
+ ✔ Only admin can approve or reject and sales never can with data set "Admin lain menyetujui order Admin"
+ ✔ Only admin can approve or reject and sales never can with data set "Sales menyetujui order Sales lain"
+ ✔ Only admin can approve or reject and sales never can with data set "Admin menyetujui order Sales"
+ ✔ Only admin can approve or reject and sales never can with data set "Sales menyetujui order MILIKNYA SENDIRI"
+ ✔ Approval requires pending approval status
+ ✔ Visibility
+ ✔ Cancel rules
+ ✔ Fulfillment is for admin or warehouse on approved orders
+
+Sales Order Service (Tests\Unit\SalesOrderService)
+ ✔ Create uses catalog price and records creator
+ ✔ Create rejects qty above available stock in chosen warehouse
+ ✔ Warehouse staff cannot create sales order
+ ✔ Full flow draft to fulfilled reduces stock and writes issue ledger
+ ✔ Sales cannot approve own order even by calling the service directly
+ ✔ Admin can approve order they created
+ ✔ Other sales cannot even see the order to approve it
+ ✔ Reject cancels pending order
+ ✔ Goods issue is rejected when stock is insufficient and order stays approved
+ ✔ Goods issue only for approved orders
+ ✔ Fulfilled order cannot be cancelled
+ ✔ List is scoped per role
+
+Stock Concurrency (Tests\Integration\StockConcurrency)
+ ✔ Second connection cannot touch stock row locked by first transaction
+ ✔ Second issue is rejected after first issue used up the stock
+ ✔ Sql guard rejects oversell even without lock and writes nothing
+ ✔ Database check constraint is the last line of defence
+
+Stock Service (Tests\Unit\StockService)
+ ✔ Receipt increases stock and writes one ledger row per change
+ ✔ Issue that would make stock negative is rejected before anything is written
+ ✔ Issue of exactly all stock is allowed and second issue is rejected
+ ✔ Multiple changes on same row are checked as one net amount
+ ✔ Rows are locked in sku order to prevent deadlock
+
+User Service (Tests\Unit\UserService)
+ ✔ Create hashes password and normalises email
+ ✔ Email must be unique regardless of case
+ ✔ Invalid input is rejected and nothing saved with data set "password terlalu pendek"
+ ✔ Invalid input is rejected and nothing saved with data set "konfirmasi tidak sama"
+ ✔ Invalid input is rejected and nothing saved with data set "password > 72 byte"
+ ✔ Invalid input is rejected and nothing saved with data set "format email salah"
+ ✔ Invalid input is rejected and nothing saved with data set "password kosong saat create"
+ ✔ Invalid input is rejected and nothing saved with data set "role di luar tiga nilai tetap"
+ ✔ Update with empty password keeps existing hash
+ ✔ Admin can deactivate other user
+ ✔ Admin cannot deactivate or demote own account
+ ✔ Own profile can change name but ignores email role and status from input
+ ✔ Own password change requires correct current password
+ ✔ Invalid own password change is rejected and hash untouched with data set "password saat ini salah"
+ ✔ Invalid own password change is rejected and hash untouched with data set "konfirmasi berbeda"
+ ✔ Invalid own password change is rejected and hash untouched with data set "sama dengan password lama"
+ ✔ Invalid own password change is rejected and hash untouched with data set "password saat ini kosong"
+ ✔ Invalid own password change is rejected and hash untouched with data set "terlalu pendek"
+
+OK (160 tests, 399 assertions)

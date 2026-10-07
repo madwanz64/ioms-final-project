@@ -7,7 +7,7 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 
 > **Status: dalam pengerjaan.** Seluruh fitur aplikasi §2 sudah jalan (login, master data,
 > PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal) dan dapat
-> dijalankan dengan Docker Compose. Yang belum: screenshot UI,
+> dijalankan dengan Docker Compose. Yang belum: laporan SonarQube,
 > critique.md (menunggu cuplikan assessor), dan tag release.
 
 ## Fitur yang sudah tersedia
@@ -151,7 +151,26 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 | [docs/planning/](docs/planning/) | [user story](docs/planning/user-stories.md), [scope](docs/planning/scope.md), [backlog](docs/planning/backlog.md), [ERD](docs/planning/erd.md), [class diagram initial](docs/planning/class-diagram-initial.md), [catatan keputusan](docs/planning/catatan-keputusan.md), wireframe |
 | [docs/architecture/](docs/architecture/) | [class diagram as-built](docs/architecture/class-diagram-as-built.md), [ADR-001 anti-oversell](docs/architecture/adr-001-mekanisme-anti-oversell.md), [ADR-002 otorisasi SO](docs/architecture/adr-002-otorisasi-sales-order.md) |
 | [docs/quality/](docs/quality/) | [refactor log](docs/quality/refactor-log.md) (R-01…R-03), [audit SRP](docs/quality/srp-audit.md), [tech-debt](docs/quality/tech-debt.md), [static analysis](docs/quality/static-analysis.md) |
-| [docs/testing/](docs/testing/) | [skenario & hasil test](docs/testing/hasil-test.md) per slice, termasuk known bugs |
+| [docs/testing/](docs/testing/) | [skenario & hasil test](docs/testing/hasil-test.md) per slice + known bugs, [output PHPUnit](docs/testing/phpunit-testdox.txt), [output PHPStan](docs/testing/phpstan-output.txt), [screenshot desktop & 360px](docs/testing/screenshots/) |
+
+## Sumber pihak ketiga (§6.1)
+
+Kode aplikasi (PHP di `app/`, view, CSS, JavaScript, ikon SVG inline, favicon) dibuat sendiri,
+tanpa framework, library frontend, CDN, atau font eksternal. CSS memakai font bawaan sistem.
+
+| Komponen | Versi | Lisensi | Dipakai untuk |
+|---|---|---|---|
+| [Composer](https://getcomposer.org) (image `composer:2`) | 2.x | MIT | Autoload PSR-4 & pemasangan dev dependency |
+| [PHPUnit](https://phpunit.de) | 11.5.56 | BSD-3-Clause | Unit & integration test (dev dependency) |
+| [PHPStan](https://phpstan.org) | 2.2.16 | MIT | Static analysis (dev dependency) |
+| Image Docker resmi [`php:8.3-apache`](https://hub.docker.com/_/php) | PHP 8.3 | PHP License / Apache 2.0 | Runtime aplikasi |
+| Image Docker resmi [`mysql:8.0`](https://hub.docker.com/_/mysql) | 8.0 | GPLv2 | Database |
+
+Alat bantu pengembangan yang **tidak** menjadi bagian aplikasi atau dependency project:
+[puppeteer-core](https://pptr.dev) + Chrome, untuk uji tampilan 360px/desktop dan pembuatan
+screenshot ([docs/testing/tools/ui-check.mjs](docs/testing/tools/ui-check.mjs)), dan
+[Mermaid](https://mermaid.js.org) untuk menggambar diagram di dokumentasi. Bantuan AI dicatat
+terpisah di bawah.
 
 ## Penggunaan AI
 

@@ -329,3 +329,63 @@ Smoke test di Docker (setelah `docker compose up --build -d app`):
 Catatan: satu pengecekan awal (profil Warehouse) sempat gagal karena skrip uji memakai ulang
 cookie jar milik Admin; diulang dengan cookie jar terpisah dan lulus. Bukan bug aplikasi.
 Database Docker di-reset ke seed setelah uji (`down -v`).
+
+---
+
+## Slice 9 — Uji tampilan di browser sungguhan (2026-10-07)
+
+Alat: Chrome headless lewat `puppeteer-core`
+([docs/testing/tools/ui-check.mjs](tools/ui-check.mjs)), terhadap aplikasi Docker
+(`localhost:8080`, data seed). Layar **desktop 1366px** dan **mobile 360px**.
+Hasil mentah: [ui-check-result.json](ui-check-result.json).
+Screenshot: [screenshots/](screenshots/) (`desktop-*.jpg`, `mobile-*.jpg`; 43 file).
+
+### Responsif (UI-01): halaman tidak boleh bergeser ke samping
+
+Tabel lebar boleh digeser **di dalam** wadahnya (`.table-wrap`), tetapi halaman itu sendiri
+tidak boleh lebih lebar dari layar. Dicek 21 halaman: login, 3 dashboard, daftar/detail/form
+produk, PO, SO, laporan, user, profil, keadaan kosong, 403, 404.
+
+| Percobaan | Hasil |
+|---|---|
+| Pertama | **3 dari 42 gagal di 360px:** detail PO (halaman 681px), detail SO (701px), form PO (501px) |
+| Setelah perbaikan (commit `f1401dd`) | **42/42 lulus** |
+
+Penyebab:
+1. Tabel kunci–nilai di detail PO/SO mewarisi `min-width:640px` dari tabel daftar, padahal
+   tidak berada di wadah scroll. Diperbaiki dengan kelas `.info-table`. (Perbaikan serupa sudah
+   ada di prototype lewat `#info-table`, tetapi tidak terbawa ke view PHP.)
+2. Label `.sr-only` (`position:absolute`) di dalam tabel item "lolos" dari wadah scroll karena
+   `.table-wrap` tidak punya `position`. Diperbaiki dengan `.table-wrap{position:relative}`.
+
+Perbaikan kosmetik sekaligus: input/select di tabel item mengikuti gaya form, angka kartu
+statistik diperkecil di 360px, dan favicon ditambahkan (menghilangkan error 404
+`favicon.ico` di console).
+
+### Fetch API (API-01) di browser
+
+| # | Skenario | Hasil |
+|---|---|---|
+| 1 | Form SO (Sales): Gudang Jakarta + SKU-0006 qty 5 | "Stok tersedia: 2 pcs", ditandai merah; harga katalog Rp 1.850.000 tampil ✅ |
+| 2 | Gudang asal diganti ke Surabaya | petunjuk diperbarui "Stok tersedia: 0 pcs" ✅ |
+| 3 | "+ Tambah item" | baris baru dengan nama field `items[3][...]` ✅ |
+| 4 | Detail produk: "Muat ulang stok" | status "Diperbarui …" tanpa reload ✅ |
+| 5 | Cookie session dihapus lalu klik "Muat ulang stok" | API menjawab 401 JSON → toast "Sesi berakhir, silakan login ulang." ✅ |
+
+Console error JavaScript: hanya respons 403/404 dari dua halaman error yang memang sengaja
+dibuka (skenario 20–21); tidak ada error script.
+
+---
+
+## Known bugs & keterbatasan terkini (2026-10-07)
+
+Tidak ada bug fungsional yang diketahui pada alur wajib. Keterbatasan yang bisa terlihat saat
+demo (rinciannya di [tech-debt.md](../quality/tech-debt.md)):
+
+| # | Gejala | Dampak | Rujukan |
+|---|---|---|---|
+| 1 | File gambar > `post_max_size` PHP (8 MB di Docker) dijawab 403 "sesi formulir kedaluwarsa", bukan pesan ukuran | Data aman; pesan kurang tepat. Diuji di Docker: 2,5 MB & 5 MB → 422 "Ukuran gambar maksimal 2 MB."; 9 MB → 403; tidak ada produk tersimpan. Di browser, JS sudah menolak > 2 MB sebelum kirim. | tech-debt #2 |
+| 2 | Dua Admin menyimpan email user yang sama di detik yang sama → kedua lolos validasi, yang kedua ditolak UNIQUE KEY → halaman 500 | Sangat jarang; data tetap benar | tech-debt #7 |
+| 3 | Di layar 360px, kolom "Terima Sekarang" pada detail PO baru terlihat setelah tabel digeser ke samping | Bisa dipakai, tetapi kurang nyaman | baru dicatat |
+| 4 | Konfirmasi batal/tolak/goods issue memakai dialog bawaan browser | Kosmetik | tech-debt #15 |
+| 5 | Gambar produk lama tidak dihapus saat diganti | Disk bertambah | tech-debt #1 |

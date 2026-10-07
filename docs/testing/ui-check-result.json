@@ -1,0 +1,420 @@
+{
+  "results": [
+    {
+      "vp": "desktop",
+      "name": "01-login",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "02-dashboard-admin",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "03-dashboard-sales",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "04-dashboard-warehouse",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "05-produk-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "06-produk-low-stock-hal2",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "07-produk-kosong",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "08-produk-detail",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "09-produk-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "10-po-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "11-po-detail-terima",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "12-po-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "13-so-daftar-sales",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "14-so-detail-approve",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "15-so-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "16-so-kosong",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "17-laporan",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "18-user-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "19-profil",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "20-error-403",
+      "status": 403,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "21-error-404",
+      "status": 404,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "01-login",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "02-dashboard-admin",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "03-dashboard-sales",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "04-dashboard-warehouse",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "05-produk-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "06-produk-low-stock-hal2",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "07-produk-kosong",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "08-produk-detail",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "09-produk-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "10-po-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "11-po-detail-terima",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "12-po-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "13-so-daftar-sales",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "14-so-detail-approve",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "15-so-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "16-so-kosong",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "17-laporan",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "18-user-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "19-profil",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "20-error-403",
+      "status": 403,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "21-error-404",
+      "status": 404,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    }
+  ],
+  "fetchChecks": [
+    {
+      "check": "Form SO: petunjuk stok SKU-0006 @ Gudang Jakarta, qty 5",
+      "expected": "Stok tersedia: 2 pcs + ditandai kurang",
+      "actual": "Stok tersedia: 2 pcs | insufficient=true | harga=Rp 1.850.000",
+      "pass": true
+    },
+    {
+      "check": "Ganti gudang asal ke Surabaya",
+      "expected": "Stok tersedia: 0 pcs",
+      "actual": "Stok tersedia: 0 pcs",
+      "pass": true
+    },
+    {
+      "check": "Tambah baris item (re-index nama field)",
+      "expected": "items[3][sku] ada",
+      "actual": "items[0][sku], items[1][sku], items[2][sku], items[3][sku]",
+      "pass": true
+    },
+    {
+      "check": "Detail produk: tombol Muat ulang stok",
+      "expected": "status \"Diperbarui ...\"",
+      "actual": "Diperbarui 11.23.42 — di bawah reorder point.",
+      "pass": true
+    },
+    {
+      "check": "Fetch setelah session dihapus",
+      "expected": "toast \"Sesi berakhir...\" (401 JSON, bukan halaman login)",
+      "actual": "Sesi berakhir, silakan login ulang.",
+      "pass": true
+    }
+  ],
+  "consoleErrors": [
+    "[desktop/sales] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[desktop/admin] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[mobile/sales] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[mobile/admin] Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}
