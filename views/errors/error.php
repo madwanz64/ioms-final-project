@@ -14,6 +14,7 @@ $headings = [403 => 'Akses Ditolak', 404 => 'Tidak Ditemukan', 405 => 'Metode Ti
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($status) ?> — IOMS</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
