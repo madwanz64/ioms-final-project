@@ -479,7 +479,7 @@
     {
       "check": "Detail produk: tombol Muat ulang stok",
       "expected": "status \"Diperbarui ...\"",
-      "actual": "Diperbarui 13.35.03 — di bawah reorder point.",
+      "actual": "Diperbarui 14.24.05 — di bawah reorder point.",
       "pass": true
     },
     {
@@ -503,7 +503,7 @@
     {
       "check": "K-08: transfer 2 rim Jakarta -> Surabaya tersimpan",
       "expected": "Issue -2 Jakarta + Receipt +2 Surabaya",
-      "actual": "http://localhost:8080/stock-transfers/1 | 07 Oct 2026 13:35 SKU-0004 Gudang Jakarta Issue -2 || 07 Oct 2026 13:35 SKU-0004 Gudang Surabaya Receipt +2",
+      "actual": "http://localhost:8080/stock-transfers/1 | 07 Oct 2026 14:24 SKU-0004 Gudang Jakarta Issue -2 || 07 Oct 2026 14:24 SKU-0004 Gudang Surabaya Receipt +2",
       "pass": true
     }
   ],

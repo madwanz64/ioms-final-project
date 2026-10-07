@@ -431,3 +431,37 @@ Uji browser: responsif **50/50** (25 halaman × desktop/360px), fungsional **9/9
   `String.replace()` JavaScript dibaca sebagai satu `$`. Hasil "lulus" pertama ternyata berasal
   dari file hasil lama. Alat kini menghapus hasil lama di awal run, dan run diulang sampai lulus
   dengan output lengkap.
+
+---
+
+## Slice 11 — SonarQube & penguatan test (2026-10-07)
+
+Rincian temuan dan pengecualian: [docs/quality/sonarqube.md](../quality/sonarqube.md).
+
+| Jenis | Skenario | Hasil |
+|---|---|---|
+| SonarQube | Quality Gate "Sonar way" | **Passed**: coverage kode baru 85,1%, duplikasi baru 0%, issue baru 0 ✅ |
+| SonarQube | Kode keseluruhan | 0 bug, 0 vulnerability, 0 code smell (rating A/A/A); coverage 66,2% ✅ |
+| Unit (baru) | `RouterTest` — tamu, API tanpa login, role, CSRF, 404/405, parameter route, `intParam` | 10 test ✅ |
+| Unit (baru) | `LocalImageStorageTest` — PNG valid disimpan dengan nama acak `.png`; skrip PHP bernama `.jpg` ditolak dari isinya; batas ukuran dari php.ini & ukuran file asli; upload gagal; pemindahan gagal | 6 test ✅ |
+| Unit (baru) | `OrderLineValidatorTest` — maksimal 50 baris; produk nonaktif, duplikat, qty 0, harga bukan angka per baris | 2 test ✅ |
+| Integration (baru) | `RepositoryGuardTest` — lock PO/SO/stok di luar transaksi ditolak; baris stok tidak ada; penerimaan melebihi pesanan ditolak guard SQL; urutan daftar user | 4 test ✅ |
+| Unit + Integration (baru) | `PartyService`: field wajib, panjang, status, tidak tersimpan bila gagal; buat & nonaktifkan. `MySqlCategoryRepository`: simpan, ubah, cek nama tanpa beda huruf besar/kecil | 3 test ✅ (sebelumnya 0% coverage) |
+| Mutation | Guard tamu `Router` dimatikan | 3 test gagal (sebelumnya: **tidak ada** yang gagal) → dikembalikan ✅ |
+| Mutation | Cek role `Router` dimatikan / cek CSRF dimatikan | masing-masing 1 test gagal → dikembalikan ✅ |
+| Mutation | Syarat akun aktif di `AuthService::attempt` dihapus | 1 test gagal → dikembalikan ✅ |
+| Mutation | Pemeriksaan isi file (magic bytes) upload dimatikan | test skrip PHP bernama `.jpg` gagal → dikembalikan ✅ |
+| Regenerasi seed | Script generator diubah (temuan SonarQube JS) lalu dijalankan ulang | `prototype/data/` & `database/` tanpa diff ✅ |
+| Browser | Template berubah (label form, flash `<output>`, tabel akun demo) | responsif **50/50**, fungsional **9/9** ✅ |
+
+Total otomatis: **194 test, 504 assertion, lulus** (lokal & di container Docker dengan PCOV).
+PHPStan level 6: 0 error.
+
+**Temuan selama slice ini:**
+- Router (guard login/role/CSRF untuk semua route) belum pernah diuji PHPUnit; hanya lewat
+  smoke test HTTP. Ketahuan dari mutation check saat merapikan temuan SonarQube.
+- Scan pertama SonarQube langsung "Passed" karena gate hanya menilai kode baru dan belum ada
+  kode baru; angka keseluruhan yang dipakai sebagai acuan perbaikan.
+- Setelah perbaikan, gate sempat **Failed** (coverage kode baru 60,6%) karena kode yang disentuh
+  belum ber-test; diselesaikan dengan menambah test, bukan menurunkan ambang.
+- Controller masih 0% coverage PHPUnit (tech-debt #18).

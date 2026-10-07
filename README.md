@@ -7,8 +7,9 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 
 > **Status: dalam pengerjaan.** Seluruh fitur aplikasi §2 sudah jalan (login, master data,
 > PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal) dan dapat
-> dijalankan dengan Docker Compose. Yang belum: laporan SonarQube,
-> critique.md (menunggu cuplikan assessor), dan tag release.
+> dijalankan dengan Docker Compose. SonarQube: Quality Gate "Sonar way" Passed
+> ([docs/quality/sonarqube.md](docs/quality/sonarqube.md)). Yang belum: critique.md
+> (menunggu cuplikan assessor) dan tag release.
 
 ## Fitur yang sudah tersedia
 
@@ -133,6 +134,16 @@ composer test:integration   # butuh MySQL; membangun ulang database DB_TEST_NAME
 composer analyse            # PHPStan level 6
 ```
 
+Analisis SonarQube (opsional, butuh ±2 GB RAM tambahan) — langkah lengkap & hasil di
+[docs/quality/sonarqube.md](docs/quality/sonarqube.md):
+
+```bash
+docker compose --profile sonar up -d sonarqube          # http://localhost:9000, buat token ke .env (SONAR_TOKEN)
+docker compose exec app composer test:coverage          # PHPUnit + PCOV -> build/coverage.xml, build/junit.xml
+docker compose cp app:/var/www/html/build ./build
+docker compose --profile sonar run --rm sonar-scanner
+```
+
 Integration test **tidak pernah** menyentuh database aplikasi: test menolak berjalan
 bila `DB_TEST_NAME` sama dengan `DB_NAME` atau tidak berakhiran `_test`.
 Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
@@ -151,7 +162,7 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 |---|---|
 | [docs/planning/](docs/planning/) | [user story](docs/planning/user-stories.md), [scope](docs/planning/scope.md), [backlog](docs/planning/backlog.md), [ERD](docs/planning/erd.md), [class diagram initial](docs/planning/class-diagram-initial.md), [catatan keputusan](docs/planning/catatan-keputusan.md), wireframe |
 | [docs/architecture/](docs/architecture/) | [class diagram as-built](docs/architecture/class-diagram-as-built.md), [ADR-001 anti-oversell](docs/architecture/adr-001-mekanisme-anti-oversell.md), [ADR-002 otorisasi SO](docs/architecture/adr-002-otorisasi-sales-order.md) |
-| [docs/quality/](docs/quality/) | [refactor log](docs/quality/refactor-log.md) (R-01…R-03), [audit SRP](docs/quality/srp-audit.md), [tech-debt](docs/quality/tech-debt.md), [static analysis](docs/quality/static-analysis.md) |
+| [docs/quality/](docs/quality/) | [refactor log](docs/quality/refactor-log.md) (R-01…R-04), [audit SRP](docs/quality/srp-audit.md), [tech-debt](docs/quality/tech-debt.md), [static analysis](docs/quality/static-analysis.md), [SonarQube](docs/quality/sonarqube.md) |
 | [docs/testing/](docs/testing/) | [skenario & hasil test](docs/testing/hasil-test.md) per slice + known bugs, [output PHPUnit](docs/testing/phpunit-testdox.txt), [output PHPStan](docs/testing/phpstan-output.txt), [screenshot desktop & 360px](docs/testing/screenshots/) |
 
 ## Sumber pihak ketiga (§6.1)
@@ -166,6 +177,8 @@ tanpa framework, library frontend, CDN, atau font eksternal. CSS memakai font ba
 | [PHPStan](https://phpstan.org) | 2.2.16 | MIT | Static analysis (dev dependency) |
 | Image Docker resmi [`php:8.3-apache`](https://hub.docker.com/_/php) | PHP 8.3 | PHP License / Apache 2.0 | Runtime aplikasi |
 | Image Docker resmi [`mysql:8.0`](https://hub.docker.com/_/mysql) | 8.0 | GPLv2 | Database |
+| [PCOV](https://github.com/krakjoe/pcov) | 1.0.12 | PHP License | Driver code coverage di image app, dipakai `composer test:coverage` untuk laporan SonarQube |
+| [SonarQube Community Build](https://www.sonarsource.com/open-source-editions/) (image `sonarqube:community`) + [SonarScanner CLI](https://docs.sonarsource.com/sonarqube-community-build/analyzing-source-code/scanners/sonarscanner/) | 26.9 / 8.1 | LGPL-3.0 | Analisis kualitas kode (profile `sonar`, tidak ikut `docker compose up` biasa) |
 
 Alat bantu pengembangan yang **tidak** menjadi bagian aplikasi atau dependency project:
 [puppeteer-core](https://pptr.dev) + Chrome, untuk uji tampilan 360px/desktop dan pembuatan

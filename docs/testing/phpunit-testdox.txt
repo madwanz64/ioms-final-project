@@ -1,18 +1,19 @@
 # Output mentah: docker compose exec app composer test (PHPUnit --testdox)
-# Tanggal: 2026-10-07 13:37 WIB | commit kode: 37484bc
-# Lingkungan: container app (php:8.3-apache) + db (mysql:8.0) dari compose.yaml
+# Tanggal: 2026-10-07 14:31 WIB | commit kode: d402e32
+# Lingkungan: container app (php:8.3-apache + PCOV) + db (mysql:8.0) dari compose.yaml
 
 PHPUnit 11.5.56 by Sebastian Bergmann and contributors.
 
 Runtime:       PHP 8.3.35
 Configuration: /var/www/html/phpunit.xml.dist
-Random Seed:   1791355079
+Random Seed:   1791358261
 
-...............................................................  63 / 169 ( 37%)
-............................................................... 126 / 169 ( 74%)
-...........................................                     169 / 169 (100%)
+...............................................................  63 / 194 ( 32%)
+............................................................... 126 / 194 ( 64%)
+............................................................... 189 / 194 ( 97%)
+.....                                                           194 / 194 (100%)
 
-Time: 00:03.247, Memory: 12.00 MB
+Time: 00:04.168, Memory: 12.00 MB
 
 Auth Integration (Tests\Integration\AuthIntegration)
  ✔ Seed accounts can login with password verify
@@ -23,17 +24,17 @@ Auth Service (Tests\Unit\AuthService)
  ✔ Valid credentials return user
  ✔ Email is case insensitive and trimmed
  ✔ Failed login returns null with data set "email tidak terdaftar"
- ✔ Failed login returns null with data set "akun nonaktif walau password benar"
  ✔ Failed login returns null with data set "password salah"
+ ✔ Failed login returns null with data set "akun nonaktif walau password benar"
  ✔ Failed login returns null with data set "email kosong"
  ✔ Failed login returns null with data set "password kosong"
 
 Csv Response (Tests\Unit\CsvResponse)
- ✔ Cells that excel would evaluate are escaped with data set "diawali plus"
- ✔ Cells that excel would evaluate are escaped with data set "angka negatif tetap angka"
- ✔ Cells that excel would evaluate are escaped with data set "diawali @"
  ✔ Cells that excel would evaluate are escaped with data set "diawali minus (teks)"
+ ✔ Cells that excel would evaluate are escaped with data set "angka negatif tetap angka"
  ✔ Cells that excel would evaluate are escaped with data set "rumus Excel dinetralkan"
+ ✔ Cells that excel would evaluate are escaped with data set "diawali plus"
+ ✔ Cells that excel would evaluate are escaped with data set "diawali @"
  ✔ Cells that excel would evaluate are escaped with data set "teks biasa tidak diubah"
  ✔ Csv has utf 8 bom quotes and download headers
 
@@ -44,11 +45,19 @@ Env (Tests\Unit\Env)
 Json Response (Tests\Unit\JsonResponse)
  ✔ Json response has content type status and readable unicode
 
+Local Image Storage (Tests\Unit\LocalImageStorage)
+ ✔ Valid png is accepted and stored under random name with server extension
+ ✔ Php script renamed to jpg is rejected by content
+ ✔ Store refuses file that would fail validation
+ ✔ Size limit from php ini and from actual file size
+ ✔ File not uploaded via http or with upload error is rejected
+ ✔ Failed move is reported
+
 Low Stock (Tests\Unit\LowStock)
  ✔ Low stock boundary with data set "reorder point 0 tidak pernah low"
- ✔ Low stock boundary with data set "tepat sama dengan reorder point bukan low"
- ✔ Low stock boundary with data set "di atas reorder point"
  ✔ Low stock boundary with data set "di bawah reorder point"
+ ✔ Low stock boundary with data set "di atas reorder point"
+ ✔ Low stock boundary with data set "tepat sama dengan reorder point bukan low"
  ✔ Dashboard counts only active low stock products across warehouses
  ✔ Search criteria whitelists user input
 
@@ -64,6 +73,7 @@ Low Stock Report Service (Tests\Unit\LowStockReportService)
 Master Data Repository (Tests\Integration\MasterDataRepository)
  ✔ New warehouse gets zero stock row for every product
  ✔ Warehouse name check is case insensitive and excludes itself
+ ✔ Category round trip and case insensitive name check
  ✔ Supplier and customer are stored in their own tables
  ✔ User round trip and database rejects duplicate email
 
@@ -72,6 +82,8 @@ Master Data Service (Tests\Unit\MasterDataService)
  ✔ Category can be saved with its own name and empty description becomes null
  ✔ Warehouse requires name location and valid status
  ✔ Warehouse name must be unique but rename to free name works
+ ✔ Party requires name contact address within length and valid status
+ ✔ Party is created trimmed and can be deactivated
 
 My Sql Product Repository (Tests\Integration\MySqlProductRepository)
  ✔ Low stock filter uses total across warehouses
@@ -82,22 +94,26 @@ My Sql Product Repository (Tests\Integration\MySqlProductRepository)
  ✔ Update persists changes and deactivation
  ✔ Stock per warehouse matches ledger history
 
+Order Line Validator (Tests\Unit\OrderLineValidator)
+ ✔ More than max lines is rejected
+ ✔ Inactive duplicate zero qty and bad price are reported per line
+
 Product Service (Tests\Unit\ProductService)
  ✔ Create normalises sku and creates zero stock in every warehouse
  ✔ Create collects all errors at once and saves nothing
  ✔ Numbers must be whole and non negative with data set "reorder point notasi ilmiah"
+ ✔ Numbers must be whole and non negative with data set "harga jual bukan angka"
  ✔ Numbers must be whole and non negative with data set "reorder point melebihi batas"
  ✔ Numbers must be whole and non negative with data set "reorder point desimal"
- ✔ Numbers must be whole and non negative with data set "harga beli negatif"
  ✔ Numbers must be whole and non negative with data set "harga jual overflow"
- ✔ Numbers must be whole and non negative with data set "harga jual bukan angka"
+ ✔ Numbers must be whole and non negative with data set "harga beli negatif"
  ✔ Numbers must be whole and non negative with data set "reorder point negatif"
  ✔ Zero is a valid price and reorder point
- ✔ Sku format is validated with data set "terlalu pendek"
- ✔ Sku format is validated with data set "karakter ilegal"
  ✔ Sku format is validated with data set "terlalu panjang"
- ✔ Sku format is validated with data set "ada spasi"
+ ✔ Sku format is validated with data set "terlalu pendek"
  ✔ Sku format is validated with data set "kosong"
+ ✔ Sku format is validated with data set "ada spasi"
+ ✔ Sku format is validated with data set "karakter ilegal"
  ✔ Invalid image rejects whole product and stores no file
  ✔ Valid image is stored and linked to product
  ✔ Update keeps sku and existing image and can deactivate
@@ -110,9 +126,9 @@ Purchase Order Receipt (Tests\Integration\PurchaseOrderReceipt)
 
 Purchase Order Service (Tests\Unit\PurchaseOrderService)
  ✔ Create valid draft ignores blank rows and normalises sku
- ✔ Order date validation with data set "format lain"
- ✔ Order date validation with data set "tanggal tidak ada di kalender"
  ✔ Order date validation with data set "kosong"
+ ✔ Order date validation with data set "tanggal tidak ada di kalender"
+ ✔ Order date validation with data set "format lain"
  ✔ Order date validation with data set "besok (masa depan)"
  ✔ Today is a valid order date
  ✔ Line and header rules are collected together and nothing is saved
@@ -121,8 +137,8 @@ Purchase Order Service (Tests\Unit\PurchaseOrderService)
  ✔ Receiving all remaining qty marks received
  ✔ Receiving more than remaining is rejected and stock untouched
  ✔ Receipt is rejected for statuses other than ordered or partial with data set "cancelled"
- ✔ Receipt is rejected for statuses other than ordered or partial with data set "received"
  ✔ Receipt is rejected for statuses other than ordered or partial with data set "draft"
+ ✔ Receipt is rejected for statuses other than ordered or partial with data set "received"
  ✔ Status transitions
  ✔ Partially received order cannot be cancelled
 
@@ -136,23 +152,41 @@ Report Repository (Tests\Integration\ReportRepository)
 Report Service (Tests\Unit\ReportService)
  ✔ Default range is last ninety days including today
  ✔ Invalid ranges are rejected with data set "tanggal tidak ada"
- ✔ Invalid ranges are rejected with data set "lebih dari 366 hari"
  ✔ Invalid ranges are rejected with data set "hanya satu diisi"
  ✔ Invalid ranges are rejected with data set "akhir di masa depan"
  ✔ Invalid ranges are rejected with data set "awal setelah akhir"
+ ✔ Invalid ranges are rejected with data set "lebih dari 366 hari"
  ✔ Exactly 366 days is allowed
- ✔ Download permissions follow role table with data set "Warehouse status order"
  ✔ Download permissions follow role table with data set "Admin ledger"
- ✔ Download permissions follow role table with data set "Warehouse rekap stok"
- ✔ Download permissions follow role table with data set "Sales ledger"
- ✔ Download permissions follow role table with data set "Warehouse ledger"
  ✔ Download permissions follow role table with data set "Sales status order"
- ✔ Download permissions follow role table with data set "Admin status order"
+ ✔ Download permissions follow role table with data set "Warehouse status order"
+ ✔ Download permissions follow role table with data set "Warehouse ledger"
+ ✔ Download permissions follow role table with data set "Sales ledger"
+ ✔ Download permissions follow role table with data set "Warehouse rekap stok"
  ✔ Download permissions follow role table with data set "Sales rekap stok"
+ ✔ Download permissions follow role table with data set "Admin status order"
  ✔ Unknown report type is not found
  ✔ Sales order status is limited to own sales orders and has no purchase orders
  ✔ Status recap lists every status including zero
  ✔ Stock summary csv has header and net column
+
+Repository Guard (Tests\Integration\RepositoryGuard)
+ ✔ Locks outside transaction are refused
+ ✔ Locking unknown stock row fails
+ ✔ Receiving beyond ordered qty is refused by sql guard
+ ✔ User list is ordered by role then name
+
+Router (Tests\Unit\Router)
+ ✔ Public route is open for guests
+ ✔ Guest is redirected to login on protected page
+ ✔ Guest on api gets 401 json instead of redirect
+ ✔ Logged in user without required role is forbidden
+ ✔ User with required role reaches handler
+ ✔ Post without valid csrf token is rejected before handler
+ ✔ Post with valid csrf token reaches handler
+ ✔ Unknown path is 404 and wrong method is 405
+ ✔ Route params are url decoded and literal parts are escaped
+ ✔ Int param accepts only positive digits
 
 Sales Order Fulfillment (Tests\Integration\SalesOrderFulfillment)
  ✔ Second goods issue is rejected after first uses up the stock
@@ -161,10 +195,10 @@ Sales Order Fulfillment (Tests\Integration\SalesOrderFulfillment)
 
 Sales Order Policy (Tests\Unit\SalesOrderPolicy)
  ✔ Only admin can approve or reject and sales never can with data set "Admin menyetujui order Sales"
- ✔ Only admin can approve or reject and sales never can with data set "Warehouse Staff menyetujui"
- ✔ Only admin can approve or reject and sales never can with data set "Sales menyetujui order MILIKNYA SENDIRI"
- ✔ Only admin can approve or reject and sales never can with data set "Sales menyetujui order Sales lain"
  ✔ Only admin can approve or reject and sales never can with data set "Admin lain menyetujui order Admin"
+ ✔ Only admin can approve or reject and sales never can with data set "Sales menyetujui order MILIKNYA SENDIRI"
+ ✔ Only admin can approve or reject and sales never can with data set "Warehouse Staff menyetujui"
+ ✔ Only admin can approve or reject and sales never can with data set "Sales menyetujui order Sales lain"
  ✔ Only admin can approve or reject and sales never can with data set "Admin menyetujui order buatannya sendiri"
  ✔ Approval requires pending approval status
  ✔ Visibility
@@ -214,21 +248,21 @@ Stock Transfer Service (Tests\Unit\StockTransferService)
 User Service (Tests\Unit\UserService)
  ✔ Create hashes password and normalises email
  ✔ Email must be unique regardless of case
- ✔ Invalid input is rejected and nothing saved with data set "konfirmasi tidak sama"
- ✔ Invalid input is rejected and nothing saved with data set "password > 72 byte"
- ✔ Invalid input is rejected and nothing saved with data set "password terlalu pendek"
  ✔ Invalid input is rejected and nothing saved with data set "role di luar tiga nilai tetap"
+ ✔ Invalid input is rejected and nothing saved with data set "konfirmasi tidak sama"
  ✔ Invalid input is rejected and nothing saved with data set "format email salah"
  ✔ Invalid input is rejected and nothing saved with data set "password kosong saat create"
+ ✔ Invalid input is rejected and nothing saved with data set "password > 72 byte"
+ ✔ Invalid input is rejected and nothing saved with data set "password terlalu pendek"
  ✔ Update with empty password keeps existing hash
  ✔ Admin can deactivate other user
  ✔ Admin cannot deactivate or demote own account
  ✔ Own profile can change name but ignores email role and status from input
  ✔ Own password change requires correct current password
- ✔ Invalid own password change is rejected and hash untouched with data set "terlalu pendek"
- ✔ Invalid own password change is rejected and hash untouched with data set "sama dengan password lama"
  ✔ Invalid own password change is rejected and hash untouched with data set "password saat ini salah"
- ✔ Invalid own password change is rejected and hash untouched with data set "password saat ini kosong"
+ ✔ Invalid own password change is rejected and hash untouched with data set "terlalu pendek"
  ✔ Invalid own password change is rejected and hash untouched with data set "konfirmasi berbeda"
+ ✔ Invalid own password change is rejected and hash untouched with data set "password saat ini kosong"
+ ✔ Invalid own password change is rejected and hash untouched with data set "sama dengan password lama"
 
-OK (169 tests, 440 assertions)
+OK (194 tests, 504 assertions)

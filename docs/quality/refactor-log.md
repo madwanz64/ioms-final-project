@@ -204,3 +204,42 @@ Integration test yang mencakup jalur ini: pencarian PO & SO (`PurchaseOrderRecei
 PHPStan level 6 tetap 0 error.
 
 **Commit:** `refactor: ekstrak RowMapper untuk konversi DECIMAL & OrderSummary yang tersalin`.
+
+---
+
+## R-04 · Extract Method pada `Router::dispatch` dan `OrderLineValidator::validate` (2026-10-07)
+
+Dipicu temuan SonarQube (php:S3776 Cognitive Complexity), rincian di
+[sonarqube.md](sonarqube.md).
+
+**Smell:** **Long Method / kompleksitas tinggi.** `Router::dispatch` (kompleksitas kognitif 22)
+mencampur pencocokan URL, cek CSRF, cek login, cek role, dan pemanggilan handler dalam satu
+loop dengan `if` bersarang. `OrderLineValidator::validate` (19) mencampur normalisasi baris,
+validasi produk, dan validasi qty/harga.
+
+**Teknik:** Extract Method.
+- `Router`: `dispatch()` hanya mencocokkan route; `handle()` menjalankan CSRF lalu handler;
+  `authorize()` memutuskan tamu (redirect / 401 JSON) dan role (403). Literal `'/login'` menjadi
+  `Router::LOGIN_PATH`.
+- `OrderLineValidator`: `checkProduct()` (aktif & tidak duplikat) dan `parseLine()` (qty & harga).
+
+**Sesudah** (`Router::dispatch`):
+
+```php
+foreach ($this->routes as $route) {
+    if (preg_match($route['regex'], $request->path, $matches) !== 1) {
+        continue;
+    }
+    $pathMatched = true;
+    if ($route['method'] === $request->method) {
+        return $this->handle($route, $request, $matches);
+    }
+}
+```
+
+**Bukti perilaku tidak berubah:** saat refactor dimulai, `Router` ternyata **tidak punya unit
+test**: mutasi yang mematikan guard tetap membuat 169 test hijau. Karena itu `RouterTest`
+(10 test: tamu, API 401, role 403, CSRF, 404/405, parameter route, `intParam`) ditulis dan
+dijalankan terhadap kode hasil refactor, lalu tiga mutasi (guard tamu, role, CSRF) masing-masing
+membuat test gagal. `OrderLineValidator` dicakup test PO/SO/transfer yang sudah ada ditambah
+`OrderLineValidatorTest`. Total 191 test lulus; PHPStan level 6 0 error; uji browser 50/50 dan 9/9.
