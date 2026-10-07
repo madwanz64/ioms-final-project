@@ -542,3 +542,8 @@ fieldset.line-items .data-table td{vertical-align:top;}
   .stat-tile .value{font-size:1.2rem; line-height:1.25; overflow-wrap:anywhere;}
   .stat-tile .label{font-size:.72rem;}
 }
+
+/* Tabel kecil (2–5 kolom) di panel dua kolom (stok per gudang, item transfer, riwayat
+   ledger, ringkasan dashboard) tidak perlu lebar minimum tabel daftar 640px — tanpa ini
+   kolom terakhir tersembunyi dan harus digeser walau di desktop. */
+.two-col table.data-table{min-width:0;}
