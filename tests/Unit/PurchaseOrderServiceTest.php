@@ -69,9 +69,10 @@ final class PurchaseOrderServiceTest extends TestCase
 
     public function testCreateValidDraftIgnoresBlankRowsAndNormalisesSku(): void
     {
-        $this->service->create($this->header(), [['sku' => 'sku-a', 'qty' => '10', 'buy_price' => '900'], ['sku' => '', 'qty' => '', 'buy_price' => '']]);
+        $this->service->create($this->header(), [['sku' => 'sku-a', 'qty' => '10', 'buy_price' => '900'], ['sku' => '', 'qty' => '', 'buy_price' => '']], $this->staff);
 
         self::assertCount(1, $this->orders->created);
+        self::assertSame(4, $this->orders->created[0]['createdBy'], 'pembuat PO tercatat (K-03)');
         $lines = $this->orders->created[0]['lines'];
         self::assertCount(1, $lines);
         self::assertSame('SKU-A', $lines[0]->sku);
@@ -102,7 +103,7 @@ final class PurchaseOrderServiceTest extends TestCase
 
     public function testTodayIsAValidOrderDate(): void
     {
-        $this->service->create($this->header(['order_date' => '2026-10-07']), [['sku' => 'SKU-A', 'qty' => '1', 'buy_price' => '0']]);
+        $this->service->create($this->header(['order_date' => '2026-10-07']), [['sku' => 'SKU-A', 'qty' => '1', 'buy_price' => '0']], $this->staff);
 
         self::assertCount(1, $this->orders->created);
     }
@@ -213,7 +214,7 @@ final class PurchaseOrderServiceTest extends TestCase
     private function createErrors(array $header, ?array $lines = null): array
     {
         try {
-            $this->service->create($this->header($header), $lines ?? [['sku' => 'SKU-A', 'qty' => '1', 'buy_price' => '1']]);
+            $this->service->create($this->header($header), $lines ?? [['sku' => 'SKU-A', 'qty' => '1', 'buy_price' => '1']], $this->staff);
         } catch (ValidationException $e) {
             return $e->errors;
         }
@@ -234,6 +235,6 @@ final class PurchaseOrderServiceTest extends TestCase
         return new PurchaseOrder(1, 'PO-2026-0099', 1, 'CV Aktif', 1, 'Gudang Jakarta', $status, '2026-10-01', [
             new PurchaseOrderItem(11, 'SKU-A', 'Produk A', 'pcs', 10, $receivedA, 1000),
             new PurchaseOrderItem(12, 'SKU-B', 'Produk B', 'pcs', 3, 0, 1000),
-        ]);
+        ], 4, 'Rudi');
     }
 }

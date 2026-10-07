@@ -26,11 +26,12 @@ interface PurchaseOrderRepositoryInterface
 
     /**
      * Simpan PO berstatus Draft beserta item-nya; nomor PO dibuat otomatis.
+     * $createdBy = user pembuat/pengusul (K-03).
      *
      * @param list<NewOrderLine> $lines
      * @return int id PO baru
      */
-    public function create(int $supplierId, int $warehouseId, string $orderDate, array $lines): int;
+    public function create(int $supplierId, int $warehouseId, int $createdBy, string $orderDate, array $lines): int;
 
     public function updateStatus(int $id, PurchaseOrderStatus $status): void;
 

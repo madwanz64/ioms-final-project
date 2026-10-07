@@ -12,6 +12,8 @@ USE ioms;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS stock_transfer_items;
+DROP TABLE IF EXISTS stock_transfers;
 DROP TABLE IF EXISTS stock_ledger;
 DROP TABLE IF EXISTS sales_order_items;
 DROP TABLE IF EXISTS sales_orders;
@@ -136,10 +138,12 @@ CREATE TABLE purchase_orders (
   warehouse_id INT UNSIGNED NOT NULL,
   status ENUM('Draft', 'Ordered', 'PartiallyReceived', 'Received', 'Cancelled') NOT NULL DEFAULT 'Draft',
   order_date DATE NOT NULL,
+  created_by INT UNSIGNED NOT NULL COMMENT 'pembuat/pengusul PO (K-03)',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_po_order_no (order_no),
   CONSTRAINT fk_po_supplier FOREIGN KEY (supplier_id) REFERENCES suppliers (id),
   CONSTRAINT fk_po_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses (id),
+  CONSTRAINT fk_po_created_by FOREIGN KEY (created_by) REFERENCES users (id),
   INDEX idx_po_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -203,8 +207,8 @@ CREATE TABLE stock_ledger (
   warehouse_id INT UNSIGNED NOT NULL,
   movement_type ENUM('Receipt', 'Issue', 'Adjustment') NOT NULL,
   quantity INT NOT NULL COMMENT 'positif = stok masuk, negatif = stok keluar',
-  ref_type ENUM('PO', 'SO', 'ADJ') NOT NULL,
-  ref_id VARCHAR(30) NOT NULL COMMENT 'order_no PO/SO terkait',
+  ref_type ENUM('PO', 'SO', 'ADJ', 'TRF') NOT NULL,
+  ref_id VARCHAR(30) NOT NULL COMMENT 'nomor PO/SO/transfer terkait',
   performed_by INT UNSIGNED NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_ledger_product FOREIGN KEY (product_sku) REFERENCES products (sku),
@@ -213,6 +217,39 @@ CREATE TABLE stock_ledger (
   INDEX idx_ledger_product_warehouse (product_sku, warehouse_id),
   INDEX idx_ledger_created_at (created_at),
   INDEX idx_ledger_ref (ref_type, ref_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -----------------------------------------------------------------------------
+-- stock_transfers + stock_transfer_items — perpindahan stok antar-gudang (K-08).
+-- Dokumen transfer hanya mencatat "apa dipindah ke mana oleh siapa"; perubahan
+-- stoknya selalu lewat stock_ledger: Issue di gudang asal + Receipt di gudang
+-- tujuan (ref_type 'TRF'), dalam satu transaksi bersama dokumen ini.
+-- -----------------------------------------------------------------------------
+CREATE TABLE stock_transfers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  transfer_no VARCHAR(30) NOT NULL,
+  from_warehouse_id INT UNSIGNED NOT NULL,
+  to_warehouse_id INT UNSIGNED NOT NULL,
+  note VARCHAR(255) NULL,
+  created_by INT UNSIGNED NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_transfer_no (transfer_no),
+  CONSTRAINT chk_transfer_different_warehouse CHECK (from_warehouse_id <> to_warehouse_id),
+  CONSTRAINT fk_transfer_from FOREIGN KEY (from_warehouse_id) REFERENCES warehouses (id),
+  CONSTRAINT fk_transfer_to FOREIGN KEY (to_warehouse_id) REFERENCES warehouses (id),
+  CONSTRAINT fk_transfer_created_by FOREIGN KEY (created_by) REFERENCES users (id),
+  INDEX idx_transfer_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE stock_transfer_items (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  stock_transfer_id INT UNSIGNED NOT NULL,
+  product_sku VARCHAR(20) NOT NULL,
+  qty INT NOT NULL,
+  CONSTRAINT chk_sti_qty_positive CHECK (qty > 0),
+  CONSTRAINT fk_sti_transfer FOREIGN KEY (stock_transfer_id) REFERENCES stock_transfers (id) ON DELETE CASCADE,
+  CONSTRAINT fk_sti_product FOREIGN KEY (product_sku) REFERENCES products (sku),
+  UNIQUE KEY uq_sti_transfer_product (stock_transfer_id, product_sku)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================================================
@@ -387,19 +424,19 @@ INSERT INTO product_stock (product_sku, warehouse_id, quantity) VALUES
   ('SKU-0032', 1, 57),
   ('SKU-0032', 2, 45);
 
-INSERT INTO purchase_orders (id, order_no, supplier_id, warehouse_id, status, order_date) VALUES
-  (1, 'PO-2026-0001', 1, 1, 'Received', '2026-08-15'),
-  (2, 'PO-2026-0002', 2, 1, 'Received', '2026-08-17'),
-  (3, 'PO-2026-0003', 3, 2, 'Received', '2026-08-19'),
-  (4, 'PO-2026-0004', 1, 1, 'PartiallyReceived', '2026-08-25'),
-  (5, 'PO-2026-0005', 2, 1, 'PartiallyReceived', '2026-08-27'),
-  (6, 'PO-2026-0006', 1, 1, 'Ordered', '2026-08-30'),
-  (7, 'PO-2026-0007', 4, 2, 'Ordered', '2026-08-31'),
-  (8, 'PO-2026-0008', 3, 2, 'Draft', '2026-09-02'),
-  (9, 'PO-2026-0009', 2, 1, 'Draft', '2026-09-03'),
-  (10, 'PO-2026-0010', 1, 1, 'Cancelled', '2026-08-23'),
-  (11, 'PO-2026-0011', 4, 1, 'Ordered', '2026-09-01'),
-  (12, 'PO-2026-0012', 2, 2, 'Draft', '2026-09-03');
+INSERT INTO purchase_orders (id, order_no, supplier_id, warehouse_id, status, order_date, created_by) VALUES
+  (1, 'PO-2026-0001', 1, 1, 'Received', '2026-08-15', 1),
+  (2, 'PO-2026-0002', 2, 1, 'Received', '2026-08-17', 4),
+  (3, 'PO-2026-0003', 3, 2, 'Received', '2026-08-19', 6),
+  (4, 'PO-2026-0004', 1, 1, 'PartiallyReceived', '2026-08-25', 1),
+  (5, 'PO-2026-0005', 2, 1, 'PartiallyReceived', '2026-08-27', 4),
+  (6, 'PO-2026-0006', 1, 1, 'Ordered', '2026-08-30', 6),
+  (7, 'PO-2026-0007', 4, 2, 'Ordered', '2026-08-31', 1),
+  (8, 'PO-2026-0008', 3, 2, 'Draft', '2026-09-02', 4),
+  (9, 'PO-2026-0009', 2, 1, 'Draft', '2026-09-03', 6),
+  (10, 'PO-2026-0010', 1, 1, 'Cancelled', '2026-08-23', 1),
+  (11, 'PO-2026-0011', 4, 1, 'Ordered', '2026-09-01', 4),
+  (12, 'PO-2026-0012', 2, 2, 'Draft', '2026-09-03', 6);
 
 INSERT INTO purchase_order_items (purchase_order_id, product_sku, qty, received_qty, buy_price) VALUES
   (1, 'SKU-0006', 5, 5, 1450000),

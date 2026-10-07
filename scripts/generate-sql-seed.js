@@ -60,6 +60,8 @@ USE ioms;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS stock_transfer_items;
+DROP TABLE IF EXISTS stock_transfers;
 DROP TABLE IF EXISTS stock_ledger;
 DROP TABLE IF EXISTS sales_order_items;
 DROP TABLE IF EXISTS sales_orders;
@@ -184,10 +186,12 @@ CREATE TABLE purchase_orders (
   warehouse_id INT UNSIGNED NOT NULL,
   status ENUM('Draft', 'Ordered', 'PartiallyReceived', 'Received', 'Cancelled') NOT NULL DEFAULT 'Draft',
   order_date DATE NOT NULL,
+  created_by INT UNSIGNED NOT NULL COMMENT 'pembuat/pengusul PO (K-03)',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_po_order_no (order_no),
   CONSTRAINT fk_po_supplier FOREIGN KEY (supplier_id) REFERENCES suppliers (id),
   CONSTRAINT fk_po_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouses (id),
+  CONSTRAINT fk_po_created_by FOREIGN KEY (created_by) REFERENCES users (id),
   INDEX idx_po_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -251,8 +255,8 @@ CREATE TABLE stock_ledger (
   warehouse_id INT UNSIGNED NOT NULL,
   movement_type ENUM('Receipt', 'Issue', 'Adjustment') NOT NULL,
   quantity INT NOT NULL COMMENT 'positif = stok masuk, negatif = stok keluar',
-  ref_type ENUM('PO', 'SO', 'ADJ') NOT NULL,
-  ref_id VARCHAR(30) NOT NULL COMMENT 'order_no PO/SO terkait',
+  ref_type ENUM('PO', 'SO', 'ADJ', 'TRF') NOT NULL,
+  ref_id VARCHAR(30) NOT NULL COMMENT 'nomor PO/SO/transfer terkait',
   performed_by INT UNSIGNED NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_ledger_product FOREIGN KEY (product_sku) REFERENCES products (sku),
@@ -261,6 +265,39 @@ CREATE TABLE stock_ledger (
   INDEX idx_ledger_product_warehouse (product_sku, warehouse_id),
   INDEX idx_ledger_created_at (created_at),
   INDEX idx_ledger_ref (ref_type, ref_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -----------------------------------------------------------------------------
+-- stock_transfers + stock_transfer_items — perpindahan stok antar-gudang (K-08).
+-- Dokumen transfer hanya mencatat "apa dipindah ke mana oleh siapa"; perubahan
+-- stoknya selalu lewat stock_ledger: Issue di gudang asal + Receipt di gudang
+-- tujuan (ref_type 'TRF'), dalam satu transaksi bersama dokumen ini.
+-- -----------------------------------------------------------------------------
+CREATE TABLE stock_transfers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  transfer_no VARCHAR(30) NOT NULL,
+  from_warehouse_id INT UNSIGNED NOT NULL,
+  to_warehouse_id INT UNSIGNED NOT NULL,
+  note VARCHAR(255) NULL,
+  created_by INT UNSIGNED NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_transfer_no (transfer_no),
+  CONSTRAINT chk_transfer_different_warehouse CHECK (from_warehouse_id <> to_warehouse_id),
+  CONSTRAINT fk_transfer_from FOREIGN KEY (from_warehouse_id) REFERENCES warehouses (id),
+  CONSTRAINT fk_transfer_to FOREIGN KEY (to_warehouse_id) REFERENCES warehouses (id),
+  CONSTRAINT fk_transfer_created_by FOREIGN KEY (created_by) REFERENCES users (id),
+  INDEX idx_transfer_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE stock_transfer_items (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  stock_transfer_id INT UNSIGNED NOT NULL,
+  product_sku VARCHAR(20) NOT NULL,
+  qty INT NOT NULL,
+  CONSTRAINT chk_sti_qty_positive CHECK (qty > 0),
+  CONSTRAINT fk_sti_transfer FOREIGN KEY (stock_transfer_id) REFERENCES stock_transfers (id) ON DELETE CASCADE,
+  CONSTRAINT fk_sti_product FOREIGN KEY (product_sku) REFERENCES products (sku),
+  UNIQUE KEY uq_sti_transfer_product (stock_transfer_id, product_sku)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================================================
@@ -387,7 +424,7 @@ function buildSeedSql() {
   const purchaseOrders = readJson('purchase-orders.json');
   sql += insertBlock(
     'purchase_orders',
-    ['id', 'order_no', 'supplier_id', 'warehouse_id', 'status', 'order_date'],
+    ['id', 'order_no', 'supplier_id', 'warehouse_id', 'status', 'order_date', 'created_by'],
     purchaseOrders.map((o) => ({
       id: o.id,
       order_no: sqlStr(o.orderNo),
@@ -395,6 +432,9 @@ function buildSeedSql() {
       warehouse_id: o.warehouseId,
       status: sqlStr(o.status),
       order_date: sqlStr(o.createdAt),
+      // K-03: data prototype tidak mencatat pembuat PO, jadi seed membagi secara
+      // deterministik ke Admin (1), Rudi (4), dan Wulan (6) — Admin & Warehouse Staff.
+      created_by: [1, 4, 6][(o.id - 1) % 3],
     }))
   );
   const poItems = [];

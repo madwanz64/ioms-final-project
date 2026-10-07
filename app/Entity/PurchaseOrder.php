@@ -19,6 +19,8 @@ final class PurchaseOrder
         public readonly PurchaseOrderStatus $status,
         public readonly string $orderDate,
         public readonly array $items,
+        public readonly int $createdBy,
+        public readonly string $createdByName,
     ) {
     }
 

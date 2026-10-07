@@ -31,6 +31,7 @@ $csrfField = '<input type="hidden" name="_csrf" value="' . e($csrfToken) . '">';
         <tr><th scope="row">Tanggal Order</th><td><?= e(date('d M Y', (int) strtotime($order->orderDate))) ?></td></tr>
         <tr><th scope="row">Supplier</th><td><?= e($order->supplierName) ?></td></tr>
         <tr><th scope="row">Gudang Tujuan</th><td><?= e($order->warehouseName) ?></td></tr>
+        <tr><th scope="row">Dibuat oleh</th><td><?= e($order->createdByName) ?></td></tr>
         <tr><th scope="row">Total</th><td><?= e(rupiah($order->total())) ?></td></tr>
       </tbody>
     </table>

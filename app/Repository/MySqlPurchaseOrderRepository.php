@@ -80,21 +80,22 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
         return $this->load($id, true);
     }
 
-    public function create(int $supplierId, int $warehouseId, string $orderDate, array $lines): int
+    public function create(int $supplierId, int $warehouseId, int $createdBy, string $orderDate, array $lines): int
     {
-        return Database::transactional($this->pdo, function () use ($supplierId, $warehouseId, $orderDate, $lines): int {
+        return Database::transactional($this->pdo, function () use ($supplierId, $warehouseId, $createdBy, $orderDate, $lines): int {
             // Nomor sementara yang unik, lalu diganti nomor final berbasis id
             // auto-increment (PO-2026-0013) — id dijamin unik oleh MySQL, sehingga
             // dua PO yang dibuat bersamaan tidak bisa mendapat nomor yang sama.
             $header = $this->pdo->prepare(
-                "INSERT INTO purchase_orders (order_no, supplier_id, warehouse_id, status, order_date)
-                 VALUES (:order_no, :supplier_id, :warehouse_id, 'Draft', :order_date)"
+                "INSERT INTO purchase_orders (order_no, supplier_id, warehouse_id, status, order_date, created_by)
+                 VALUES (:order_no, :supplier_id, :warehouse_id, 'Draft', :order_date, :created_by)"
             );
             $header->execute([
                 'order_no' => 'TMP-' . bin2hex(random_bytes(8)),
                 'supplier_id' => $supplierId,
                 'warehouse_id' => $warehouseId,
                 'order_date' => $orderDate,
+                'created_by' => $createdBy,
             ]);
             $id = (int) $this->pdo->lastInsertId();
 
@@ -136,10 +137,11 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
         // OF <alias>: hanya baris order yang dikunci, bukan supplier/gudang/produk yang ikut di-JOIN.
         $stmt = $this->pdo->prepare(
             'SELECT po.id, po.order_no, po.supplier_id, s.name AS supplier_name, po.warehouse_id, w.name AS warehouse_name,
-                    po.status, po.order_date
+                    po.status, po.order_date, po.created_by, creator.name AS creator_name
              FROM purchase_orders po
              JOIN suppliers s ON s.id = po.supplier_id
              JOIN warehouses w ON w.id = po.warehouse_id
+             JOIN users creator ON creator.id = po.created_by
              WHERE po.id = :id' . ($forUpdate ? ' FOR UPDATE OF po' : '')
         );
         $stmt->execute(['id' => $id]);
@@ -176,6 +178,8 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
             PurchaseOrderStatus::from((string) $row['status']),
             (string) $row['order_date'],
             array_values($items),
+            (int) $row['created_by'],
+            (string) $row['creator_name'],
         );
     }
 }

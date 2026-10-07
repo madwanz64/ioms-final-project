@@ -85,7 +85,7 @@ final class PurchaseOrderService
      * @param list<array<string, string>> $lines baris item: sku, qty, buy_price
      * @throws ValidationException
      */
-    public function create(array $input, array $lines): int
+    public function create(array $input, array $lines, User $actor): int
     {
         $validator = new InputValidator($input);
 
@@ -101,7 +101,7 @@ final class PurchaseOrderService
         $orderLines = $this->lineValidator->validate($validator, $lines, 'buy_price', 'Harga beli');
         $validator->throwIfInvalid();
 
-        return $this->orders->create((int) $supplier?->id, (int) $warehouse?->id, $orderDate, $orderLines);
+        return $this->orders->create((int) $supplier?->id, (int) $warehouse?->id, $actor->id, $orderDate, $orderLines);
     }
 
     /**

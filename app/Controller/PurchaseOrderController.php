@@ -50,11 +50,11 @@ final class PurchaseOrderController
         return $this->form(['order_date' => (new DateTimeImmutable('today'))->format('Y-m-d')], [[], [], []]);
     }
 
-    public function store(Request $request): Response
+    public function store(Request $request, User $user): Response
     {
         $lines = $request->inputRows('items');
         try {
-            $id = $this->orders->create($request->allInput(), $lines);
+            $id = $this->orders->create($request->allInput(), $lines, $user);
         } catch (ValidationException $e) {
             return $this->form($request->allInput(), $lines === [] ? [[]] : $lines, $e->errors);
         }

@@ -48,11 +48,12 @@ final class PurchaseOrderReceiptTest extends IntegrationTestCase
 
     public function testPartialThenFullReceiptUpdatesStockLedgerAndStatus(): void
     {
-        $id = $this->orders->create(1, 2, '2026-10-01', [new NewOrderLine('SKU-0006', 8, 1500000)]);
+        $id = $this->orders->create(1, 2, 4, '2026-10-01', [new NewOrderLine('SKU-0006', 8, 1500000)]);
         $this->service->markOrdered($id);
         $order = $this->orders->findById($id);
         self::assertNotNull($order);
         self::assertMatchesRegularExpression('/^PO-2026-\d{4}$/', $order->orderNo);
+        self::assertSame('Rudi Hartono', $order->createdByName, 'pembuat PO tercatat (K-03)');
         $itemId = $order->items[0]->id;
         $stockBefore = $this->stock('SKU-0006', 2);
 
@@ -73,8 +74,8 @@ final class PurchaseOrderReceiptTest extends IntegrationTestCase
 
     public function testOrderNumbersAreUniqueAndSearchFindsBySupplierName(): void
     {
-        $first = $this->orders->findById($this->orders->create(1, 1, '2026-10-02', [new NewOrderLine('SKU-0001', 1, 1)]));
-        $second = $this->orders->findById($this->orders->create(1, 1, '2026-10-02', [new NewOrderLine('SKU-0001', 1, 1)]));
+        $first = $this->orders->findById($this->orders->create(1, 1, 6, '2026-10-02', [new NewOrderLine('SKU-0001', 1, 1)]));
+        $second = $this->orders->findById($this->orders->create(1, 1, 6, '2026-10-02', [new NewOrderLine('SKU-0001', 1, 1)]));
         self::assertNotNull($first);
         self::assertNotNull($second);
         self::assertNotSame($first->orderNo, $second->orderNo);

@@ -17,7 +17,7 @@ final class InMemoryPurchaseOrderRepository implements PurchaseOrderRepositoryIn
     /** @var array<int, PurchaseOrder> */
     private array $orders = [];
 
-    /** @var list<array{supplierId: int, warehouseId: int, orderDate: string, lines: list<\App\Entity\NewOrderLine>}> */
+    /** @var list<array{supplierId: int, warehouseId: int, createdBy: int, orderDate: string, lines: list<\App\Entity\NewOrderLine>}> */
     public array $created = [];
 
     public function add(PurchaseOrder $order): void
@@ -40,9 +40,9 @@ final class InMemoryPurchaseOrderRepository implements PurchaseOrderRepositoryIn
         return $this->findById($id);
     }
 
-    public function create(int $supplierId, int $warehouseId, string $orderDate, array $lines): int
+    public function create(int $supplierId, int $warehouseId, int $createdBy, string $orderDate, array $lines): int
     {
-        $this->created[] = ['supplierId' => $supplierId, 'warehouseId' => $warehouseId, 'orderDate' => $orderDate, 'lines' => $lines];
+        $this->created[] = ['supplierId' => $supplierId, 'warehouseId' => $warehouseId, 'createdBy' => $createdBy, 'orderDate' => $orderDate, 'lines' => $lines];
 
         return 100 + count($this->created);
     }
@@ -51,7 +51,7 @@ final class InMemoryPurchaseOrderRepository implements PurchaseOrderRepositoryIn
     {
         $order = $this->orders[$id];
         $this->orders[$id] = new PurchaseOrder($order->id, $order->orderNo, $order->supplierId, $order->supplierName,
-            $order->warehouseId, $order->warehouseName, $status, $order->orderDate, $order->items);
+            $order->warehouseId, $order->warehouseName, $status, $order->orderDate, $order->items, $order->createdBy, $order->createdByName);
     }
 
     public function addReceivedQty(int $itemId, int $qty): void
@@ -68,7 +68,7 @@ final class InMemoryPurchaseOrderRepository implements PurchaseOrderRepositoryIn
                 $items[] = $item;
             }
             $this->orders[$id] = new PurchaseOrder($order->id, $order->orderNo, $order->supplierId, $order->supplierName,
-                $order->warehouseId, $order->warehouseName, $order->status, $order->orderDate, $items);
+                $order->warehouseId, $order->warehouseName, $order->status, $order->orderDate, $items, $order->createdBy, $order->createdByName);
         }
     }
 }
