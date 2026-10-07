@@ -33,13 +33,14 @@ final class SalesOrderPolicyTest extends TestCase
             'Sales menyetujui order MILIKNYA SENDIRI' => [self::SINTA, Role::Sales, self::SINTA, false],
             'Sales menyetujui order Sales lain' => [self::DONI, Role::Sales, self::SINTA, false],
             'Warehouse Staff menyetujui' => [self::RUDI, Role::WarehouseStaff, self::SINTA, false],
-            'Admin menyetujui order buatannya sendiri' => [self::ADMIN, Role::Admin, self::ADMIN, false],
+            // K-05 (dikonfirmasi): tabel peran §1.2 membolehkan Admin membuat & menyetujui SO.
+            'Admin menyetujui order buatannya sendiri' => [self::ADMIN, Role::Admin, self::ADMIN, true],
             'Admin lain menyetujui order Admin' => [self::ADMIN_2, Role::Admin, self::ADMIN, true],
         ];
     }
 
     #[DataProvider('reviewCases')]
-    public function testOnlyAdminWhoIsNotTheCreatorCanApproveOrReject(int $actorId, Role $role, int $creatorId, bool $expected): void
+    public function testOnlyAdminCanApproveOrRejectAndSalesNeverCan(int $actorId, Role $role, int $creatorId, bool $expected): void
     {
         $order = $this->order($creatorId, SalesOrderStatus::PendingApproval);
 

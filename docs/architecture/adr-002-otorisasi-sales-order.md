@@ -1,6 +1,6 @@
 # ADR-002 · Otorisasi Sales Order: Policy di layer Service, bukan hanya di router/UI
 
-- **Status:** Diterima
+- **Status:** Diterima (direvisi 2026-10-07: aturan Admin atas SO sendiri, lihat bagian Revisi)
 - **Tanggal:** 2026-10-07
 - **Terkait:** SO-01, §1.2 (segregation of duties), §4.2, §8.2 (critical failure: authorization hanya di frontend)
 
@@ -32,9 +32,9 @@ memeriksa pemilik order atau status.
 4. Router tetap menyaring role kasar (mis. Warehouse tidak bisa membuat SO). Endpoint
    approve/reject **sengaja dibuka untuk semua role yang login**, sehingga penolakan Sales
    terbukti berasal dari authorization layer, persis seperti skenario brief.
-5. Segregation of duties diterapkan **per user**: pembuat order tidak pernah boleh
-   menyetujui/menolak order itu, **termasuk Admin** (lihat K-05 di
-   `docs/planning/catatan-keputusan.md`).
+5. Segregation of duties mengikuti tabel peran §1.2: **Sales tidak pernah boleh
+   menyetujui/menolak SO**, termasuk order miliknya sendiri. **Admin boleh** menyetujui
+   SO apa pun, termasuk buatannya sendiri (K-05, dikonfirmasi).
 
 ## Consequences
 
@@ -46,8 +46,17 @@ memeriksa pemilik order atau status.
 - Menambah aturan baru cukup di satu tempat.
 
 **Negatif / risiko yang diterima**
-- Dengan satu akun Admin (seed minimum §7.1), SO yang dibuat Admin sendiri tidak bisa
-  disetujui siapa pun. Ini disengaja (lebih aman), dan solusinya menambah Admin kedua.
-  Dicatat di tech-debt sebagai keterbatasan operasional.
+- Admin dapat membuat sekaligus menyetujui SO miliknya. Ini sesuai §1.2; jejaknya tetap
+  tercatat (`created_by` dan `approved_by` bernilai sama), sehingga bisa diaudit.
 - Ada dua lapis pemeriksaan role (router & policy). Duplikasi ini disengaja (defense in
   depth), bukan logic bisnis yang tersalin.
+
+## Revisi 2026-10-07 — Admin boleh menyetujui SO buatannya sendiri
+
+Keputusan awal butir 5 memberlakukan larangan per user, termasuk untuk Admin. Klarifikasi
+yang diterima: tabel peran §1.2 mencantumkan Admin "Boleh" membuat dan "Boleh" menyetujui
+SO, dan larangan eksplisit hanya untuk Sales. `SalesOrderPolicy::canReview()` diubah
+dari `Admin && bukan pembuat` menjadi `Admin`. Pemeriksaan tetap di server, dan Sales tetap
+ditolak 403 (diuji ulang: unit, integration, dan smoke test). Karena aturannya terpusat di
+satu method policy, perubahan ini hanya menyentuh satu baris logic, dua test, dan satu
+keterangan di view.

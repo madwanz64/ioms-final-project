@@ -62,9 +62,7 @@ $ownPending = $order->status === SalesOrderStatus::PendingApproval && $order->is
         <?php endif; ?>
       </div>
     <?php endif; ?>
-    <?php if ($ownPending && $currentUser->role === Role::Admin): ?>
-      <p class="hint">Order ini Anda buat sendiri, sehingga harus disetujui Admin lain (segregation of duties).</p>
-    <?php elseif ($ownPending): ?>
+    <?php if ($ownPending && $currentUser->role !== Role::Admin): ?>
       <p class="hint">Menunggu persetujuan Admin. Pembuat order tidak dapat menyetujui order sendiri.</p>
     <?php endif; ?>
   </section>

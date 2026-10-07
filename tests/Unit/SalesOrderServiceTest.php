@@ -128,13 +128,16 @@ final class SalesOrderServiceTest extends TestCase
         self::assertSame(SalesOrderStatus::PendingApproval, $this->orders->findById($id)?->status);
     }
 
-    public function testAdminCannotApproveOrderTheyCreated(): void
+    public function testAdminCanApproveOrderTheyCreated(): void
     {
+        // K-05 (dikonfirmasi): §1.2 membolehkan Admin membuat dan menyetujui SO.
         $id = $this->createOrder($this->admin, 1);
         $this->service->submit($id, $this->admin);
 
-        $this->expectException(AuthorizationException::class);
-        $this->service->approve($id, $this->admin);
+        $approved = $this->service->approve($id, $this->admin);
+
+        self::assertSame(SalesOrderStatus::Approved, $approved->status);
+        self::assertSame($this->admin->id, $approved->approvedBy);
     }
 
     public function testOtherSalesCannotEvenSeeTheOrderToApproveIt(): void

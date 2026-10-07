@@ -14,8 +14,9 @@ use App\Entity\User;
  * server oleh SalesOrderService (bukan hanya menyembunyikan tombol di UI);
  * view memakai method yang sama hanya untuk menentukan tombol yang tampil.
  *
- * Segregation of duties: pembuat order TIDAK PERNAH boleh menyetujui/menolak
- * order yang sama — berlaku untuk semua user, termasuk Admin (lihat K-05).
+ * Segregation of duties (§1.2): Sales tidak pernah boleh menyetujui/menolak
+ * order — termasuk order miliknya sendiri. Admin boleh membuat sekaligus
+ * menyetujui SO, sesuai tabel peran §1.2 (dikonfirmasi, lihat K-05).
  */
 final class SalesOrderPolicy
 {
@@ -44,13 +45,13 @@ final class SalesOrderPolicy
     }
 
     /**
-     * Approve dan reject memakai aturan yang sama: hanya Admin, dan bukan pembuat order.
+     * Approve dan reject memakai aturan yang sama: hanya Admin (termasuk atas SO
+     * buatannya sendiri). Sales selalu ditolak, juga untuk order miliknya.
      */
     public function canReview(User $user, SalesOrder $order): bool
     {
         return $order->status === SalesOrderStatus::PendingApproval
-            && $user->role === Role::Admin
-            && !$order->isCreatedBy($user);
+            && $user->role === Role::Admin;
     }
 
     public function canFulfill(User $user, SalesOrder $order): bool

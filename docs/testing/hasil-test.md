@@ -150,9 +150,8 @@ Area logic baru: validasi tanggal PO, transisi status PO, perhitungan goods rece
 Area logic baru: ownership & authorization approve (`SalesOrderPolicy`), transisi status
 SO, goods issue (`SalesOrderService`). Refactor R-02: 89 test lama lulus tanpa diubah.
 
-Mutation check: syarat "penyetuju bukan pembuat order" dihapus → 2 test gagal (Admin
-atas order sendiri). Sales atas order sendiri tetap ditolak oleh syarat role, sesuai
-desain berlapis → dikembalikan.
+Mutation check (setelah koreksi K-05): `canReview` dibuat mengizinkan Sales → 4 test
+gagal (unit policy 2 kasus, unit service, integration) → dikembalikan.
 
 ### Skenario manual (smoke test 4 akun: Sinta & Doni = Sales, Admin, Rudi = Warehouse)
 
@@ -173,7 +172,7 @@ desain berlapis → dikembalikan.
 | 13 | Sinta membatalkan SO Approved | 403 | ✅ |
 | 14 | Warehouse goods issue | Fulfilled; ledger Issue -4 oleh Rudi; stok 34 → 30 = SUM(ledger) | ✅ |
 | 15 | **Dua SO masing-masing 2 unit SKU-0006 (stok 2), keduanya Approved; goods issue berurutan** | SO pertama Fulfilled; SO kedua ditolak "tersedia 0, dibutuhkan 2" dan tetap Approved; stok 0 = SUM(ledger); tidak ada ledger untuk SO kedua | ✅ |
-| 16 | Admin membuat, mengajukan, lalu menyetujui SO miliknya | 403; tombol Setujui tidak tampil, ada keterangan "harus disetujui Admin lain" | ✅ |
+| 16 | Admin membuat, mengajukan, lalu menyetujui SO miliknya | ~~403~~ → setelah koreksi K-05: Approved, `approved_by` = `created_by` = 1; tombol Setujui tampil | ✅ (diuji ulang) |
 | 17 | Admin membatalkan SO Approved / SO Fulfilled | Cancelled / ditolak | ✅ |
 
 **Catatan perbaikan:** pada percobaan pertama, skenario #9 mengembalikan 302 + flash
