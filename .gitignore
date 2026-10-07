@@ -19,3 +19,7 @@ Thumbs.db
 public/uploads/
 .phpunit.cache/
 .phpstan.cache/
+
+# Dokumen internal training PT Neuronworks — tetap disimpan lokal, tidak di-push
+Project Brief - Programmer.pdf
+Guidelines - Presentation Final Project (Peserta).pdf
