@@ -76,7 +76,7 @@ $navItems[] = ['/profile', 'Profil Saya', 'profile'];
 
     <main class="main">
       <?php foreach ($flashes as $flash): ?>
-        <div class="alert <?= e($flash['type']) ?>" role="status" data-flash><?= e($flash['message']) ?></div>
+        <output class="alert <?= e($flash['type']) ?>" data-flash><?= e($flash['message']) ?></output>
       <?php endforeach; ?>
       <?= $content ?>
     </main>

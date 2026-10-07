@@ -44,9 +44,12 @@
       <div class="demo-accounts">
         <strong>Akun demo (data seed) — klik untuk menyalin:</strong>
         <table>
+          <thead><tr><th scope="col" class="sr-only">Role</th><th scope="col" class="sr-only">Email</th><th scope="col" class="sr-only">Password</th></tr></thead>
+          <tbody>
           <tr><td>Admin</td><td><code class="copyable" title="Klik untuk menyalin">admin@ioms.test</code></td><td><code class="copyable" title="Klik untuk menyalin">admin123</code></td></tr>
           <tr><td>Sales</td><td><code class="copyable" title="Klik untuk menyalin">sinta@ioms.test</code></td><td><code class="copyable" title="Klik untuk menyalin">sales123</code></td></tr>
           <tr><td>Warehouse</td><td><code class="copyable" title="Klik untuk menyalin">rudi@ioms.test</code></td><td><code class="copyable" title="Klik untuk menyalin">gudang123</code></td></tr>
+          </tbody>
         </table>
       </div>
     </div>

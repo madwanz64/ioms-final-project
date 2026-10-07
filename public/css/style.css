@@ -205,7 +205,7 @@ button{font-family:inherit;}
 /* ==========================================================================
    Table
    ========================================================================== */
-.table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface);}
+.table-wrap{position:relative; overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface);}
 table.data-table{width:100%; border-collapse:collapse; min-width:640px;}
 table.data-table th, table.data-table td{
   padding:13px 16px; text-align:left; font-size:.85rem; border-bottom:1px solid var(--border);
@@ -219,7 +219,6 @@ table.data-table tbody tr:hover{background:var(--surface-alt);}
 table.data-table tbody tr:last-child td{border-bottom:none;}
 table.data-table td.num{text-align:right; font-variant-numeric:tabular-nums;}
 table.data-table td.actions{white-space:nowrap; text-align:right;}
-table.data-table tbody{}
 
 /* row entrance animation, applied via JS per batch render */
 tr.row-in{animation:fadeInUp .35s var(--ease) both;}
@@ -400,7 +399,7 @@ table.line-items input, table.line-items select{width:100%; padding:7px 8px; bor
 .login-card .logo-dot{width:44px; height:44px; border-radius:12px; margin:0 auto 16px; background:linear-gradient(135deg,var(--primary),var(--accent));}
 .login-card h1{font-size:1.25rem; text-align:center;}
 .login-card p.sub{text-align:center; color:var(--text-muted); font-size:.82rem; margin-bottom:22px;}
-.demo-accounts{margin-top:20px; font-size:.75rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:14px;}
+.demo-accounts{position:relative; margin-top:20px; font-size:.75rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:14px;}
 .demo-accounts table{width:100%; border-collapse:collapse; margin-top:8px;}
 .demo-accounts td{padding:3px 0; font-size:.72rem;}
 .demo-accounts code{background:var(--surface-alt); padding:1px 5px; border-radius:4px;}
@@ -512,12 +511,11 @@ a.topbar-user{text-decoration:none; color:inherit; border-radius:var(--radius-sm
 a.topbar-user:hover .name{text-decoration:underline;}
 
 /* UI-01 (temuan uji browser 360px, 2026-10-07):
-   1) Label .sr-only (position:absolute) di dalam tabel lepas dari wadah scroll karena
-      .table-wrap tidak punya position, sehingga halaman ikut melebar. Wadah scroll harus
-      menjadi containing block agar isinya ikut terpotong.
+   1) Label .sr-only (position:absolute) di dalam tabel lepas dari wadah scroll bila
+      .table-wrap tidak punya position, sehingga halaman ikut melebar. Karena itu .table-wrap
+      (aturan "Table" di atas) diberi position:relative agar menjadi containing block.
    2) Tabel kunci–nilai (info PO/SO/produk) tidak boleh mewarisi min-width:640px milik
       tabel daftar; di layar sempit sel boleh membungkus teks. */
-.table-wrap{position:relative;}
 table.data-table.info-table{min-width:0; border:none;}
 .info-table th[scope="row"]{white-space:nowrap; width:1%; padding-right:18px;}
 .info-table td{overflow-wrap:anywhere;}

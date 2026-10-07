@@ -18,7 +18,7 @@ $required ??= false;
 $error = $errors[$name] ?? null;
 $id = 'f-' . $name;
 $value = $type === 'password' ? '' : ($old[$name] ?? '');
-$attrs = ' id="' . e($id) . '" name="' . e($name) . '"'
+$attrs = ' name="' . e($name) . '"'
     . ($required ? ' required' : '')
     . (isset($maxlength) ? ' maxlength="' . e($maxlength) . '"' : '')
     . (isset($autocomplete) ? ' autocomplete="' . e($autocomplete) . '"' : '')
@@ -27,15 +27,15 @@ $attrs = ' id="' . e($id) . '" name="' . e($name) . '"'
 <div class="field<?= $error !== null ? ' has-error' : '' ?>">
   <label for="<?= e($id) ?>"><?= e($label) ?><?= $required ? ' <span class="req">*</span>' : '' ?></label>
   <?php if ($type === 'textarea'): ?>
-    <textarea<?= $attrs ?>><?= e($value) ?></textarea>
+    <textarea id="<?= e($id) ?>"<?= $attrs ?>><?= e($value) ?></textarea>
   <?php elseif ($type === 'select'): ?>
-    <select<?= $attrs ?>>
+    <select id="<?= e($id) ?>"<?= $attrs ?>>
       <?php foreach ($options ?? [] as $optionValue => $optionLabel): ?>
         <option value="<?= e($optionValue) ?>"<?= (string) $optionValue === $value ? ' selected' : '' ?>><?= e($optionLabel) ?></option>
       <?php endforeach; ?>
     </select>
   <?php else: ?>
-    <input type="<?= e($type) ?>" value="<?= e($value) ?>"<?= $attrs ?>>
+    <input type="<?= e($type) ?>" id="<?= e($id) ?>" value="<?= e($value) ?>"<?= $attrs ?>>
   <?php endif; ?>
   <?php if (($hint ?? '') !== ''): ?>
     <span class="hint"><?= e($hint) ?></span>
