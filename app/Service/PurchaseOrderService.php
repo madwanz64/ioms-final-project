@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\NewOrderLine;
 use App\Entity\OrderSummary;
 use App\Entity\Party;
 use App\Entity\Product;
@@ -28,9 +27,7 @@ use DateTimeImmutable;
  */
 final class PurchaseOrderService
 {
-    public const MAX_LINES = 50;
-    private const MAX_QTY = 100_000;
-    private const MAX_PRICE = 999_999_999_999;
+    private readonly OrderLineValidator $lineValidator;
 
     public function __construct(
         private readonly PurchaseOrderRepositoryInterface $orders,
@@ -42,6 +39,8 @@ final class PurchaseOrderService
         private readonly TransactionManagerInterface $transactions,
         private readonly DateTimeImmutable $today,
     ) {
+        // Kolaborator murni (tanpa I/O sendiri) — cukup dirakit di sini dari repository yang sama.
+        $this->lineValidator = new OrderLineValidator($products);
     }
 
     /**
@@ -98,8 +97,8 @@ final class PurchaseOrderService
         if ($warehouse === null) {
             $validator->addError('warehouse_id', 'Pilih gudang tujuan yang aktif.');
         }
-        $orderDate = $this->validateOrderDate($validator);
-        $orderLines = $this->validateLines($validator, $lines);
+        $orderDate = $validator->dateNotAfter('order_date', 'Tanggal order', $this->today);
+        $orderLines = $this->lineValidator->validate($validator, $lines, 'buy_price', 'Harga beli');
         $validator->throwIfInvalid();
 
         return $this->orders->create((int) $supplier?->id, (int) $warehouse?->id, $orderDate, $orderLines);
@@ -191,77 +190,6 @@ final class PurchaseOrderService
         }
 
         return $received;
-    }
-
-    /**
-     * Tanggal order wajib format YYYY-MM-DD yang valid dan tidak di masa depan.
-     */
-    private function validateOrderDate(InputValidator $validator): string
-    {
-        $raw = $validator->raw('order_date');
-        $date = DateTimeImmutable::createFromFormat('!Y-m-d', $raw);
-        if ($raw === '') {
-            $validator->addError('order_date', 'Tanggal order wajib diisi.');
-        } elseif ($date === false || $date->format('Y-m-d') !== $raw) {
-            $validator->addError('order_date', 'Tanggal order tidak valid (format YYYY-MM-DD).');
-        } elseif ($date > $this->today) {
-            $validator->addError('order_date', 'Tanggal order tidak boleh di masa depan.');
-        }
-
-        return $raw;
-    }
-
-    /**
-     * @param list<array<string, string>> $lines
-     * @return list<NewOrderLine>
-     */
-    private function validateLines(InputValidator $validator, array $lines): array
-    {
-        $result = [];
-        $seen = [];
-        $index = 0;
-        foreach ($lines as $line) {
-            $sku = strtoupper(trim($line['sku'] ?? ''));
-            $qtyRaw = trim($line['qty'] ?? '');
-            $priceRaw = trim($line['buy_price'] ?? '');
-            if ($sku === '' && $qtyRaw === '' && $priceRaw === '') {
-                continue; // baris kosong dari form diabaikan
-            }
-            $prefix = 'items.' . $index . '.';
-            $index++;
-
-            $product = $this->products->findBySku($sku);
-            if ($product === null || !$product->active) {
-                $validator->addError($prefix . 'sku', 'Pilih produk yang aktif.');
-            } elseif (isset($seen[$sku])) {
-                $validator->addError($prefix . 'sku', 'Produk ini sudah ada di baris lain; gabungkan qty-nya.');
-            }
-            $seen[$sku] = true;
-
-            $lineValidator = new InputValidator(['qty' => $qtyRaw, 'buy_price' => $priceRaw]);
-            $qty = $lineValidator->wholeNumber('qty', 'Qty', self::MAX_QTY);
-            if (!$lineValidator->hasError('qty') && $qty === 0) {
-                $lineValidator->addError('qty', 'Qty minimal 1.');
-            }
-            $price = $lineValidator->wholeNumber('buy_price', 'Harga beli', self::MAX_PRICE);
-            try {
-                $lineValidator->throwIfInvalid();
-            } catch (ValidationException $e) {
-                foreach ($e->errors as $field => $message) {
-                    $validator->addError($prefix . $field, $message);
-                }
-            }
-
-            $result[] = new NewOrderLine($sku, $qty, $price);
-        }
-
-        if ($result === []) {
-            $validator->addError('items', 'Tambahkan minimal satu item.');
-        } elseif (count($result) > self::MAX_LINES) {
-            $validator->addError('items', sprintf('Maksimal %d item per PO.', self::MAX_LINES));
-        }
-
-        return $result;
     }
 
     /**

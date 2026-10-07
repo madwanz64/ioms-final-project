@@ -89,3 +89,62 @@ private function validatedProduct(InputValidator $validator, string $sku, ?Uploa
 diubah**. Pesan error identik. PHPStan level 6 tetap 0 error.
 
 **Commit:** `refactor: ekstrak InputValidator dari ProductService`.
+
+---
+
+## R-02 · Extract Class `OrderLineValidator` + Move Method tanggal ke `InputValidator` (2026-10-07)
+
+**Smell:**
+- **Duplicate Code (calon).** Sales Order butuh validasi baris item dan tanggal order
+  yang persis sama dengan Purchase Order. Bedanya hanya sumber harga: PO dari input
+  `buy_price`, SO dari harga jual katalog. Tanpa ekstraksi, 50 baris akan tersalin.
+- **Large Class.** `PurchaseOrderService` (291 baris) mencampur aturan alur PO dengan
+  detail parsing baris form.
+- **Exceptions as control flow.** Error validator baris disalin ke validator form
+  lewat `try { throwIfInvalid() } catch (ValidationException $e) { foreach ... }`.
+
+**Teknik:** Extract Class (`OrderLineValidator`), Move Method (`validateOrderDate` →
+`InputValidator::dateNotAfter`), Parameterize Method (`$priceField`: nama field harga,
+atau `null` = harga katalog), dan Replace Exception with Test (`InputValidator::errors()`
+menggantikan try/catch).
+
+**Sebelum** (`PurchaseOrderService`):
+
+```php
+private function validateLines(InputValidator $validator, array $lines): array
+{
+    // ... 47 baris: lewati baris kosong, cek produk aktif & duplikat, qty >= 1,
+    $price = $lineValidator->wholeNumber('buy_price', 'Harga beli', self::MAX_PRICE);
+    try {
+        $lineValidator->throwIfInvalid();
+    } catch (ValidationException $e) {
+        foreach ($e->errors as $field => $message) {
+            $validator->addError($prefix . $field, $message);
+        }
+    }
+    // ...
+}
+```
+
+**Sesudah:**
+
+```php
+// PurchaseOrderService::create()
+$orderDate = $validator->dateNotAfter('order_date', 'Tanggal order', $this->today);
+$orderLines = $this->lineValidator->validate($validator, $lines, 'buy_price', 'Harga beli');
+
+// SalesOrderService::create() — harga tidak bisa diisi pengguna
+$orderLines = $this->lineValidator->validate($validator, $lines, null);
+
+// OrderLineValidator
+foreach ($lineValidator->errors() as $field => $message) {
+    $validator->addError($prefix . $field, $message);
+}
+```
+
+**Bukti perilaku tidak berubah:** 89 test lulus sebelum & sesudah tanpa test diubah,
+termasuk 4 kasus tanggal (`2026-02-30`, masa depan, format lain, kosong) dan aturan item
+di `PurchaseOrderServiceTest`. Signature konstruktor `PurchaseOrderService` sengaja
+dipertahankan. Smoke test form PO: halaman 200, tanggal `2026-02-30` tetap ditolak.
+
+**Commit:** `refactor: ekstrak OrderLineValidator & validasi tanggal untuk dipakai PO dan SO`.

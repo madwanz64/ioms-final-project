@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use DateTimeImmutable;
+
 /**
  * Pengumpul hasil validasi untuk satu form (VAL-01).
  *
@@ -96,6 +98,25 @@ final class InputValidator
         return ctype_digit($value) && (int) $value > 0 ? (int) $value : null;
     }
 
+    /**
+     * Tanggal format YYYY-MM-DD yang benar-benar ada di kalender (2026-02-30
+     * ditolak) dan tidak melewati $today.
+     */
+    public function dateNotAfter(string $field, string $label, DateTimeImmutable $today): string
+    {
+        $value = $this->raw($field);
+        $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+        if ($value === '') {
+            $this->addError($field, $label . ' wajib diisi.');
+        } elseif ($date === false || $date->format('Y-m-d') !== $value) {
+            $this->addError($field, $label . ' tidak valid (format YYYY-MM-DD).');
+        } elseif ($date > $today) {
+            $this->addError($field, $label . ' tidak boleh di masa depan.');
+        }
+
+        return $value;
+    }
+
     public function raw(string $field): string
     {
         return trim($this->input[$field] ?? '');
@@ -110,6 +131,14 @@ final class InputValidator
     public function hasError(string $field): bool
     {
         return isset($this->errors[$field]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function errors(): array
+    {
+        return $this->errors;
     }
 
     /**

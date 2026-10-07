@@ -9,7 +9,7 @@
  * @var array{suppliers: list<App\Entity\Party>, warehouses: list<App\Entity\Warehouse>, products: list<App\Entity\Product>} $options
  */
 
-use App\Service\PurchaseOrderService;
+use App\Service\OrderLineValidator;
 
 $common = ['old' => $old, 'errors' => $errors];
 $supplierOptions = ['' => '— Pilih supplier —'];
@@ -45,7 +45,7 @@ $lineError = static fn (int $i, string $field): ?string => $errors['items.' . $i
       <p class="error-msg" role="alert"><?= e($errors['items']) ?></p>
     <?php endif; ?>
     <div class="table-wrap line-items-scroll">
-      <table class="data-table" data-line-items data-max-lines="<?= e(PurchaseOrderService::MAX_LINES) ?>">
+      <table class="data-table" data-line-items data-max-lines="<?= e(OrderLineValidator::MAX_LINES) ?>">
         <thead><tr><th>Produk</th><th class="num">Qty</th><th class="num">Harga Beli (Rp)</th><th><span class="sr-only">Hapus</span></th></tr></thead>
         <tbody>
           <?php foreach ($lines as $i => $line): ?>
