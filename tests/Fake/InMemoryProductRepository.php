@@ -82,6 +82,11 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
         return $this->products[$sku] ?? null;
     }
 
+    public function allActive(): array
+    {
+        return array_values(array_filter($this->products, static fn (Product $product): bool => $product->active));
+    }
+
     public function skuExists(string $sku): bool
     {
         return isset($this->products[$sku]);

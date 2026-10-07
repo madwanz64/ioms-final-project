@@ -37,12 +37,41 @@ abstract class IntegrationTestCase extends TestCase
         }
     }
 
+    /**
+     * Koneksi KEDUA yang terpisah (session MySQL lain), untuk mensimulasikan
+     * request lain yang berjalan bersamaan (ARCH-02).
+     */
+    protected static function secondConnection(): PDO
+    {
+        self::connection();
+        [$db, $testDb] = self::config();
+
+        return Database::connect(['name' => $testDb] + $db);
+    }
+
     private static function connection(): PDO
     {
         if (self::$sharedPdo !== null) {
             return self::$sharedPdo;
         }
 
+        [$db, $testDb] = self::config();
+
+        if (!self::$schemaLoaded) {
+            self::loadSchema($db, $testDb);
+            self::$schemaLoaded = true;
+        }
+
+        self::$sharedPdo = Database::connect(['name' => $testDb] + $db);
+
+        return self::$sharedPdo;
+    }
+
+    /**
+     * @return array{array{host: string, port: int, name: string, user: string, pass: string}, string}
+     */
+    private static function config(): array
+    {
         /** @var array{db: array{host: string, port: int, name: string, user: string, pass: string}, db_test_name: string} $config */
         $config = require dirname(__DIR__, 2) . '/config/config.php';
         $testDb = $config['db_test_name'];
@@ -52,14 +81,7 @@ abstract class IntegrationTestCase extends TestCase
             throw new RuntimeException('DB_TEST_NAME harus berakhiran "_test" dan berbeda dari DB_NAME.');
         }
 
-        if (!self::$schemaLoaded) {
-            self::loadSchema($config['db'], $testDb);
-            self::$schemaLoaded = true;
-        }
-
-        self::$sharedPdo = Database::connect(['name' => $testDb] + $config['db']);
-
-        return self::$sharedPdo;
+        return [$config['db'], $testDb];
     }
 
     /**
