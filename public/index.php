@@ -12,6 +12,7 @@ use App\Controller\CategoryController;
 use App\Controller\DashboardController;
 use App\Controller\PartyController;
 use App\Controller\ProductApiController;
+use App\Controller\ProfileController;
 use App\Controller\ProductController;
 use App\Controller\PurchaseOrderController;
 use App\Controller\ReportController;
@@ -124,7 +125,9 @@ try {
     $warehouseController = new WarehouseController(new WarehouseService($warehouseRepository), $session, $view);
     $supplierController = new PartyController(PartyType::Supplier, new PartyService($supplierRepository), $session, $view);
     $customerController = new PartyController(PartyType::Customer, new PartyService($customerRepository), $session, $view);
-    $userController = new UserController(new UserService($users), $session, $view);
+    $userService = new UserService($users);
+    $userController = new UserController($userService, $session, $view);
+    $profileController = new ProfileController($userService, $session, $view);
     $purchaseOrderController = new PurchaseOrderController(
         new PurchaseOrderService(
             new MySqlPurchaseOrderRepository($pdo),
@@ -184,6 +187,10 @@ try {
     $adminCrud(PartyType::Supplier->path(), $supplierController);
     $adminCrud(PartyType::Customer->path(), $customerController);
     $adminCrud('/users', $userController);
+
+    // Profil sendiri (§1.2): semua role yang login; selalu akun milik session, tanpa {id}.
+    $router->get('/profile', [$profileController, 'show']);
+    $router->post('/profile', [$profileController, 'update']);
 
     // Purchase Order (§1.2): Admin & Warehouse Staff membuat (Warehouse = mengusulkan Draft)
     // dan menerima barang; menandai Ordered dan membatalkan khusus Admin. Sales: tidak ada akses.

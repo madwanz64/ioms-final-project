@@ -15,12 +15,12 @@
   </div>
   <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
     <?= $actions ?? '' ?>
-    <div class="topbar-user">
+    <a class="topbar-user" href="/profile" title="Profil saya">
       <div>
         <span class="name" style="display:block; text-align:right;"><?= e($currentUser->name) ?></span>
         <span class="role"><?= e($currentUser->role->value) ?></span>
       </div>
       <div class="avatar" aria-hidden="true"><?= e(mb_strtoupper(mb_substr($currentUser->name, 0, 1))) ?></div>
-    </div>
+    </a>
   </div>
 </div>

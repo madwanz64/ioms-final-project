@@ -15,6 +15,7 @@ $icons = [
     'truck' => '<rect x="1.5" y="5" width="9.5" height="7.5" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M11 8h3.2L17 10.7V12.5h-6V8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="5" cy="14.5" r="1.5" stroke="currentColor" stroke-width="1.6"/><circle cx="14" cy="14.5" r="1.5" stroke="currentColor" stroke-width="1.6"/>',
     'cart' => '<path d="M2.5 3h1.8l1.4 9.4a1.8 1.8 0 0 0 1.8 1.5h6.7a1.8 1.8 0 0 0 1.77-1.47l1.03-5.63H5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.2" cy="17" r="1.1" fill="currentColor"/><circle cx="14.7" cy="17" r="1.1" fill="currentColor"/>',
     'report' => '<path d="M5 2.5h7l3.5 3.5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-13.5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 10h6M7 13h6M7 7h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+    'profile' => '<circle cx="10" cy="7" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 17c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
     'logout' => '<path d="M7.5 17.5h-3a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M13 13.5 17 10l-4-3.5M17 10H7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
 ];
 ?>

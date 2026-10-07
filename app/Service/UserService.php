@@ -88,6 +88,40 @@ final class UserService
     }
 
     /**
+     * Profil sendiri (§1.2: semua role). Hanya nama dan password yang bisa diubah;
+     * email, role, dan status tetap wewenang Admin — field itu diabaikan walau dikirim.
+     * Mengganti password wajib menyertakan password saat ini yang benar.
+     *
+     * @param array<string, string> $input name, current_password, password, password_confirmation
+     * @return array{user: User, passwordChanged: bool}
+     * @throws ValidationException
+     */
+    public function updateOwnProfile(User $self, array $input): array
+    {
+        $validator = new InputValidator($input);
+        $name = $validator->requiredText('name', 'Nama', 150);
+        $password = $this->validatePassword($validator, $input, false);
+
+        if ($password !== null) {
+            $current = $input['current_password'] ?? '';
+            if ($current === '') {
+                $validator->addError('current_password', 'Isi password saat ini untuk mengganti password.');
+            } elseif (!password_verify($current, $self->passwordHash)) {
+                $validator->addError('current_password', 'Password saat ini salah.');
+            } elseif (!$validator->hasError('password') && hash_equals($current, $password)) {
+                $validator->addError('password', 'Password baru harus berbeda dari password saat ini.');
+            }
+        }
+        $validator->throwIfInvalid();
+
+        $hash = $password === null ? $self->passwordHash : $this->hash($password);
+        $user = new User($self->id, $name, $self->email, $hash, $self->role, $self->active);
+        $this->users->update($user);
+
+        return ['user' => $user, 'passwordChanged' => $password !== null];
+    }
+
+    /**
      * @return array{string, string, Role|null, bool}
      */
     private function validateProfile(InputValidator $validator, ?int $userId): array

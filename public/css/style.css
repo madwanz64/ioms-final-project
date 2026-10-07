@@ -506,3 +506,7 @@ fieldset.line-items [aria-invalid="true"], .data-table input[aria-invalid="true"
 /* Petunjuk stok per baris SO (diisi lewat Fetch API) */
 .line-stock{display:block; font-size:.72rem; color:var(--text-muted); margin-top:4px;}
 .line-stock.insufficient{color:var(--danger); font-weight:600;}
+
+/* Blok nama di topbar menjadi tautan ke profil */
+a.topbar-user{text-decoration:none; color:inherit; border-radius:var(--radius-sm);}
+a.topbar-user:hover .name{text-decoration:underline;}

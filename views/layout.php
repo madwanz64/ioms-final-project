@@ -40,6 +40,7 @@ $navItems = match ($currentUser->role) {
         ['/reports', 'Laporan Stok', 'report'],
     ],
 };
+$navItems[] = ['/profile', 'Profil Saya', 'profile'];
 ?>
 <!doctype html>
 <html lang="id">
