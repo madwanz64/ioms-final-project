@@ -50,6 +50,7 @@ tests/Unit       Unit test dengan fake repository (tanpa database)
 tests/Integration Integration test ke MySQL nyata (database ioms_test)
 prototype/       Prototype HTML/JS statis dari fase sebelumnya (arsip, bukan aplikasi)
 docs/            planning, architecture, quality, testing
+ioms.bat, ioms.sh Pintasan perintah Docker (up, test, reset, sonar, ...)
 ```
 
 ## Menjalankan dengan Docker (cara utama)
@@ -68,7 +69,22 @@ docker compose up --build -d             # build image + MySQL 8, tunggu sampai 
 - MySQL juga bisa diakses dari host di `127.0.0.1:3307` (`DB_HOST_PORT`), user `root`,
   password `DB_PASS` dari `.env`.
 
-Perintah yang sering dipakai:
+**Cara singkat:** script `ioms.bat` (Windows CMD/PowerShell) dan `ioms.sh` (Linux, macOS,
+Git Bash) membungkus perintah di bawah. Keduanya membuat `.env` dari `.env.example` bila belum
+ada dan menunggu sampai aplikasi bisa dibuka.
+
+| Windows | Linux / macOS / Git Bash | Fungsi |
+|---|---|---|
+| `ioms up` | `./ioms.sh up` | build & jalankan app + database |
+| `ioms down` | `./ioms.sh down` | hentikan container (data tetap) |
+| `ioms reset` | `./ioms.sh reset` | kembalikan database & upload ke seed awal (minta konfirmasi) |
+| `ioms test` · `test-unit` · `test-int` | `./ioms.sh test` · … | PHPUnit |
+| `ioms analyse` | `./ioms.sh analyse` | PHPStan |
+| `ioms low-stock` | `./ioms.sh low-stock` | JOB-01 |
+| `ioms logs` · `status` · `shell` | `./ioms.sh logs` · … | log, status container, shell di container app |
+| `ioms sonar` · `sonar-scan` · `sonar-stop` | `./ioms.sh sonar` · … | SonarQube (lihat [sonarqube.md](docs/quality/sonarqube.md)) |
+
+Daftar lengkap: `ioms help`. Perintah Docker Compose aslinya:
 
 ```bash
 docker compose exec app composer test                     # unit + integration test (MySQL di container)
