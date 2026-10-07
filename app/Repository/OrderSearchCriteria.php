@@ -19,7 +19,20 @@ final class OrderSearchCriteria
         public readonly string $sort = 'date_desc',
         public readonly int $page = 1,
         public readonly int $perPage = self::PER_PAGE,
+        public readonly ?int $createdBy = null,
+        /** @var list<string> status yang disembunyikan dari user ini */
+        public readonly array $hiddenStatuses = [],
     ) {
+    }
+
+    /**
+     * Batasi hasil sesuai hak akses (ditentukan service, bukan dari query string user).
+     *
+     * @param list<string> $hiddenStatuses
+     */
+    public function scoped(?int $createdBy, array $hiddenStatuses): self
+    {
+        return new self($this->search, $this->status, $this->sort, $this->page, $this->perPage, $createdBy, $hiddenStatuses);
     }
 
     /**

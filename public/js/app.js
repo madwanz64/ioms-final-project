@@ -77,8 +77,14 @@
     body.addEventListener('change', function (event) {
       if (!event.target.matches('[data-line-product]')) return;
       const option = event.target.selectedOptions[0];
-      const price = event.target.closest('tr').querySelector('[data-line-price]');
+      const row = event.target.closest('tr');
+      const price = row.querySelector('[data-line-price]');
       if (option && option.dataset.price && price && price.value === '') price.value = option.dataset.price;
+      // SO: harga jual katalog hanya ditampilkan (server tetap memakai harga katalog).
+      const priceText = row.querySelector('[data-line-price-text]');
+      if (priceText) {
+        priceText.textContent = option && option.dataset.price ? 'Rp ' + Number(option.dataset.price).toLocaleString('id-ID') : '';
+      }
     });
 
     body.addEventListener('click', function (event) {
@@ -100,6 +106,7 @@
           field.removeAttribute('aria-invalid');
         });
         row.querySelectorAll('.error-msg').forEach(function (msg) { msg.remove(); });
+        row.querySelectorAll('[data-line-price-text]').forEach(function (text) { text.textContent = ''; });
         body.appendChild(row);
         reindex();
         row.querySelector('select').focus();

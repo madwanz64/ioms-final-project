@@ -13,6 +13,7 @@ use App\Controller\DashboardController;
 use App\Controller\PartyController;
 use App\Controller\ProductController;
 use App\Controller\PurchaseOrderController;
+use App\Controller\SalesOrderController;
 use App\Controller\UserController;
 use App\Controller\WarehouseController;
 use App\Core\Auth;
@@ -30,6 +31,7 @@ use App\Repository\MySqlCategoryRepository;
 use App\Repository\MySqlPartyRepository;
 use App\Repository\MySqlProductRepository;
 use App\Repository\MySqlPurchaseOrderRepository;
+use App\Repository\MySqlSalesOrderRepository;
 use App\Repository\MySqlStockRepository;
 use App\Repository\MySqlUserRepository;
 use App\Repository\MySqlWarehouseRepository;
@@ -41,6 +43,8 @@ use App\Service\LocalImageStorage;
 use App\Service\PartyService;
 use App\Service\ProductService;
 use App\Service\PurchaseOrderService;
+use App\Service\SalesOrderPolicy;
+use App\Service\SalesOrderService;
 use App\Service\StockService;
 use App\Service\UserService;
 use App\Service\WarehouseService;
@@ -97,17 +101,17 @@ try {
     $productController = new ProductController($productService, $session, $view);
     $warehouseRepository = new MySqlWarehouseRepository($pdo);
     $supplierRepository = new MySqlPartyRepository($pdo, PartyType::Supplier);
+    $customerRepository = new MySqlPartyRepository($pdo, PartyType::Customer);
     $stockRepository = new MySqlStockRepository($pdo);
+    $stockService = new StockService($stockRepository);
+    $transactions = new PdoTransactionManager($pdo);
+    $today = new DateTimeImmutable('today');
+    $salesOrderPolicy = new SalesOrderPolicy();
 
     $categoryController = new CategoryController(new CategoryService($categories), $session, $view);
     $warehouseController = new WarehouseController(new WarehouseService($warehouseRepository), $session, $view);
     $supplierController = new PartyController(PartyType::Supplier, new PartyService($supplierRepository), $session, $view);
-    $customerController = new PartyController(
-        PartyType::Customer,
-        new PartyService(new MySqlPartyRepository($pdo, PartyType::Customer)),
-        $session,
-        $view,
-    );
+    $customerController = new PartyController(PartyType::Customer, new PartyService($customerRepository), $session, $view);
     $userController = new UserController(new UserService($users), $session, $view);
     $purchaseOrderController = new PurchaseOrderController(
         new PurchaseOrderService(
@@ -116,10 +120,26 @@ try {
             $warehouseRepository,
             $productRepository,
             $stockRepository,
-            new StockService($stockRepository),
-            new PdoTransactionManager($pdo),
-            new DateTimeImmutable('today'),
+            $stockService,
+            $transactions,
+            $today,
         ),
+        $session,
+        $view,
+    );
+    $salesOrderController = new SalesOrderController(
+        new SalesOrderService(
+            new MySqlSalesOrderRepository($pdo),
+            $customerRepository,
+            $warehouseRepository,
+            $productRepository,
+            $stockRepository,
+            $stockService,
+            $transactions,
+            $salesOrderPolicy,
+            $today,
+        ),
+        $salesOrderPolicy,
         $session,
         $view,
     );
@@ -163,6 +183,21 @@ try {
     $router->post('/purchase-orders/{id}/order', [$purchaseOrderController, 'markOrdered'], [Role::Admin]);
     $router->post('/purchase-orders/{id}/cancel', [$purchaseOrderController, 'cancel'], [Role::Admin]);
     $router->post('/purchase-orders/{id}/receive', [$purchaseOrderController, 'receive'], $poRoles);
+
+    // Sales Order: router menyaring role per endpoint; aturan per order (pemilik,
+    // pembuat != penyetuju, status) ditegakkan lagi di SalesOrderService -> 403.
+    $allRoles = [Role::Admin, Role::Sales, Role::WarehouseStaff];
+    $router->get('/sales-orders', [$salesOrderController, 'index'], $allRoles);
+    $router->get('/sales-orders/create', [$salesOrderController, 'create'], [Role::Admin, Role::Sales]);
+    $router->post('/sales-orders', [$salesOrderController, 'store'], [Role::Admin, Role::Sales]);
+    $router->get('/sales-orders/{id}', [$salesOrderController, 'show'], $allRoles);
+    $router->post('/sales-orders/{id}/submit', [$salesOrderController, 'submit'], [Role::Admin, Role::Sales]);
+    // Sengaja TIDAK dibatasi ke Admin di router: endpoint approve tetap "tersedia" (brief §1.2)
+    // dan penolakan untuk Sales dibuktikan berasal dari authorization layer di service.
+    $router->post('/sales-orders/{id}/approve', [$salesOrderController, 'approve'], $allRoles);
+    $router->post('/sales-orders/{id}/reject', [$salesOrderController, 'reject'], $allRoles);
+    $router->post('/sales-orders/{id}/cancel', [$salesOrderController, 'cancel'], [Role::Admin, Role::Sales]);
+    $router->post('/sales-orders/{id}/fulfill', [$salesOrderController, 'fulfill'], [Role::Admin, Role::WarehouseStaff]);
 
     $response = $router->dispatch($request);
 } catch (HttpException $e) {
