@@ -8,9 +8,12 @@ use App\Entity\Product;
 use App\Entity\ProductSummary;
 use App\Repository\ProductSearchCriteria;
 use App\Service\DashboardService;
+use App\Service\ReportService;
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Fake\InMemoryProductRepository;
+use Tests\Fake\InMemoryReportRepository;
 
 /**
  * Area logic: perhitungan low stock (total stok semua gudang < reorder point).
@@ -48,7 +51,9 @@ final class LowStockTest extends TestCase
         // Low tapi nonaktif -> tidak dihitung di dashboard.
         $repo->seed($this->product('A-003', 10, false), [1 => 0, 2 => 0]);
 
-        $summary = (new DashboardService($repo))->stockSummary();
+        $today = new DateTimeImmutable('2026-10-07');
+        $reports = new InMemoryReportRepository();
+        $summary = (new DashboardService($repo, $reports, new ReportService($reports, $today), $today))->stockSummary();
 
         self::assertSame(2, $summary['activeProducts']);
         self::assertSame(1, $summary['lowStockCount']);
