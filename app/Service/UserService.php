@@ -50,8 +50,13 @@ final class UserService
         [$name, $email, $role, $active] = $this->validateProfile($validator, null);
         $password = $this->validatePassword($validator, $input, true);
         $validator->throwIfInvalid();
+        // Setelah throwIfInvalid, role & password pasti terisi (role kosong sudah jadi error).
+        // Invarian ini dinyatakan eksplisit agar tidak bergantung pada urutan kode di atas.
+        if ($role === null || $password === null) {
+            throw new \LogicException('Role/password kosong lolos validasi.');
+        }
 
-        $user = new User(0, $name, $email, $this->hash((string) $password), $role, $active);
+        $user = new User(0, $name, $email, $this->hash($password), $role, $active);
 
         return new User($this->users->create($user), $user->name, $user->email, $user->passwordHash, $user->role, $user->active);
     }
