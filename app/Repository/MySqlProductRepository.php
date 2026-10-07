@@ -26,6 +26,7 @@ final class MySqlProductRepository implements ProductRepositoryInterface
     ];
 
     private const PRODUCT_COLUMNS = 'sku, name, category_id, unit, buy_price, sell_price, reorder_point, image_url, active';
+    private const SELECT_COLUMNS = self::PRODUCT_COLUMNS . ', updated_at';
 
     public function __construct(private readonly PDO $pdo)
     {
@@ -93,7 +94,7 @@ final class MySqlProductRepository implements ProductRepositoryInterface
 
     public function findBySku(string $sku): ?Product
     {
-        $stmt = $this->pdo->prepare('SELECT ' . self::PRODUCT_COLUMNS . ' FROM products WHERE sku = :sku');
+        $stmt = $this->pdo->prepare('SELECT ' . self::SELECT_COLUMNS . ' FROM products WHERE sku = :sku');
         $stmt->execute(['sku' => $sku]);
         $row = $stmt->fetch();
 
@@ -102,7 +103,7 @@ final class MySqlProductRepository implements ProductRepositoryInterface
 
     public function allActive(): array
     {
-        $stmt = $this->pdo->query('SELECT ' . self::PRODUCT_COLUMNS . ' FROM products WHERE active = 1 ORDER BY name');
+        $stmt = $this->pdo->query('SELECT ' . self::SELECT_COLUMNS . ' FROM products WHERE active = 1 ORDER BY name');
         $rows = $stmt === false ? [] : $stmt->fetchAll();
 
         return array_values(array_map(fn (array $row): Product => $this->hydrate($row), $rows));
@@ -137,9 +138,17 @@ final class MySqlProductRepository implements ProductRepositoryInterface
         });
     }
 
-    public function update(Product $product, ?PriceChange $priceChange): void
+    public function update(Product $product, string $expectedVersion, ?PriceChange $priceChange): bool
     {
-        Database::transactional($this->pdo, function () use ($product, $priceChange): void {
+        return Database::transactional($this->pdo, function () use ($product, $expectedVersion, $priceChange): bool {
+            // Kunci baris lalu bandingkan versi: request lain yang menyimpan di
+            // antara form dibuka dan disimpan membuat versi berbeda -> ditolak.
+            $lock = $this->pdo->prepare('SELECT updated_at FROM products WHERE sku = :sku FOR UPDATE');
+            $lock->execute(['sku' => $product->sku]);
+            if ($lock->fetchColumn() !== $expectedVersion) {
+                return false;
+            }
+
             $stmt = $this->pdo->prepare(
                 'UPDATE products
                  SET name = :name, category_id = :category_id, unit = :unit, buy_price = :buy_price,
@@ -151,6 +160,8 @@ final class MySqlProductRepository implements ProductRepositoryInterface
             if ($priceChange !== null) {
                 $this->insertPriceChange($priceChange);
             }
+
+            return true;
         });
     }
 
@@ -278,6 +289,7 @@ final class MySqlProductRepository implements ProductRepositoryInterface
             (int) $row['reorder_point'],
             $row['image_url'] === null ? null : (string) $row['image_url'],
             (bool) $row['active'],
+            (string) $row['updated_at'],
         );
     }
 }

@@ -78,7 +78,7 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
         self::assertNotNull($product);
 
         $changed = new Product($product->sku, 'Kabel HDMI 3m', $product->categoryId, $product->unit, $product->buyPrice, 47000, 12, null, false);
-        $this->repo->update($changed, PriceChange::between($product, $changed, 1));
+        self::assertTrue($this->repo->update($changed, (string) $product->updatedAt, PriceChange::between($product, $changed, 1)));
 
         $reloaded = $this->repo->findBySku('SKU-0001');
         self::assertNotNull($reloaded);
@@ -108,7 +108,7 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
         $product = new Product('INT-0002', 'Produk Harga', 1, 'pcs', 1000, 1500, 5, null, true);
         $this->repo->create($product, PriceChange::initial($product, 1));
         $repriced = new Product('INT-0002', 'Produk Harga', 1, 'pcs', 1200, 1800, 5, null, true);
-        $this->repo->update($repriced, PriceChange::between($product, $repriced, 4));
+        $this->repo->update($repriced, (string) $this->repo->findBySku('INT-0002')?->updatedAt, PriceChange::between($product, $repriced, 4));
 
         $history = $this->repo->priceHistory('INT-0002', 10);
 
@@ -128,7 +128,7 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
 
         try {
             // User 999 tidak ada: FK riwayat harga gagal -> UPDATE products ikut dibatalkan.
-            $this->repo->update($changed, PriceChange::between($product, $changed, 999));
+            $this->repo->update($changed, (string) $product->updatedAt, PriceChange::between($product, $changed, 999));
             self::fail('PDOException seharusnya dilempar.');
         } catch (PDOException) {
         }
@@ -136,6 +136,22 @@ final class MySqlProductRepositoryTest extends IntegrationTestCase
         $reloaded = $this->repo->findBySku('SKU-0001');
         self::assertNotNull($reloaded);
         self::assertSame($product->sellPrice, $reloaded->sellPrice);
+        self::assertSame([], $this->repo->priceHistory('SKU-0001', 10));
+    }
+
+    public function testUpdateWithStaleVersionChangesNothing(): void
+    {
+        $product = $this->repo->findBySku('SKU-0001');
+        self::assertNotNull($product);
+        self::assertNotNull($product->updatedAt, 'versi dibaca dari kolom updated_at');
+        $changed = new Product($product->sku, 'Ditimpa', $product->categoryId, $product->unit, $product->buyPrice, 99000, $product->reorderPoint, null, true);
+
+        $saved = $this->repo->update($changed, '2000-01-01 00:00:00', PriceChange::between($product, $changed, 1));
+
+        self::assertFalse($saved);
+        $reloaded = $this->repo->findBySku('SKU-0001');
+        self::assertNotNull($reloaded);
+        self::assertSame([$product->name, $product->sellPrice], [$reloaded->name, $reloaded->sellPrice]);
         self::assertSame([], $this->repo->priceHistory('SKU-0001', 10));
     }
 

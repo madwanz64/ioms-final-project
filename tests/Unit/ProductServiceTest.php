@@ -9,6 +9,7 @@ use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Service\BusinessRuleException;
 use App\Service\ProductService;
 use App\Service\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -137,10 +138,9 @@ final class ProductServiceTest extends TestCase
 
     public function testUpdateKeepsSkuAndExistingImageAndCanDeactivate(): void
     {
-        $existing = new Product('SKU-0002', 'Mouse', 1, 'pcs', 80000, 120000, 15, '/uploads/products/lama.png', true);
-        $this->products->seed($existing, [1 => 5]);
+        $this->products->seed(new Product('SKU-0002', 'Mouse', 1, 'pcs', 80000, 120000, 15, '/uploads/products/lama.png', true), [1 => 5]);
 
-        $updated = $this->service->update($existing, $this->validInput(['sku' => 'GANTI-SKU', 'name' => 'Mouse Wireless', 'active' => '0']), null, $this->admin);
+        $updated = $this->edit('SKU-0002', ['sku' => 'GANTI-SKU', 'name' => 'Mouse Wireless', 'active' => '0']);
 
         self::assertSame('SKU-0002', $updated->sku);
         self::assertSame('/uploads/products/lama.png', $updated->imageUrl);
@@ -150,10 +150,7 @@ final class ProductServiceTest extends TestCase
 
     public function testUpdateDoesNotRequireUniqueSkuCheckAgainstItself(): void
     {
-        $existing = $this->products->findBySku('SKU-0001');
-        self::assertNotNull($existing);
-
-        $updated = $this->service->update($existing, $this->validInput(['reorder_point' => '20']), null, $this->admin);
+        $updated = $this->edit('SKU-0001', ['reorder_point' => '20']);
 
         self::assertSame(20, $updated->reorderPoint);
     }
@@ -171,13 +168,10 @@ final class ProductServiceTest extends TestCase
 
     public function testUpdateRecordsOldAndNewPriceOnlyWhenAPriceChanges(): void
     {
-        $existing = $this->products->findBySku('SKU-0001');
-        self::assertNotNull($existing);
-
-        $this->service->update($existing, $this->validInput(['name' => 'Kabel HDMI 2m']), null, $this->admin);
+        $this->edit('SKU-0001', ['name' => 'Kabel HDMI 2m']);
         self::assertCount(0, $this->service->priceHistory('SKU-0001', includeBuyPrice: true), 'harga sama: tidak ada riwayat');
 
-        $this->service->update($existing, $this->validInput(['sell_price' => '50000']), null, $this->admin);
+        $this->edit('SKU-0001', ['sell_price' => '50000']);
         $history = $this->service->priceHistory('SKU-0001', includeBuyPrice: true);
         self::assertCount(1, $history);
         self::assertSame([30000, 30000, 45000, 50000], [$history[0]->oldBuyPrice, $history[0]->newBuyPrice, $history[0]->oldSellPrice, $history[0]->newSellPrice]);
@@ -185,11 +179,8 @@ final class ProductServiceTest extends TestCase
 
     public function testFailedValidationRecordsNoPriceChange(): void
     {
-        $existing = $this->products->findBySku('SKU-0001');
-        self::assertNotNull($existing);
-
         try {
-            $this->service->update($existing, $this->validInput(['sell_price' => '99000', 'name' => '']), null, $this->admin);
+            $this->edit('SKU-0001', ['sell_price' => '99000', 'name' => '']);
             self::fail('ValidationException seharusnya dilempar.');
         } catch (ValidationException) {
         }
@@ -199,17 +190,65 @@ final class ProductServiceTest extends TestCase
 
     public function testSalesDoesNotSeeRowsThatOnlyChangeBuyPrice(): void
     {
-        $existing = $this->products->findBySku('SKU-0001');
-        self::assertNotNull($existing);
-        $this->service->update($existing, $this->validInput(['buy_price' => '32000']), null, $this->admin);
-        $afterBuy = $this->products->findBySku('SKU-0001');
-        self::assertNotNull($afterBuy);
-        $this->service->update($afterBuy, $this->validInput(['buy_price' => '32000', 'sell_price' => '48000']), null, $this->admin);
+        $this->edit('SKU-0001', ['buy_price' => '32000']);
+        $this->edit('SKU-0001', ['buy_price' => '32000', 'sell_price' => '48000']);
 
         self::assertCount(2, $this->service->priceHistory('SKU-0001', includeBuyPrice: true));
         $forSales = $this->service->priceHistory('SKU-0001', includeBuyPrice: false);
         self::assertCount(1, $forSales);
         self::assertSame(48000, $forSales[0]->newSellPrice);
+    }
+
+    public function testStaleFormIsRejectedBeforeAnythingIsSavedOrStored(): void
+    {
+        // Admin A dan B membuka form pada versi yang sama; A menyimpan lebih dulu.
+        $openedByB = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($openedByB);
+        $this->edit('SKU-0001', ['sell_price' => '50000']);
+        $current = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($current);
+        $writesBefore = $this->products->writes;
+
+        try {
+            $this->service->update(
+                $current,
+                $this->validInput(['sell_price' => '60000', 'version' => (string) $openedByB->updatedAt]),
+                new UploadedFile('/tmp/x', 'foto.png', 100, UPLOAD_ERR_OK),
+                $this->admin,
+            );
+            self::fail('BusinessRuleException seharusnya dilempar.');
+        } catch (BusinessRuleException $e) {
+            self::assertStringContainsString('sudah diubah pengguna lain', $e->getMessage());
+        }
+
+        self::assertSame($writesBefore, $this->products->writes);
+        self::assertSame(50000, $this->products->findBySku('SKU-0001')?->sellPrice, 'perubahan A tidak tertimpa');
+        self::assertSame([], $this->images->stored, 'gambar tidak disimpan untuk form usang');
+    }
+
+    public function testRepositoryRejectsStaleVersionEvenWhenServiceCheckPasses(): void
+    {
+        // Celah antara pembacaan $existing dan penyimpanan: keduanya usang namun
+        // saling cocok, sehingga hanya pengecekan di repository yang menangkapnya.
+        $stale = $this->products->findBySku('SKU-0001');
+        self::assertNotNull($stale);
+        $this->edit('SKU-0001', ['sell_price' => '50000']);
+
+        $this->expectException(BusinessRuleException::class);
+        $this->service->update($stale, $this->validInput(['sell_price' => '60000', 'version' => (string) $stale->updatedAt]), null, $this->admin);
+    }
+
+    /**
+     * Alur form edit: muat produk terbaru, kirim versinya bersama input.
+     *
+     * @param array<string, string> $overrides
+     */
+    private function edit(string $sku, array $overrides): Product
+    {
+        $existing = $this->products->findBySku($sku);
+        self::assertNotNull($existing);
+
+        return $this->service->update($existing, $this->validInput($overrides + ['version' => (string) $existing->updatedAt]), null, $this->admin);
     }
 
     /**

@@ -110,15 +110,33 @@ final class ProductService
      * riwayat order dan stock ledger. Perubahan harga beli/jual dicatat ke
      * riwayat harga beserta siapa yang mengubahnya.
      *
+     * Optimistic lock: input "version" adalah updated_at saat form dibuka. Bila
+     * produk sudah disimpan orang lain sejak itu, perubahan ditolak agar tidak
+     * menimpa tanpa sadar. Dicek sebelum gambar disimpan, lalu dicek ulang
+     * repository di dalam transaksi (menutup celah di antara keduanya).
+     *
      * @param array<string, string> $input
      * @throws ValidationException
+     * @throws BusinessRuleException produk sudah diubah pengguna lain
      */
     public function update(Product $existing, array $input, ?UploadedFile $image, User $actor): Product
     {
-        $product = $this->validatedProduct(new InputValidator($input), $existing->sku, $image, $existing->imageUrl);
-        $this->products->update($product, PriceChange::between($existing, $product, $actor->id));
+        $validator = new InputValidator($input);
+        $version = $validator->raw('version');
+        if ($version !== $existing->updatedAt) {
+            throw self::staleProduct();
+        }
+        $product = $this->validatedProduct($validator, $existing->sku, $image, $existing->imageUrl);
+        if (!$this->products->update($product, $version, PriceChange::between($existing, $product, $actor->id))) {
+            throw self::staleProduct();
+        }
 
         return $product;
+    }
+
+    private static function staleProduct(): BusinessRuleException
+    {
+        return new BusinessRuleException('Produk ini sudah diubah pengguna lain sejak form dibuka. Data terbaru ditampilkan; silakan ulangi perubahan Anda.');
     }
 
     private function validateNewSku(InputValidator $validator): string

@@ -35,6 +35,9 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
     /** @var list<PriceChange> urutan dicatat (lama → baru) */
     public array $priceChanges = [];
 
+    /** Pengganti updated_at MySQL: setiap simpanan mendapat versi baru. */
+    private int $version = 0;
+
     /**
      * @param list<int> $warehouseIds
      */
@@ -48,7 +51,7 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
      */
     public function seed(Product $product, array $stockPerWarehouse = []): void
     {
-        $this->products[$product->sku] = $product;
+        $this->products[$product->sku] = $this->stamped($product);
         $this->stock[$product->sku] = $stockPerWarehouse;
     }
 
@@ -100,18 +103,23 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
     public function create(Product $product, PriceChange $initialPrice): void
     {
         $this->writes++;
-        $this->products[$product->sku] = $product;
+        $this->products[$product->sku] = $this->stamped($product);
         $this->stock[$product->sku] = array_fill_keys($this->warehouseIds, 0);
         $this->priceChanges[] = $initialPrice;
     }
 
-    public function update(Product $product, ?PriceChange $priceChange): void
+    public function update(Product $product, string $expectedVersion, ?PriceChange $priceChange): bool
     {
+        if (($this->products[$product->sku] ?? null)?->updatedAt !== $expectedVersion) {
+            return false;
+        }
         $this->writes++;
-        $this->products[$product->sku] = $product;
+        $this->products[$product->sku] = $this->stamped($product);
         if ($priceChange !== null) {
             $this->priceChanges[] = $priceChange;
         }
+
+        return true;
     }
 
     public function priceHistory(string $sku, int $limit): array
@@ -146,6 +154,11 @@ final class InMemoryProductRepository implements ProductRepositoryInterface
     public function recentMovements(string $sku, int $limit): array
     {
         return [];
+    }
+
+    private function stamped(Product $p): Product
+    {
+        return new Product($p->sku, $p->name, $p->categoryId, $p->unit, $p->buyPrice, $p->sellPrice, $p->reorderPoint, $p->imageUrl, $p->active, 'v' . ++$this->version);
     }
 
     private function matches(ProductSummary $summary, Product $product, ProductSearchCriteria $criteria): bool

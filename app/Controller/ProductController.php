@@ -13,6 +13,7 @@ use App\Entity\Product;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\ProductSearchCriteria;
+use App\Service\BusinessRuleException;
 use App\Service\ProductService;
 use App\Service\ValidationException;
 
@@ -96,6 +97,7 @@ final class ProductController
             'sell_price' => (string) $product->sellPrice,
             'reorder_point' => (string) $product->reorderPoint,
             'active' => $product->active ? '1' : '0',
+            'version' => $product->updatedAt ?? '',
         ]);
     }
 
@@ -109,6 +111,11 @@ final class ProductController
             $this->products->update($product, $request->allInput(), $request->file('image'), $user);
         } catch (ValidationException $e) {
             return $this->form($product, $request->allInput(), $e->errors);
+        } catch (BusinessRuleException $e) {
+            // Muat ulang form dengan data & versi terbaru, bukan input yang sudah usang.
+            $this->session->flash('error', $e->getMessage());
+
+            return Response::redirect('/products/' . rawurlencode($product->sku) . '/edit');
         }
 
         $this->session->flash('success', 'Produk ' . $product->sku . ' berhasil diperbarui.');

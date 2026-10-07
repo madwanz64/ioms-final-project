@@ -7,6 +7,9 @@ namespace App\Entity;
 /**
  * Produk master (PRD-01). Harga disimpan sebagai rupiah utuh (int) — seluruh
  * seed dan UI tidak memakai sen, jadi int menghindari pembulatan float.
+ *
+ * $updatedAt adalah versi baris untuk optimistic lock form edit; null pada
+ * produk yang belum tersimpan.
  */
 final class Product
 {
@@ -20,6 +23,7 @@ final class Product
         public readonly int $reorderPoint,
         public readonly ?string $imageUrl,
         public readonly bool $active,
+        public readonly ?string $updatedAt = null,
     ) {
     }
 }

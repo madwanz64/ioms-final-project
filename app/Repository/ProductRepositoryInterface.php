@@ -43,10 +43,13 @@ interface ProductRepositoryInterface
     public function create(Product $product, PriceChange $initialPrice): void;
 
     /**
-     * Simpan perubahan produk; bila $priceChange tidak null, riwayat harganya
-     * ditulis dalam transaksi yang sama.
+     * Simpan perubahan produk hanya bila versinya (updated_at) masih sama dengan
+     * $expectedVersion; bila $priceChange tidak null, riwayat harganya ditulis
+     * dalam transaksi yang sama.
+     *
+     * @return bool false = produk sudah diubah pihak lain, tidak ada yang disimpan
      */
-    public function update(Product $product, ?PriceChange $priceChange): void;
+    public function update(Product $product, string $expectedVersion, ?PriceChange $priceChange): bool;
 
     /**
      * @return list<StockLevel>

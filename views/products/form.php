@@ -34,6 +34,10 @@ $maxMb = rtrim(rtrim(number_format($uploadMaxBytes / 1048576, 1), '0'), '.');
 
 <form class="data-form wide animate-in" method="post" action="<?= e($action) ?>" enctype="multipart/form-data">
   <input type="hidden" name="_csrf" value="<?= e($csrfToken) ?>">
+  <?php if ($isEdit): ?>
+    <!-- Versi saat form dibuka (optimistic lock): ditolak bila produk diubah orang lain sementara itu. -->
+    <input type="hidden" name="version" value="<?= e($value('version')) ?>">
+  <?php endif; ?>
 
   <div class="form-row">
     <div class="<?= $fieldClass('sku') ?>">
