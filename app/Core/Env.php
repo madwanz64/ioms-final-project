@@ -18,14 +18,9 @@ final class Env
     {
         $values = is_file($path) ? self::parse((string) file_get_contents($path)) : [];
 
-        foreach (array_keys($values) as $key) {
-            $real = getenv($key);
-            if ($real !== false) {
-                $values[$key] = $real;
-            }
-        }
-
-        return $values;
+        // Env var sungguhan menang, TERMASUK key yang tidak ada di file — di container
+        // tidak ada .env sama sekali dan seluruh konfigurasi datang dari Docker Compose.
+        return array_merge($values, getenv());
     }
 
     /**
