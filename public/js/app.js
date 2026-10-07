@@ -139,7 +139,8 @@
 
   // Form Sales Order: tampilkan stok tersedia di gudang asal untuk produk tiap baris.
   document.querySelectorAll('form[data-stock-check]').forEach(function (form) {
-    const warehouseSelect = form.querySelector('[name="warehouse_id"]');
+    // data-stock-check berisi nama dropdown gudang yang stoknya ditampilkan (default: warehouse_id).
+    const warehouseSelect = form.querySelector('[name="' + (form.dataset.stockCheck || 'warehouse_id') + '"]');
 
     function updateLine(row) {
       const hint = row.querySelector('[data-line-stock]');

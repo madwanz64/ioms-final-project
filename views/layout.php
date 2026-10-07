@@ -24,6 +24,7 @@ $navItems = match ($currentUser->role) {
         ['/users', 'User', 'users'],
         ['/purchase-orders', 'Purchase Order', 'truck'],
         ['/sales-orders', 'Sales Order', 'cart'],
+        ['/stock-transfers', 'Transfer Stok', 'transfer'],
         ['/reports', 'Laporan', 'report'],
     ],
     Role::Sales => [
@@ -37,6 +38,7 @@ $navItems = match ($currentUser->role) {
         ['/products', 'Produk & Stok', 'box'],
         ['/purchase-orders', 'Purchase Order', 'truck'],
         ['/sales-orders', 'Sales Order', 'cart'],
+        ['/stock-transfers', 'Transfer Stok', 'transfer'],
         ['/reports', 'Laporan Stok', 'report'],
     ],
 };

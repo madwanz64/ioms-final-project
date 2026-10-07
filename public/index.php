@@ -17,6 +17,7 @@ use App\Controller\ProductController;
 use App\Controller\PurchaseOrderController;
 use App\Controller\ReportController;
 use App\Controller\SalesOrderController;
+use App\Controller\StockTransferController;
 use App\Controller\UserController;
 use App\Controller\WarehouseController;
 use App\Core\Auth;
@@ -37,6 +38,7 @@ use App\Repository\MySqlPurchaseOrderRepository;
 use App\Repository\MySqlReportRepository;
 use App\Repository\MySqlSalesOrderRepository;
 use App\Repository\MySqlStockRepository;
+use App\Repository\MySqlStockTransferRepository;
 use App\Repository\MySqlUserRepository;
 use App\Repository\MySqlWarehouseRepository;
 use App\Repository\PdoTransactionManager;
@@ -51,6 +53,7 @@ use App\Service\ReportService;
 use App\Service\SalesOrderPolicy;
 use App\Service\SalesOrderService;
 use App\Service\StockService;
+use App\Service\StockTransferService;
 use App\Service\UserService;
 use App\Service\WarehouseService;
 
@@ -142,6 +145,18 @@ try {
         $session,
         $view,
     );
+    $stockTransferController = new StockTransferController(
+        new StockTransferService(
+            new MySqlStockTransferRepository($pdo),
+            $warehouseRepository,
+            $productRepository,
+            $stockRepository,
+            $stockService,
+            $transactions,
+        ),
+        $session,
+        $view,
+    );
     $salesOrderController = new SalesOrderController(
         new SalesOrderService(
             new MySqlSalesOrderRepository($pdo),
@@ -217,6 +232,12 @@ try {
     $router->post('/sales-orders/{id}/reject', [$salesOrderController, 'reject'], $allRoles);
     $router->post('/sales-orders/{id}/cancel', [$salesOrderController, 'cancel'], [Role::Admin, Role::Sales]);
     $router->post('/sales-orders/{id}/fulfill', [$salesOrderController, 'fulfill'], [Role::Admin, Role::WarehouseStaff]);
+
+    // Transfer stok antar-gudang (K-08): Admin & Warehouse Staff.
+    $router->get('/stock-transfers', [$stockTransferController, 'index'], $poRoles);
+    $router->get('/stock-transfers/create', [$stockTransferController, 'create'], $poRoles);
+    $router->post('/stock-transfers', [$stockTransferController, 'store'], $poRoles);
+    $router->get('/stock-transfers/{id}', [$stockTransferController, 'show'], $poRoles);
 
     // Laporan: semua role membuka halaman; jenis laporan yang boleh diunduh diatur ReportService (§1.2).
     $router->get('/reports', [$reportController, 'index'], $allRoles);
