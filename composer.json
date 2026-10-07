@@ -33,6 +33,7 @@
         "test:unit": "phpunit --testsuite Unit",
         "test:integration": "phpunit --testsuite Integration",
         "test:coverage": "phpunit --coverage-clover build/coverage.xml --log-junit build/junit.xml",
+        "test:coverage-html": "phpunit --coverage-html build/coverage-html",
         "analyse": "phpstan analyse --memory-limit=512M",
         "low-stock": "php scripts/check-low-stock.php"
     },

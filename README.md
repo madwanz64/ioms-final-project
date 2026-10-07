@@ -79,6 +79,7 @@ ada dan menunggu sampai aplikasi bisa dibuka.
 | `ioms down` | `./ioms.sh down` | hentikan container (data tetap) |
 | `ioms reset` | `./ioms.sh reset` | kembalikan database & upload ke seed awal (minta konfirmasi) |
 | `ioms test` · `test-unit` · `test-int` | `./ioms.sh test` · … | PHPUnit |
+| `ioms coverage` · `coverage-unit` | `./ioms.sh coverage` · … | laporan coverage HTML di `build/coverage-html/index.html` |
 | `ioms analyse` | `./ioms.sh analyse` | PHPStan |
 | `ioms low-stock` | `./ioms.sh low-stock` | JOB-01 |
 | `ioms logs` · `status` · `shell` | `./ioms.sh logs` · … | log, status container, shell di container app |

@@ -29,6 +29,8 @@ if /i "%CMD%"=="shell" goto shell
 if /i "%CMD%"=="test" goto test
 if /i "%CMD%"=="test-unit" goto testunit
 if /i "%CMD%"=="test-int" goto testint
+if /i "%CMD%"=="coverage" goto coverage
+if /i "%CMD%"=="coverage-unit" goto coverageunit
 if /i "%CMD%"=="analyse" goto analyse
 if /i "%CMD%"=="low-stock" goto lowstock
 if /i "%CMD%"=="sonar" goto sonar
@@ -86,6 +88,14 @@ exit /b %errorlevel%
 docker compose exec app composer test:integration
 exit /b %errorlevel%
 
+:coverage
+call :coverage_html
+exit /b %errorlevel%
+
+:coverageunit
+call :coverage_html --testsuite Unit
+exit /b %errorlevel%
+
 :analyse
 docker compose exec app composer analyse
 exit /b %errorlevel%
@@ -121,6 +131,15 @@ docker compose --profile sonar stop sonarqube
 exit /b %errorlevel%
 
 rem ---------------------------------------------------------------------------
+:coverage_html
+rem %* argumen tambahan untuk PHPUnit (mis. --testsuite Unit)
+docker compose exec app composer test:coverage-html -- %* || exit /b 1
+if exist build\coverage-html rmdir /s /q build\coverage-html
+if not exist build mkdir build
+docker compose cp app:/var/www/html/build/coverage-html ./build/coverage-html || exit /b 1
+echo ^>^> Laporan: build\coverage-html\index.html
+exit /b 0
+
 :ensure_env
 if not exist .env (
   copy /y .env.example .env >nul
@@ -166,6 +185,8 @@ echo Kualitas
 echo   test         Unit + integration test
 echo   test-unit    Unit test saja
 echo   test-int     Integration test saja
+echo   coverage     Laporan coverage HTML unit + integration (build\coverage-html)
+echo   coverage-unit  Laporan coverage HTML unit test saja
 echo   analyse      PHPStan level 6
 echo   low-stock    Script terjadwal JOB-01 (laporan stok di bawah reorder point)
 echo.

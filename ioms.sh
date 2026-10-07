@@ -35,6 +35,14 @@ wait_for() { # $1 URL, $2 label, $3 pola isi yang ditunggu (opsional)
 
 app_exec() { docker compose exec app "$@"; }
 
+coverage_html() { # $@ argumen tambahan untuk PHPUnit (mis. --testsuite Unit)
+  app_exec composer test:coverage-html -- "$@"
+  rm -rf build/coverage-html
+  mkdir -p build
+  docker compose cp app:/var/www/html/build/coverage-html ./build/coverage-html
+  echo ">> Laporan: build/coverage-html/index.html"
+}
+
 usage() {
   cat <<'EOF'
 Pakai: ./ioms.sh <perintah>
@@ -51,6 +59,8 @@ Kualitas
   test         Unit + integration test
   test-unit    Unit test saja
   test-int     Integration test saja
+  coverage     Laporan coverage HTML unit + integration (build/coverage-html)
+  coverage-unit  Laporan coverage HTML unit test saja
   analyse      PHPStan level 6
   low-stock    Script terjadwal JOB-01 (laporan stok di bawah reorder point)
 
@@ -94,6 +104,8 @@ case "$cmd" in
   test)       app_exec composer test ;;
   test-unit)  app_exec composer test:unit ;;
   test-int)   app_exec composer test:integration ;;
+  coverage)   coverage_html ;;
+  coverage-unit) coverage_html --testsuite Unit ;;
   analyse)    app_exec composer analyse ;;
   low-stock)  app_exec composer low-stock ;;
   sonar)
