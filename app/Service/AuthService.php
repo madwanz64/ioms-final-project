@@ -36,16 +36,9 @@ final class AuthService
         }
 
         $user = $this->users->findByEmail($email);
-        if ($user === null) {
-            password_verify($password, self::DUMMY_HASH);
+        // Email tak terdaftar tetap diverifikasi terhadap DUMMY_HASH (anti timing).
+        $valid = password_verify($password, $user->passwordHash ?? self::DUMMY_HASH);
 
-            return null;
-        }
-
-        if (!password_verify($password, $user->passwordHash) || !$user->active) {
-            return null;
-        }
-
-        return $user;
+        return $valid && $user !== null && $user->active ? $user : null;
     }
 }

@@ -9,7 +9,6 @@ use App\Entity\SalesOrder;
 use App\Entity\SalesOrderItem;
 use App\Entity\SalesOrderStatus;
 use PDO;
-use RuntimeException;
 
 final class MySqlSalesOrderRepository implements SalesOrderRepositoryInterface
 {
@@ -86,7 +85,7 @@ final class MySqlSalesOrderRepository implements SalesOrderRepositoryInterface
     public function lockById(int $id): ?SalesOrder
     {
         if (!$this->pdo->inTransaction()) {
-            throw new RuntimeException('lockById() harus dipanggil di dalam transaksi.');
+            throw new PersistenceException('lockById() harus dipanggil di dalam transaksi.');
         }
 
         return $this->load($id, true);

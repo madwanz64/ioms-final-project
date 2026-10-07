@@ -10,7 +10,7 @@ use PDO;
 
 final class MySqlUserRepository implements UserRepositoryInterface
 {
-    private const COLUMNS = 'id, name, email, password, role, active';
+    private const SELECT_USERS = 'SELECT id, name, email, password, role, active FROM users';
 
     public function __construct(private readonly PDO $pdo)
     {
@@ -18,7 +18,7 @@ final class MySqlUserRepository implements UserRepositoryInterface
 
     public function findById(int $id): ?User
     {
-        $stmt = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM users WHERE id = :id');
+        $stmt = $this->pdo->prepare(self::SELECT_USERS . ' WHERE id = :id');
         $stmt->execute(['id' => $id]);
 
         return $this->hydrate($stmt->fetch());
@@ -26,7 +26,7 @@ final class MySqlUserRepository implements UserRepositoryInterface
 
     public function findByEmail(string $email): ?User
     {
-        $stmt = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM users WHERE email = :email');
+        $stmt = $this->pdo->prepare(self::SELECT_USERS . ' WHERE email = :email');
         $stmt->execute(['email' => $email]);
 
         return $this->hydrate($stmt->fetch());
@@ -34,7 +34,7 @@ final class MySqlUserRepository implements UserRepositoryInterface
 
     public function all(): array
     {
-        $stmt = $this->pdo->query('SELECT ' . self::COLUMNS . ' FROM users ORDER BY FIELD(role, \'Admin\', \'Sales\', \'Warehouse Staff\'), name');
+        $stmt = $this->pdo->query(self::SELECT_USERS . ' ORDER BY FIELD(role, \'Admin\', \'Sales\', \'Warehouse Staff\'), name');
         $users = [];
         foreach ($stmt === false ? [] : $stmt->fetchAll() as $row) {
             $user = $this->hydrate($row);

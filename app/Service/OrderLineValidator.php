@@ -43,27 +43,10 @@ final class OrderLineValidator
             }
             $prefix = 'items.' . count($result) . '.';
 
-            $product = $this->products->findBySku($sku);
-            if ($product === null || !$product->active) {
-                $validator->addError($prefix . 'sku', 'Pilih produk yang aktif.');
-            } elseif (isset($seen[$sku])) {
-                $validator->addError($prefix . 'sku', 'Produk ini sudah ada di baris lain; gabungkan qty-nya.');
-            }
+            $this->checkProduct($validator, $prefix, $sku, isset($seen[$sku]));
             $seen[$sku] = true;
 
-            $lineValidator = new InputValidator($lineInput);
-            $qty = $lineValidator->wholeNumber('qty', 'Qty', self::MAX_QTY);
-            if (!$lineValidator->hasError('qty') && $qty === 0) {
-                $lineValidator->addError('qty', 'Qty minimal 1.');
-            }
-            $price = $priceField === null
-                ? 0
-                : $lineValidator->wholeNumber($priceField, $priceLabel, self::MAX_PRICE);
-            foreach ($lineValidator->errors() as $field => $message) {
-                $validator->addError($prefix . $field, $message);
-            }
-
-            $result[] = new NewOrderLine($sku, $qty, $price);
+            $result[] = $this->parseLine($validator, $prefix, $sku, $lineInput, $priceField, $priceLabel);
         }
 
         if ($result === []) {
@@ -73,5 +56,43 @@ final class OrderLineValidator
         }
 
         return $result;
+    }
+
+    private function checkProduct(InputValidator $validator, string $prefix, string $sku, bool $duplicate): void
+    {
+        $product = $this->products->findBySku($sku);
+        if ($product === null || !$product->active) {
+            $validator->addError($prefix . 'sku', 'Pilih produk yang aktif.');
+        } elseif ($duplicate) {
+            $validator->addError($prefix . 'sku', 'Produk ini sudah ada di baris lain; gabungkan qty-nya.');
+        }
+    }
+
+    /**
+     * Qty & harga satu baris; error ditulis ke validator form dengan prefix baris.
+     *
+     * @param array<string, string> $lineInput
+     */
+    private function parseLine(
+        InputValidator $validator,
+        string $prefix,
+        string $sku,
+        array $lineInput,
+        ?string $priceField,
+        string $priceLabel,
+    ): NewOrderLine {
+        $lineValidator = new InputValidator($lineInput);
+        $qty = $lineValidator->wholeNumber('qty', 'Qty', self::MAX_QTY);
+        if (!$lineValidator->hasError('qty') && $qty === 0) {
+            $lineValidator->addError('qty', 'Qty minimal 1.');
+        }
+        $price = $priceField === null
+            ? 0
+            : $lineValidator->wholeNumber($priceField, $priceLabel, self::MAX_PRICE);
+        foreach ($lineValidator->errors() as $field => $message) {
+            $validator->addError($prefix . $field, $message);
+        }
+
+        return new NewOrderLine($sku, $qty, $price);
     }
 }

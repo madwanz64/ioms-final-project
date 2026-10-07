@@ -7,7 +7,6 @@ namespace App\Repository;
 use App\Entity\StockChange;
 use App\Entity\StockMovement;
 use PDO;
-use RuntimeException;
 
 /**
  * Implementasi ADR-001: lock baris stok berurutan + conditional update.
@@ -21,7 +20,7 @@ final class MySqlStockRepository implements StockRepositoryInterface
     public function lockQuantities(array $keys): array
     {
         if (!$this->pdo->inTransaction()) {
-            throw new RuntimeException('lockQuantities() harus dipanggil di dalam transaksi.');
+            throw new PersistenceException('lockQuantities() harus dipanggil di dalam transaksi.');
         }
 
         // Urutan kunci tetap (SKU, lalu gudang) di semua transaksi -> mencegah deadlock.
@@ -36,7 +35,7 @@ final class MySqlStockRepository implements StockRepositoryInterface
             $quantity = $stmt->fetchColumn();
             if ($quantity === false) {
                 // Invarian WH-01: setiap produk punya baris stok di setiap gudang.
-                throw new RuntimeException(sprintf('Baris stok %s di gudang #%d tidak ditemukan.', $key['sku'], $key['warehouseId']));
+                throw new PersistenceException(sprintf('Baris stok %s di gudang #%d tidak ditemukan.', $key['sku'], $key['warehouseId']));
             }
             $quantities[StockChange::key($key['sku'], $key['warehouseId'])] = (int) $quantity;
         }

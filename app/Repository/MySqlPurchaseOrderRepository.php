@@ -9,7 +9,6 @@ use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\PurchaseOrderStatus;
 use PDO;
-use RuntimeException;
 
 final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInterface
 {
@@ -74,7 +73,7 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
     public function lockById(int $id): ?PurchaseOrder
     {
         if (!$this->pdo->inTransaction()) {
-            throw new RuntimeException('lockById() harus dipanggil di dalam transaksi.');
+            throw new PersistenceException('lockById() harus dipanggil di dalam transaksi.');
         }
 
         return $this->load($id, true);
@@ -128,7 +127,7 @@ final class MySqlPurchaseOrderRepository implements PurchaseOrderRepositoryInter
         );
         $stmt->execute(['id' => $itemId, 'qty' => $qty, 'qty_check' => $qty]);
         if ($stmt->rowCount() !== 1) {
-            throw new RuntimeException(sprintf('Penerimaan item #%d melebihi qty pesanan.', $itemId));
+            throw new PersistenceException(sprintf('Penerimaan item #%d melebihi qty pesanan.', $itemId));
         }
     }
 

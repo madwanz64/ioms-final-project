@@ -16,6 +16,8 @@ use DateTimeImmutable;
  */
 final class InputValidator
 {
+    private const REQUIRED_SUFFIX = ' wajib diisi.';
+
     /** @var array<string, string> */
     private array $errors = [];
 
@@ -30,7 +32,7 @@ final class InputValidator
     {
         $value = $this->raw($field);
         if ($value === '') {
-            $this->addError($field, $label . ' wajib diisi.');
+            $this->addError($field, $label . self::REQUIRED_SUFFIX);
         } elseif (mb_strlen($value) > $maxLength) {
             $this->addError($field, sprintf('%s maksimal %d karakter.', $label, $maxLength));
         }
@@ -54,19 +56,16 @@ final class InputValidator
     public function wholeNumber(string $field, string $label, int $max): int
     {
         $value = $this->raw($field);
-        if ($value === '') {
-            $this->addError($field, $label . ' wajib diisi.');
-
-            return 0;
-        }
-        if (!ctype_digit($value)) {
-            $this->addError($field, $label . ' harus bilangan bulat >= 0.');
-
-            return 0;
-        }
-        // Cek panjang dulu agar string angka raksasa tidak overflow saat di-cast ke int.
-        if (strlen(ltrim($value, '0')) > strlen((string) $max) || (int) $value > $max) {
-            $this->addError($field, sprintf('%s maksimal %s.', $label, number_format($max, 0, ',', '.')));
+        $error = match (true) {
+            $value === '' => $label . self::REQUIRED_SUFFIX,
+            !ctype_digit($value) => $label . ' harus bilangan bulat >= 0.',
+            // Cek panjang dulu agar string angka raksasa tidak overflow saat di-cast ke int.
+            strlen(ltrim($value, '0')) > strlen((string) $max) || (int) $value > $max
+                => sprintf('%s maksimal %s.', $label, number_format($max, 0, ',', '.')),
+            default => null,
+        };
+        if ($error !== null) {
+            $this->addError($field, $error);
 
             return 0;
         }
@@ -107,7 +106,7 @@ final class InputValidator
         $value = $this->raw($field);
         $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value);
         if ($value === '') {
-            $this->addError($field, $label . ' wajib diisi.');
+            $this->addError($field, $label . self::REQUIRED_SUFFIX);
         } elseif ($date === false || $date->format('Y-m-d') !== $value) {
             $this->addError($field, $label . ' tidak valid (format YYYY-MM-DD).');
         } elseif ($date > $today) {

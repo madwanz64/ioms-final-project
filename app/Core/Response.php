@@ -44,7 +44,7 @@ final class Response
     {
         $handle = fopen('php://temp', 'r+');
         if ($handle === false) {
-            throw new \RuntimeException('Tidak dapat membuat buffer CSV.');
+            throw new InfrastructureException('Tidak dapat membuat buffer CSV.');
         }
         foreach ($rows as $row) {
             fputcsv($handle, array_map([self::class, 'csvCell'], $row), ',', '"', '');

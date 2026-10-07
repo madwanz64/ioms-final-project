@@ -60,7 +60,7 @@ final class PurchaseOrderController
         }
         $this->session->flash('success', 'Purchase Order berhasil dibuat sebagai Draft.');
 
-        return Response::redirect('/purchase-orders/' . $id);
+        return $this->redirectToOrder($id);
     }
 
     /**
@@ -104,11 +104,11 @@ final class PurchaseOrderController
         } catch (BusinessRuleException $e) {
             $this->session->flash('error', $e->getMessage());
 
-            return Response::redirect('/purchase-orders/' . $order->id);
+            return $this->redirectToOrder($order->id);
         }
         $this->session->flash('success', sprintf('Penerimaan barang %s tersimpan. Status: %s.', $updated->orderNo, $updated->status->label()));
 
-        return Response::redirect('/purchase-orders/' . $order->id);
+        return $this->redirectToOrder($order->id);
     }
 
     /**
@@ -123,7 +123,7 @@ final class PurchaseOrderController
             $this->session->flash('error', $e->getMessage());
         }
 
-        return Response::redirect('/purchase-orders/' . $id);
+        return $this->redirectToOrder($id);
     }
 
     /**
@@ -168,5 +168,10 @@ final class PurchaseOrderController
     private function findOr404(array $params): PurchaseOrder
     {
         return $this->orders->find(Router::intParam($params, 'id')) ?? throw HttpException::notFound();
+    }
+
+    private function redirectToOrder(int $id): Response
+    {
+        return Response::redirect('/purchase-orders/' . $id);
     }
 }
