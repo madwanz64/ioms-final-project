@@ -23,3 +23,6 @@ public/uploads/
 # Dokumen internal training PT Neuronworks — tetap disimpan lokal, tidak di-push
 Project Brief - Programmer.pdf
 Guidelines - Presentation Final Project (Peserta).pdf
+
+# Laporan coverage & JUnit untuk SonarQube (dibuat ulang setiap scan)
+build/

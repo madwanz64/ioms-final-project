@@ -49,6 +49,40 @@ services:
       # Gambar produk yang diunggah tetap ada walau container dibuat ulang.
       - uploads:/var/www/html/public/uploads
 
+  # --- Pemeriksaan kualitas kode (opsional, tidak ikut `docker compose up` biasa) -------------
+  #   docker compose --profile sonar up -d sonarqube        # http://localhost:9000
+  #   docker compose exec app composer test:coverage && docker compose cp app:/var/www/html/build ./build
+  #   docker compose --profile sonar run --rm sonar-scanner
+  # Langkah lengkap: docs/quality/sonarqube.md
+  sonarqube:
+    image: sonarqube:community
+    profiles: ["sonar"]
+    environment:
+      # Docker Desktop/WSL2 sering tidak mengizinkan vm.max_map_count Elasticsearch diubah;
+      # pemeriksaan bootstrap dimatikan karena ini instance lokal satu node untuk analisis.
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    ports:
+      - "127.0.0.1:${SONAR_PORT:-9000}:9000"
+    volumes:
+      - sonar-data:/opt/sonarqube/data
+      - sonar-extensions:/opt/sonarqube/extensions
+
+  sonar-scanner:
+    image: sonarsource/sonar-scanner-cli
+    profiles: ["sonar"]
+    depends_on:
+      - sonarqube
+    environment:
+      SONAR_HOST_URL: http://sonarqube:9000
+      SONAR_TOKEN: ${SONAR_TOKEN:-}
+    # Dipasang di path yang SAMA dengan container app agar path di laporan coverage cocok.
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:ro
+    command: ["-Dsonar.projectBaseDir=/var/www/html", "-Dsonar.working.directory=/tmp/scannerwork"]
+
 volumes:
   db-data:
   uploads:
+  sonar-data:
+  sonar-extensions:
