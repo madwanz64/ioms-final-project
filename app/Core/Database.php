@@ -16,12 +16,19 @@ final class Database
     {
         $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $config['host'], $config['port'], $config['name']);
 
-        return new PDO($dsn, $config['user'], $config['pass'], [
+        $pdo = new PDO($dsn, $config['user'], $config['pass'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             // Prepared statement asli di sisi MySQL, bukan emulasi string di PHP.
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+
+        // Samakan zona waktu sesi MySQL dengan PHP, agar CURRENT_TIMESTAMP (created_at
+        // ledger) dan filter tanggal laporan konsisten walau server MySQL berjalan di UTC.
+        $offset = (new \DateTimeImmutable())->format('P'); // mis. "+07:00", bukan input user
+        $pdo->prepare('SET time_zone = :offset')->execute(['offset' => $offset]);
+
+        return $pdo;
     }
 
     /**

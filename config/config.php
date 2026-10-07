@@ -7,6 +7,10 @@ use App\Core\Env;
 $root = dirname(__DIR__);
 $env = Env::load($root . '/.env');
 
+// "Hari ini" untuk validasi tanggal order & laporan harus mengikuti zona waktu bisnis,
+// bukan UTC — tanpa ini, pukul 00:00–07:00 WIB tanggal hari ini dianggap "masa depan".
+date_default_timezone_set($env['APP_TIMEZONE'] ?? 'Asia/Jakarta');
+
 return [
     'db' => [
         'host' => $env['DB_HOST'] ?? '127.0.0.1',
