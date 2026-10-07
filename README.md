@@ -6,7 +6,7 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 (Admin, Sales, Warehouse Staff).
 
 > **Status: dalam pengerjaan.** Sudah jalan: login/logout, guard role, produk,
-> master data, manajemen user, Purchase Order + goods receipt, serta Sales Order + approval + goods issue. Dashboard lengkap,
+> master data, manajemen user, Purchase Order + goods receipt, serta Sales Order + approval + goods issue. API JSON,
 > dashboard lengkap, laporan CSV, API JSON, script terjadwal, dan Docker
 > belum dibuat (lihat [Known limitations](#known-limitations)).
 
@@ -21,13 +21,14 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 | USR-01 Manajemen user | ✅ Admin menambah/mengubah/menonaktifkan user, email unik, role hanya 3 nilai, password di-hash; Sales & Warehouse mendapat 403; Admin tidak bisa menonaktifkan akunnya sendiri |
 | Master data | ✅ Kategori (nama unik), supplier & customer (nonaktif, tanpa hapus) — khusus Admin |
 | FIND-01 Produk | ✅ Cari nama/SKU, filter kategori & status stok, sort, pagination 10/halaman, filter tetap aktif saat pindah halaman |
-| DASH-01 | ⏳ Sebagian: Admin & Warehouse melihat jumlah produk aktif dan produk di bawah reorder point (dari query) |
+| DASH-01 Dashboard | ✅ Admin: nilai inventori, produk di bawah reorder point, order per status (PO & SO); Sales: order miliknya per status; Warehouse: antrean goods receipt/issue & low stock — semua dari query agregasi |
 | ERR-01 | ✅ Tanpa login → redirect, tanpa hak akses → 403, tidak ditemukan → 404, error server → 500 tanpa stack trace |
 | VAL-01 | ✅ untuk form yang sudah ada: HTML5 di frontend, semua aturan diulang di backend, input lama dipertahankan (kecuali password) |
 | PO-01 Purchase Order | ✅ Draft → Ordered → PartiallyReceived/Received, batal sebelum ada penerimaan; goods receipt penuh/sebagian menambah stok + ledger Receipt dalam satu transaksi; cari/filter status/sort tanggal/pagination |
 | ARCH-02 Anti-oversell | ✅ Mekanisme siap & teruji ([ADR-001](docs/architecture/adr-001-mekanisme-anti-oversell.md)): FOR UPDATE berurutan + guard SQL + CHECK constraint; dipakai goods receipt & goods issue |
 | SO-01 Sales Order | ✅ Draft → PendingApproval → Approved → Fulfilled / Cancelled; approve hanya Admin yang bukan pembuat order (ditegakkan di server, [ADR-002](docs/architecture/adr-002-otorisasi-sales-order.md)); goods issue ditolak bila stok kurang; Sales hanya melihat order miliknya |
-| REPORT-01, API-01, JOB-01 | ⏳ Belum |
+| REPORT-01 Laporan CSV | ✅ Detail stock ledger, rekap stok per produk+gudang, dan status order dalam rentang tanggal; query sama dengan dashboard; hak unduh per role; aman dari CSV injection |
+| API-01, JOB-01 | ⏳ Belum |
 
 ## Struktur
 
@@ -86,7 +87,7 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 ## Known limitations
 
 - Docker Compose belum tersedia; aplikasi & test baru diuji pada PHP 8.3 + MySQL 8.0 lokal.
-- Dashboard order per role, laporan CSV, API JSON, dan script low-stock belum dibangun.
+- API JSON dan script low-stock belum dibangun.
 - Interpretasi requirement yang ambigu (mis. arti "mengusulkan" PO): [docs/planning/catatan-keputusan.md](docs/planning/catatan-keputusan.md).
 - Daftar lengkap jalan pintas: [docs/quality/tech-debt.md](docs/quality/tech-debt.md).
 

@@ -178,3 +178,43 @@ gagal (unit policy 2 kasus, unit service, integration) → dikembalikan.
 **Catatan perbaikan:** pada percobaan pertama, skenario #9 mengembalikan 302 + flash
 "tidak ditemukan" (data aman, status tidak berubah, tapi kode HTTP tidak konsisten dengan
 halaman detail). Diperbaiki dengan `NotFoundException` → 404, lalu diuji ulang.
+
+---
+
+## Slice 5 — Dashboard tiga role & laporan CSV (2026-10-07)
+
+### Otomatis
+
+| Suite | Hasil |
+|---|---|
+| Unit | 115 test (+23), lulus |
+| Integration | 30 test (+5 di file baru; total termasuk data provider), lulus |
+| Semua | 145 test, 355 assertion, lulus |
+
+Area logic baru: rentang tanggal laporan, hak unduh per role, rekap status (termasuk nol),
+dan keamanan CSV (formula injection, sanitasi nama file).
+
+Mutation check (dilakukan dengan benar, lihat catatan):
+- Guard CSV dipersempit menjadi hanya `=` → 3 test gagal (`+`, `-`, `@`).
+- Batas akhir rentang tanpa `+1 hari` → 2 test gagal (tanggal akhir tidak lagi inklusif).
+
+**Catatan jujur:** percobaan mutasi pertama pada guard CSV memakai `sed` yang polanya tidak
+cocok, sehingga kode tidak berubah dan hasil "lulus" tidak bermakna. Pengembalian mutasi itu
+memakai `git checkout` yang ikut menghapus method `csv()`/`csvCell()` yang belum di-commit.
+Kesalahan langsung terdeteksi oleh test berikutnya (7 error), kode dipasang kembali, lalu
+mutasi diulang memakai edit yang diverifikasi.
+
+### Skenario manual (smoke test 3 role; angka dibandingkan dengan query SQL independen)
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | Dashboard Admin | Nilai inventori Rp 248.575.000 (= SQL), 5 low stock, 4 SO menunggu persetujuan (= SQL), +229/−51 unit 90 hari | ✅ |
+| 2 | Dashboard Sales (Sinta) | Draft 1, Pending 3, Approved 1, nilai Fulfilled Rp 7.266.000 (= SQL milik Sinta) | ✅ |
+| 3 | Dashboard Warehouse | 5 PO menunggu penerimaan, 2 SO menunggu goods issue (= SQL), daftar antrean tampil | ✅ |
+| 4 | Laporan Admin Agustus | 72 baris ledger (= SQL), pratinjau 20 terakhir | ✅ |
+| 5 | CSV detail ledger | `text/csv`, BOM UTF-8, nama file `pergerakan-stok_2026-08-01_2026-08-31.csv`, 72 baris data | ✅ |
+| 6 | CSV status order Admin Agustus | PO & SO semua status termasuk 0; jumlah SO cocok dengan SQL | ✅ |
+| 7 | CSV status order Sinta | hanya SO miliknya, tanpa baris PO | ✅ |
+| 8 | Sales unduh ledger / Warehouse unduh status order | 403 / 403 | ✅ |
+| 9 | Jenis laporan tidak dikenal / tanpa login | 404 / 302 ke login | ✅ |
+| 10 | Rentang: awal > akhir, 2026-02-30, > 366 hari, akhir di masa depan | 422 dengan pesan yang sesuai | ✅ |
