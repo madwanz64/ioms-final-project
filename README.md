@@ -180,6 +180,7 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 | [docs/architecture/](docs/architecture/) | [class diagram as-built](docs/architecture/class-diagram-as-built.md), [ADR-001 anti-oversell](docs/architecture/adr-001-mekanisme-anti-oversell.md), [ADR-002 otorisasi SO](docs/architecture/adr-002-otorisasi-sales-order.md) |
 | [docs/quality/](docs/quality/) | [refactor log](docs/quality/refactor-log.md) (R-01…R-04), [audit SRP](docs/quality/srp-audit.md), [tech-debt](docs/quality/tech-debt.md), [static analysis](docs/quality/static-analysis.md), [SonarQube](docs/quality/sonarqube.md) |
 | [docs/testing/](docs/testing/) | [skenario & hasil test](docs/testing/hasil-test.md) per slice + known bugs, [output PHPUnit](docs/testing/phpunit-testdox.txt), [output PHPStan](docs/testing/phpstan-output.txt), [screenshot desktop & 360px](docs/testing/screenshots/) |
+| [docs/presentasi/](docs/presentasi/) | [naskah presentasi & demo 10 menit](docs/presentasi/naskah-presentasi.md) (persiapan, alur demo, penelusuran kode, tanya jawab) |
 
 ## Sumber pihak ketiga (§6.1)
 
