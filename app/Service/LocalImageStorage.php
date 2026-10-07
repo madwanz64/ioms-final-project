@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Core\UploadedFile;
+use Closure;
 use finfo;
-use RuntimeException;
 
 /**
  * Menyimpan gambar di public/uploads/products dengan nama acak (PRD-01).
@@ -22,45 +22,54 @@ final class LocalImageStorage implements ImageStorageInterface
         'image/png' => 'png',
     ];
 
+    /** @var Closure(string): bool */
+    private readonly Closure $isUploaded;
+
+    /** @var Closure(string, string): bool */
+    private readonly Closure $moveUploaded;
+
+    /**
+     * @param (Closure(string): bool)|null $isUploaded default is_uploaded_file
+     * @param (Closure(string, string): bool)|null $moveUploaded default move_uploaded_file
+     *        Keduanya hanya diganti di test: di CLI tidak ada file hasil upload HTTP.
+     */
     public function __construct(
         private readonly string $directory,
         private readonly string $urlPrefix,
         private readonly int $maxBytes,
+        ?Closure $isUploaded = null,
+        ?Closure $moveUploaded = null,
     ) {
+        $this->isUploaded = $isUploaded ?? is_uploaded_file(...);
+        $this->moveUploaded = $moveUploaded ?? move_uploaded_file(...);
     }
 
     public function validate(UploadedFile $file): ?string
     {
-        if ($file->error === UPLOAD_ERR_INI_SIZE || $file->error === UPLOAD_ERR_FORM_SIZE) {
-            return $this->tooLargeMessage();
-        }
-        if (!$file->isOk() || !is_uploaded_file($file->tmpPath)) {
-            return 'Upload gambar gagal, silakan coba lagi.';
-        }
-        if ($file->size > $this->maxBytes || (int) filesize($file->tmpPath) > $this->maxBytes) {
-            return $this->tooLargeMessage();
-        }
-        if ($this->detectExtension($file) === null) {
-            return 'Format gambar harus JPG atau PNG.';
-        }
-
-        return null;
+        // Urutan pemeriksaan penting: file yang gagal di-upload tidak diperiksa ukuran/isinya.
+        return match (true) {
+            $file->error === UPLOAD_ERR_INI_SIZE || $file->error === UPLOAD_ERR_FORM_SIZE => $this->tooLargeMessage(),
+            !$file->isOk() || !($this->isUploaded)($file->tmpPath) => 'Upload gambar gagal, silakan coba lagi.',
+            $file->size > $this->maxBytes || (int) filesize($file->tmpPath) > $this->maxBytes => $this->tooLargeMessage(),
+            $this->detectExtension($file) === null => 'Format gambar harus JPG atau PNG.',
+            default => null,
+        };
     }
 
     public function store(UploadedFile $file): string
     {
         $extension = $this->detectExtension($file);
         if ($extension === null) {
-            throw new RuntimeException('store() dipanggil untuk file yang tidak lolos validate().');
+            throw new ImageStorageException('store() dipanggil untuk file yang tidak lolos validate().');
         }
         if (!is_dir($this->directory) && !mkdir($this->directory, 0775, true) && !is_dir($this->directory)) {
-            throw new RuntimeException('Folder upload tidak dapat dibuat.');
+            throw new ImageStorageException('Folder upload tidak dapat dibuat.');
         }
 
         // 32 karakter heksadesimal acak (128 bit) — tidak bisa ditebak/di-enumerasi.
         $filename = bin2hex(random_bytes(16)) . '.' . $extension;
-        if (!move_uploaded_file($file->tmpPath, $this->directory . DIRECTORY_SEPARATOR . $filename)) {
-            throw new RuntimeException('Gagal memindahkan file upload.');
+        if (!($this->moveUploaded)($file->tmpPath, $this->directory . DIRECTORY_SEPARATOR . $filename)) {
+            throw new ImageStorageException('Gagal memindahkan file upload.');
         }
 
         return rtrim($this->urlPrefix, '/') . '/' . $filename;
