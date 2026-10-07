@@ -23,8 +23,6 @@ use App\Repository\ProductSearchCriteria;
 final class ProductService
 {
     public const SKU_PATTERN = '/^[A-Z0-9-]{3,20}$/';
-    // Satuan diawali huruf (pcs, box, rim, m2, box/12); menolak "-55" atau "10".
-    public const UNIT_PATTERN = '/^\p{L}[\p{L}\p{N} .\/-]*$/u';
     private const MAX_PRICE = 999_999_999_999; // batas DECIMAL(14,2)
     private const MAX_REORDER_POINT = 1_000_000;
     private const RECENT_MOVEMENTS = 10;
@@ -131,9 +129,6 @@ final class ProductService
             $validator->addError('category_id', 'Pilih kategori yang valid.');
         }
         $unit = $validator->requiredText('unit', 'Unit', 20);
-        if (!$validator->hasError('unit') && preg_match(self::UNIT_PATTERN, $unit) !== 1) {
-            $validator->addError('unit', 'Unit harus diawali huruf (mis. pcs, box, rim).');
-        }
         $buyPrice = $validator->wholeNumber('buy_price', 'Harga beli', self::MAX_PRICE);
         $sellPrice = $validator->wholeNumber('sell_price', 'Harga jual', self::MAX_PRICE);
         $reorderPoint = $validator->wholeNumber('reorder_point', 'Reorder point', self::MAX_REORDER_POINT);
