@@ -22,7 +22,7 @@ use DateTimeImmutable;
 
 /**
  * Akses (§1.2) diatur di router: daftar/detail/buat/terima untuk Admin &
- * Warehouse Staff; "pesan" dan "batalkan" khusus Admin. Sales tidak punya akses.
+ * Warehouse Staff (termasuk menandai Ordered, K-01); "batalkan" khusus Admin. Sales tidak punya akses.
  */
 final class PurchaseOrderController
 {
@@ -138,7 +138,7 @@ final class PurchaseOrderController
             'title' => $order->orderNo,
             'order' => $order,
             'receipts' => $this->orders->receipts($order),
-            'canOrder' => $isAdmin && $order->status->canBeOrdered(),
+            'canOrder' => $user->hasRole(Role::Admin, Role::WarehouseStaff) && $order->status->canBeOrdered(),
             'canCancel' => $isAdmin && $order->status->canBeCancelled(),
             'canReceive' => $user->hasRole(Role::Admin, Role::WarehouseStaff) && $order->status->canReceive(),
             'receiveOld' => $receiveOld,

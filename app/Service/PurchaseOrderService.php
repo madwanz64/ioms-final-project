@@ -79,7 +79,7 @@ final class PurchaseOrderService
     }
 
     /**
-     * Buat PO berstatus Draft. Admin maupun Warehouse Staff (mengusulkan) boleh.
+     * Buat PO berstatus Draft. Admin maupun Warehouse Staff boleh (K-01).
      *
      * @param array<string, string> $input supplier_id, warehouse_id, order_date
      * @param list<array<string, string>> $lines baris item: sku, qty, buy_price
@@ -105,7 +105,7 @@ final class PurchaseOrderService
     }
 
     /**
-     * Draft -> Ordered (PO dikirim ke supplier). Hanya Admin (diatur di router).
+     * Draft -> Ordered (PO dikirim ke supplier). Admin & Warehouse Staff (K-01, diatur di router).
      *
      * @throws BusinessRuleException
      */

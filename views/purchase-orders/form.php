@@ -24,7 +24,7 @@ foreach ($options['warehouses'] as $warehouse) {
 <?= $view->partial('partials/topbar', [
     'currentUser' => $currentUser,
     'title' => 'Buat Purchase Order',
-    'subtitle' => 'PO disimpan sebagai Draft; Admin menandainya Ordered setelah dikirim ke supplier',
+    'subtitle' => 'PO disimpan sebagai Draft, lalu ditandai Ordered setelah dikirim ke supplier',
 ]) ?>
 <?= $view->partial('partials/form-errors', ['errors' => $errors]) ?>
 

@@ -192,14 +192,14 @@ try {
     $router->get('/profile', [$profileController, 'show']);
     $router->post('/profile', [$profileController, 'update']);
 
-    // Purchase Order (§1.2): Admin & Warehouse Staff membuat (Warehouse = mengusulkan Draft)
-    // dan menerima barang; menandai Ordered dan membatalkan khusus Admin. Sales: tidak ada akses.
+    // Purchase Order (§1.2, K-01): Admin & Warehouse Staff membuat, menandai Ordered, dan
+    // menerima barang; membatalkan khusus Admin. Sales: tidak ada akses.
     $poRoles = [Role::Admin, Role::WarehouseStaff];
     $router->get('/purchase-orders', [$purchaseOrderController, 'index'], $poRoles);
     $router->get('/purchase-orders/create', [$purchaseOrderController, 'create'], $poRoles);
     $router->post('/purchase-orders', [$purchaseOrderController, 'store'], $poRoles);
     $router->get('/purchase-orders/{id}', [$purchaseOrderController, 'show'], $poRoles);
-    $router->post('/purchase-orders/{id}/order', [$purchaseOrderController, 'markOrdered'], [Role::Admin]);
+    $router->post('/purchase-orders/{id}/order', [$purchaseOrderController, 'markOrdered'], $poRoles);
     $router->post('/purchase-orders/{id}/cancel', [$purchaseOrderController, 'cancel'], [Role::Admin]);
     $router->post('/purchase-orders/{id}/receive', [$purchaseOrderController, 'receive'], $poRoles);
 
