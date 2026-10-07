@@ -21,6 +21,45 @@ final class Response
         return new self($body, $status, ['Content-Type' => 'text/html; charset=utf-8']);
     }
 
+    /**
+     * File CSV untuk diunduh (UTF-8 dengan BOM agar Excel membaca karakter Indonesia dengan benar).
+     *
+     * @param list<list<string|int>> $rows
+     */
+    public static function csv(string $filename, array $rows): self
+    {
+        $handle = fopen('php://temp', 'r+');
+        if ($handle === false) {
+            throw new \RuntimeException('Tidak dapat membuat buffer CSV.');
+        }
+        foreach ($rows as $row) {
+            fputcsv($handle, array_map([self::class, 'csvCell'], $row), ',', '"', '');
+        }
+        rewind($handle);
+        $body = "\xEF\xBB\xBF" . stream_get_contents($handle);
+        fclose($handle);
+
+        return new self($body, 200, [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . preg_replace('/[^A-Za-z0-9._-]/', '_', $filename) . '"',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * Cegah CSV/formula injection: teks yang diawali = + - @ (atau tab/CR) akan
+     * dieksekusi sebagai rumus oleh Excel, jadi diawali tanda kutip tunggal.
+     * Angka (termasuk negatif seperti qty -4) dibiarkan apa adanya.
+     */
+    public static function csvCell(string|int $value): string
+    {
+        if (is_int($value)) {
+            return (string) $value;
+        }
+
+        return preg_match('/^[=+\-@\t\r]/', $value) === 1 ? "'" . $value : $value;
+    }
+
     public static function redirect(string $location): self
     {
         return new self('', 302, ['Location' => $location]);

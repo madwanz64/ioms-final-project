@@ -6,7 +6,7 @@
  * @var int $status
  * @var string $message
  */
-$headings = [403 => 'Akses Ditolak', 404 => 'Tidak Ditemukan', 405 => 'Metode Tidak Didukung', 500 => 'Terjadi Kesalahan'];
+$headings = [403 => 'Akses Ditolak', 404 => 'Tidak Ditemukan', 405 => 'Metode Tidak Didukung', 422 => 'Data Tidak Valid', 500 => 'Terjadi Kesalahan'];
 ?>
 <!doctype html>
 <html lang="id">

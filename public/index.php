@@ -13,6 +13,7 @@ use App\Controller\DashboardController;
 use App\Controller\PartyController;
 use App\Controller\ProductController;
 use App\Controller\PurchaseOrderController;
+use App\Controller\ReportController;
 use App\Controller\SalesOrderController;
 use App\Controller\UserController;
 use App\Controller\WarehouseController;
@@ -31,6 +32,7 @@ use App\Repository\MySqlCategoryRepository;
 use App\Repository\MySqlPartyRepository;
 use App\Repository\MySqlProductRepository;
 use App\Repository\MySqlPurchaseOrderRepository;
+use App\Repository\MySqlReportRepository;
 use App\Repository\MySqlSalesOrderRepository;
 use App\Repository\MySqlStockRepository;
 use App\Repository\MySqlUserRepository;
@@ -43,6 +45,7 @@ use App\Service\LocalImageStorage;
 use App\Service\PartyService;
 use App\Service\ProductService;
 use App\Service\PurchaseOrderService;
+use App\Service\ReportService;
 use App\Service\SalesOrderPolicy;
 use App\Service\SalesOrderService;
 use App\Service\StockService;
@@ -97,7 +100,6 @@ try {
     $view->share('uploadMaxBytes', $config['upload']['max_bytes']);
 
     $authController = new AuthController(new AuthService($users), $auth, $session, $view);
-    $dashboardController = new DashboardController(new DashboardService($productRepository), $view);
     $productController = new ProductController($productService, $session, $view);
     $warehouseRepository = new MySqlWarehouseRepository($pdo);
     $supplierRepository = new MySqlPartyRepository($pdo, PartyType::Supplier);
@@ -107,6 +109,15 @@ try {
     $transactions = new PdoTransactionManager($pdo);
     $today = new DateTimeImmutable('today');
     $salesOrderPolicy = new SalesOrderPolicy();
+    // Satu repository agregasi dipakai dashboard DAN laporan CSV (DASH-01, REPORT-01).
+    $reportRepository = new MySqlReportRepository($pdo);
+    $reportService = new ReportService($reportRepository, $today);
+
+    $dashboardController = new DashboardController(
+        new DashboardService($productRepository, $reportRepository, $reportService, $today),
+        $view,
+    );
+    $reportController = new ReportController($reportService, $view);
 
     $categoryController = new CategoryController(new CategoryService($categories), $session, $view);
     $warehouseController = new WarehouseController(new WarehouseService($warehouseRepository), $session, $view);
@@ -198,6 +209,10 @@ try {
     $router->post('/sales-orders/{id}/reject', [$salesOrderController, 'reject'], $allRoles);
     $router->post('/sales-orders/{id}/cancel', [$salesOrderController, 'cancel'], [Role::Admin, Role::Sales]);
     $router->post('/sales-orders/{id}/fulfill', [$salesOrderController, 'fulfill'], [Role::Admin, Role::WarehouseStaff]);
+
+    // Laporan: semua role membuka halaman; jenis laporan yang boleh diunduh diatur ReportService (§1.2).
+    $router->get('/reports', [$reportController, 'index'], $allRoles);
+    $router->get('/reports/{type}.csv', [$reportController, 'export'], $allRoles);
 
     $response = $router->dispatch($request);
 } catch (HttpException $e) {

@@ -97,8 +97,13 @@ final class Router
      */
     private function add(string $method, string $pattern, callable $handler, array $roles, bool $public): void
     {
-        // "/products/{sku}" -> "#^/products/(?<sku>[^/]+)$#"
-        $regex = '#^' . preg_replace('#\{(\w+)\}#', '(?<$1>[^/]+)', $pattern) . '$#';
+        // "/products/{sku}" -> "#^/products/(?<sku>[^/]+)$#"; bagian literal di-escape
+        // (mis. titik pada "/reports/{type}.csv" berarti titik, bukan "karakter apa pun").
+        $regex = '#^' . preg_replace_callback(
+            '#\{(\w+)\}|[^{]+#',
+            static fn (array $m): string => isset($m[1]) ? '(?<' . $m[1] . '>[^/]+)' : preg_quote($m[0], '#'),
+            $pattern,
+        ) . '$#';
         $this->routes[] = ['method' => $method, 'regex' => $regex, 'handler' => $handler, 'roles' => $roles, 'public' => $public];
     }
 }

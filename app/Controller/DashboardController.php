@@ -11,6 +11,9 @@ use App\Entity\Role;
 use App\Entity\User;
 use App\Service\DashboardService;
 
+/**
+ * Satu URL /dashboard; isi berbeda per role sesuai §1.2 (DASH-01).
+ */
 final class DashboardController
 {
     public function __construct(
@@ -21,10 +24,12 @@ final class DashboardController
 
     public function index(Request $request, User $user): Response
     {
-        // Sales tidak melihat ringkasan stok (§1.2: dashboard Sales = order miliknya,
-        // menyusul bersama modul Sales Order).
-        $summary = $user->hasRole(Role::Admin, Role::WarehouseStaff) ? $this->dashboard->stockSummary() : null;
+        [$template, $data] = match ($user->role) {
+            Role::Admin => ['dashboard/admin', $this->dashboard->forAdmin($user)],
+            Role::Sales => ['dashboard/sales', $this->dashboard->forSales($user)],
+            Role::WarehouseStaff => ['dashboard/warehouse', $this->dashboard->forWarehouse()],
+        };
 
-        return Response::html($this->view->render('dashboard/index', ['title' => 'Dashboard', 'summary' => $summary]));
+        return Response::html($this->view->render($template, ['title' => 'Dashboard'] + $data));
     }
 }

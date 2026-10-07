@@ -24,17 +24,20 @@ $navItems = match ($currentUser->role) {
         ['/users', 'User', 'users'],
         ['/purchase-orders', 'Purchase Order', 'truck'],
         ['/sales-orders', 'Sales Order', 'cart'],
+        ['/reports', 'Laporan', 'report'],
     ],
     Role::Sales => [
         ['/dashboard', 'Dashboard', 'dashboard'],
         ['/products', 'Katalog Produk', 'box'],
         ['/sales-orders', 'Sales Order Saya', 'cart'],
+        ['/reports', 'Laporan Order', 'report'],
     ],
     Role::WarehouseStaff => [
         ['/dashboard', 'Dashboard', 'dashboard'],
         ['/products', 'Produk & Stok', 'box'],
         ['/purchase-orders', 'Purchase Order', 'truck'],
         ['/sales-orders', 'Sales Order', 'cart'],
+        ['/reports', 'Laporan Stok', 'report'],
     ],
 };
 ?>
