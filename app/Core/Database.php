@@ -31,10 +31,16 @@ final class Database
         return $pdo;
     }
 
+    private static int $savepointDepth = 0;
+
     /**
      * Menjalankan $work dalam satu transaksi eksplisit (DB-01).
-     * Bila sudah ada transaksi aktif (mis. integration test yang membungkus
-     * tiap test dengan rollback), $work ikut transaksi luar itu.
+     *
+     * Bila sudah ada transaksi aktif (blok bersarang, mis. repository yang dipanggil
+     * di dalam transaksi service, atau integration test yang membungkus tiap test),
+     * $work dijalankan dalam SAVEPOINT: bila gagal, HANYA pekerjaan blok ini yang
+     * dibatalkan (ROLLBACK TO SAVEPOINT) lalu exception diteruskan, sehingga perilakunya
+     * sama dengan transaksi tunggal — tidak ada tulisan setengah jadi yang tertinggal.
      *
      * @template T
      * @param callable(): T $work
@@ -43,7 +49,19 @@ final class Database
     public static function transactional(PDO $pdo, callable $work): mixed
     {
         if ($pdo->inTransaction()) {
-            return $work();
+            $savepoint = 'sp_' . ++self::$savepointDepth;
+            $pdo->exec('SAVEPOINT ' . $savepoint); // nama dari counter internal, bukan input
+            try {
+                $result = $work();
+                $pdo->exec('RELEASE SAVEPOINT ' . $savepoint);
+
+                return $result;
+            } catch (Throwable $e) {
+                $pdo->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+                throw $e;
+            } finally {
+                self::$savepointDepth--;
+            }
         }
 
         $pdo->beginTransaction();
