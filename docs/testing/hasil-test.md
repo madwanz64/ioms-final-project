@@ -134,3 +134,48 @@ Area logic baru: validasi tanggal PO, transisi status PO, perhitungan goods rece
 | 10 | Admin membatalkan PO PartiallyReceived | ditolak | ✅ |
 | 11 | Terima sisa (6 + 5) | Received; 3 baris ledger Receipt, `performed_by` = Rudi; stok = SUM(ledger) (13 dan 6) | ✅ |
 | 12 | Terima lagi setelah Received | ditolak; form penerimaan tidak tampil | ✅ |
+
+---
+
+## Slice 4 — Sales Order, approval & goods issue (2026-10-07)
+
+### Otomatis
+
+| Suite | Hasil |
+|---|---|
+| Unit | 92 test (+21), lulus |
+| Integration | 22 test (+3), lulus |
+| Semua | 114 test, 298 assertion, lulus |
+
+Area logic baru: ownership & authorization approve (`SalesOrderPolicy`), transisi status
+SO, goods issue (`SalesOrderService`). Refactor R-02: 89 test lama lulus tanpa diubah.
+
+Mutation check: syarat "penyetuju bukan pembuat order" dihapus → 2 test gagal (Admin
+atas order sendiri). Sales atas order sendiri tetap ditolak oleh syarat role, sesuai
+desain berlapis → dikembalikan.
+
+### Skenario manual (smoke test 4 akun: Sinta & Doni = Sales, Admin, Rudi = Warehouse)
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | Daftar SO Sinta | hanya 9 order miliknya (= jumlah di DB) | ✅ |
+| 2 | Daftar SO Warehouse | 14 order non-Draft, tidak ada Draft | ✅ |
+| 3 | Sinta membuka SO milik Doni | 404 | ✅ |
+| 4 | Sinta membuat SO SKU-0006 qty 5 (stok 2) dengan `items[0][price]=1` | 422 "Stok tersedia di Gudang Jakarta hanya 2." | ✅ |
+| 5 | Sinta membuat SO SKU-0003 qty 4 dengan `price=1` disuntik | tersimpan Draft, harga 650.000 dari katalog | ✅ |
+| 6 | Warehouse membuka Draft Sinta | 404 | ✅ |
+| 7 | Sinta submit | PendingApproval | ✅ |
+| 8 | **Sinta approve SO miliknya sendiri** (POST langsung) | **403** "Anda tidak dapat menyetujui Sales Order yang Anda buat sendiri." | ✅ |
+| 9 | Doni (Sales lain) approve SO Sinta | 404, status tetap PendingApproval | ✅ (setelah perbaikan, lihat catatan) |
+| 10 | Warehouse approve / Sinta goods issue | 403 / 403 | ✅ |
+| 11 | Warehouse goods issue sebelum Approved | ditolak dengan pesan status | ✅ |
+| 12 | Admin approve | Approved, `approved_by` = 1 | ✅ |
+| 13 | Sinta membatalkan SO Approved | 403 | ✅ |
+| 14 | Warehouse goods issue | Fulfilled; ledger Issue -4 oleh Rudi; stok 34 → 30 = SUM(ledger) | ✅ |
+| 15 | **Dua SO masing-masing 2 unit SKU-0006 (stok 2), keduanya Approved; goods issue berurutan** | SO pertama Fulfilled; SO kedua ditolak "tersedia 0, dibutuhkan 2" dan tetap Approved; stok 0 = SUM(ledger); tidak ada ledger untuk SO kedua | ✅ |
+| 16 | Admin membuat, mengajukan, lalu menyetujui SO miliknya | 403; tombol Setujui tidak tampil, ada keterangan "harus disetujui Admin lain" | ✅ |
+| 17 | Admin membatalkan SO Approved / SO Fulfilled | Cancelled / ditolak | ✅ |
+
+**Catatan perbaikan:** pada percobaan pertama, skenario #9 mengembalikan 302 + flash
+"tidak ditemukan" (data aman, status tidak berubah, tapi kode HTTP tidak konsisten dengan
+halaman detail). Diperbaiki dengan `NotFoundException` → 404, lalu diuji ulang.
