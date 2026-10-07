@@ -58,7 +58,7 @@ $actions = $currentUser->role === Role::Admin
   </section>
 
   <section class="panel animate-in">
-    <h3>Stok per Gudang — total <?= e($totalStock) ?> <?= e($product->unit) ?></h3>
+    <h3>Stok per Gudang — total <span data-stock-total><?= e($totalStock) ?></span> <?= e($product->unit) ?></h3>
     <?php if ($stockLevels === []): ?>
       <p class="text-muted">Belum ada baris stok untuk produk ini.</p>
     <?php else: ?>
@@ -67,10 +67,14 @@ $actions = $currentUser->role === Role::Admin
           <thead><tr><th>Gudang</th><th class="num">Quantity</th></tr></thead>
           <tbody>
             <?php foreach ($stockLevels as $level): ?>
-              <tr><td><?= e($level->warehouseName) ?></td><td class="num"><?= e($level->quantity) ?></td></tr>
+              <tr><td><?= e($level->warehouseName) ?></td><td class="num" data-stock-warehouse="<?= e($level->warehouseId) ?>"><?= e($level->quantity) ?></td></tr>
             <?php endforeach; ?>
           </tbody>
         </table>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn small" data-refresh-stock="<?= e($product->sku) ?>">↻ Muat ulang stok</button>
+        <span class="hint" data-refresh-status aria-live="polite">Diambil dari <code>GET /api/products/<?= e($product->sku) ?>/availability</code> (API-01).</span>
       </div>
     <?php endif; ?>
   </section>

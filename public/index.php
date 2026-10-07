@@ -11,6 +11,7 @@ use App\Controller\AuthController;
 use App\Controller\CategoryController;
 use App\Controller\DashboardController;
 use App\Controller\PartyController;
+use App\Controller\ProductApiController;
 use App\Controller\ProductController;
 use App\Controller\PurchaseOrderController;
 use App\Controller\ReportController;
@@ -214,16 +215,21 @@ try {
     $router->get('/reports', [$reportController, 'index'], $allRoles);
     $router->get('/reports/{type}.csv', [$reportController, 'export'], $allRoles);
 
+    // API-01: endpoint JSON, autentikasi sama dengan halaman (session); semua role yang login.
+    $router->get('/api/products/{sku}/availability', [new ProductApiController($productService), 'availability'], $allRoles);
+
     $response = $router->dispatch($request);
 } catch (HttpException $e) {
-    $response = Response::html($view->render('errors/error', ['status' => $e->status, 'message' => $e->getMessage()], null), $e->status);
+    $response = $request->isApi()
+        ? Response::json(['error' => match ($e->status) { 403 => 'forbidden', 404 => 'not_found', 405 => 'method_not_allowed', default => 'error' }, 'message' => $e->getMessage()], $e->status)
+        : Response::html($view->render('errors/error', ['status' => $e->status, 'message' => $e->getMessage()], null), $e->status);
 } catch (Throwable $e) {
     // Detail teknis (termasuk PDOException) hanya masuk log server.
     error_log((string) $e);
-    $response = Response::html($view->render('errors/error', [
-        'status' => 500,
-        'message' => 'Terjadi kesalahan pada server. Silakan coba lagi beberapa saat lagi.',
-    ], null), 500);
+    $message = 'Terjadi kesalahan pada server. Silakan coba lagi beberapa saat lagi.';
+    $response = $request->isApi()
+        ? Response::json(['error' => 'server_error', 'message' => $message], 500)
+        : Response::html($view->render('errors/error', ['status' => 500, 'message' => $message], null), 500);
 }
 
 $response->send();

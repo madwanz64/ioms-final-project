@@ -34,6 +34,14 @@ final class Request
         );
     }
 
+    /**
+     * Request ke endpoint JSON (/api/...). Error untuk request ini dijawab JSON.
+     */
+    public function isApi(): bool
+    {
+        return str_starts_with($this->path, '/api/');
+    }
+
     public function query(string $key, string $default = ''): string
     {
         return self::stringValue($this->query[$key] ?? null) ?? $default;

@@ -502,3 +502,7 @@ fieldset.line-items .data-table input{max-width:140px;}
 fieldset.line-items .data-table .error-msg{display:block; font-size:.72rem; color:var(--danger); font-weight:600; margin-top:4px;}
 fieldset.line-items [aria-invalid="true"], .data-table input[aria-invalid="true"]{border-color:var(--danger);}
 .form-actions form{display:inline;}
+
+/* Petunjuk stok per baris SO (diisi lewat Fetch API) */
+.line-stock{display:block; font-size:.72rem; color:var(--text-muted); margin-top:4px;}
+.line-stock.insufficient{color:var(--danger); font-weight:600;}

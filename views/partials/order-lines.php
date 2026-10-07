@@ -35,8 +35,9 @@ $priceOf = static fn (App\Entity\Product $p): int => $priceField === null ? $p->
             </td>
             <td class="num">
               <label class="sr-only" for="item-<?= e($i) ?>-qty">Qty baris <?= e($i + 1) ?></label>
-              <input type="number" id="item-<?= e($i) ?>-qty" name="items[<?= e($i) ?>][qty]" value="<?= e($line['qty'] ?? '') ?>" min="1" step="1" inputmode="numeric"<?= $lineError($i, 'qty') !== null ? ' aria-invalid="true"' : '' ?>>
+              <input type="number" id="item-<?= e($i) ?>-qty" name="items[<?= e($i) ?>][qty]" value="<?= e($line['qty'] ?? '') ?>" min="1" step="1" inputmode="numeric" data-line-qty<?= $lineError($i, 'qty') !== null ? ' aria-invalid="true"' : '' ?>>
               <?php if ($lineError($i, 'qty') !== null): ?><span class="error-msg"><?= e($lineError($i, 'qty')) ?></span><?php endif; ?>
+              <?php if ($priceField === null): ?><span class="line-stock" data-line-stock aria-live="polite"></span><?php endif; ?>
             </td>
             <td class="num">
               <?php if ($priceField === null): ?>

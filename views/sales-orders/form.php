@@ -28,7 +28,7 @@ foreach ($options['warehouses'] as $warehouse) {
 ]) ?>
 <?= $view->partial('partials/form-errors', ['errors' => $errors]) ?>
 
-<form class="data-form wide animate-in" method="post" action="/sales-orders">
+<form class="data-form wide animate-in" method="post" action="/sales-orders" data-stock-check>
   <input type="hidden" name="_csrf" value="<?= e($csrfToken) ?>">
   <div class="form-row">
     <?= $view->partial('partials/form-field', $common + ['name' => 'customer_id', 'label' => 'Customer', 'type' => 'select', 'required' => true, 'options' => $customerOptions, 'hint' => 'Hanya customer aktif.']) ?>

@@ -62,7 +62,10 @@ final class Router
             $user = $this->auth->user();
             if (!$route['public']) {
                 if ($user === null) {
-                    return Response::redirect('/login');
+                    // API-01: klien API mendapat kode status yang tepat, bukan redirect ke halaman HTML.
+                    return $request->isApi()
+                        ? Response::json(['error' => 'unauthenticated', 'message' => 'Silakan login terlebih dahulu.'], 401)
+                        : Response::redirect('/login');
                 }
                 if ($route['roles'] !== [] && !$user->hasRole(...$route['roles'])) {
                     throw HttpException::forbidden();

@@ -106,13 +106,94 @@
           field.removeAttribute('aria-invalid');
         });
         row.querySelectorAll('.error-msg').forEach(function (msg) { msg.remove(); });
-        row.querySelectorAll('[data-line-price-text]').forEach(function (text) { text.textContent = ''; });
+        row.querySelectorAll('[data-line-price-text], [data-line-stock]').forEach(function (text) {
+          text.textContent = '';
+          text.classList.remove('insufficient');
+        });
         body.appendChild(row);
         reindex();
         row.querySelector('select').focus();
       });
     }
     reindex();
+  });
+
+  // ---------------------------------------------------------------------
+  // API-01: ketersediaan stok lewat Fetch API (JSON). Server tetap memvalidasi ulang.
+  // ---------------------------------------------------------------------
+  function fetchAvailability(sku) {
+    return fetch('/api/products/' + encodeURIComponent(sku) + '/availability', {
+      headers: { Accept: 'application/json' },
+      credentials: 'same-origin',
+    }).then(function (response) {
+      return response.json().then(function (body) {
+        if (!response.ok) {
+          const error = new Error(body.message || 'Gagal memuat stok.');
+          error.status = response.status;
+          throw error;
+        }
+        return body;
+      });
+    });
+  }
+
+  // Form Sales Order: tampilkan stok tersedia di gudang asal untuk produk tiap baris.
+  document.querySelectorAll('form[data-stock-check]').forEach(function (form) {
+    const warehouseSelect = form.querySelector('[name="warehouse_id"]');
+
+    function updateLine(row) {
+      const hint = row.querySelector('[data-line-stock]');
+      const sku = row.querySelector('[data-line-product]').value;
+      const qty = Number(row.querySelector('[data-line-qty]').value || 0);
+      if (!hint) return;
+      if (!sku || !warehouseSelect.value) {
+        hint.textContent = '';
+        return;
+      }
+      hint.textContent = 'Memuat stok…';
+      fetchAvailability(sku).then(function (data) {
+        const warehouse = data.warehouses.find(function (w) { return String(w.id) === warehouseSelect.value; });
+        const available = warehouse ? warehouse.quantity : 0;
+        hint.textContent = 'Stok tersedia: ' + available + ' ' + data.unit;
+        hint.classList.toggle('insufficient', qty > available);
+      }).catch(function (error) {
+        hint.textContent = error.status === 401 ? 'Sesi berakhir, silakan login ulang.' : error.message;
+      });
+    }
+
+    function updateAll() {
+      form.querySelectorAll('tr[data-line]').forEach(updateLine);
+    }
+
+    form.addEventListener('change', function (event) {
+      if (event.target === warehouseSelect) {
+        updateAll();
+      } else if (event.target.matches('[data-line-product], [data-line-qty]')) {
+        updateLine(event.target.closest('tr'));
+      }
+    });
+    updateAll();
+  });
+
+  // Detail produk: muat ulang stok per gudang tanpa reload halaman.
+  document.querySelectorAll('[data-refresh-stock]').forEach(function (button) {
+    const status = document.querySelector('[data-refresh-status]');
+    button.addEventListener('click', function () {
+      button.disabled = true;
+      fetchAvailability(button.dataset.refreshStock).then(function (data) {
+        data.warehouses.forEach(function (w) {
+          const cell = document.querySelector('[data-stock-warehouse="' + w.id + '"]');
+          if (cell) cell.textContent = w.quantity;
+        });
+        const total = document.querySelector('[data-stock-total]');
+        if (total) total.textContent = data.totalStock;
+        if (status) status.textContent = 'Diperbarui ' + new Date().toLocaleTimeString('id-ID') + (data.lowStock ? ' — di bawah reorder point.' : '.');
+      }).catch(function (error) {
+        toast(error.status === 401 ? 'Sesi berakhir, silakan login ulang.' : error.message, 'error');
+      }).finally(function () {
+        button.disabled = false;
+      });
+    });
   });
 
   // Upload gambar: cek ukuran & tipe lebih awal + preview. Server tetap memeriksa ulang dari isi file.
