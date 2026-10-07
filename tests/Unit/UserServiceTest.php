@@ -114,6 +114,71 @@ final class UserServiceTest extends TestCase
         self::assertSame(Role::Admin, $stored->role);
     }
 
+    public function testOwnProfileCanChangeNameButIgnoresEmailRoleAndStatusFromInput(): void
+    {
+        $sinta = $this->users->findById(2);
+        self::assertNotNull($sinta);
+
+        $result = $this->service->updateOwnProfile($sinta, [
+            'name' => 'Sinta W.',
+            // Upaya "mass assignment": field ini bukan bagian form profil dan harus diabaikan.
+            'email' => 'admin-baru@ioms.test', 'role' => 'Admin', 'active' => '0',
+        ]);
+
+        self::assertSame('Sinta W.', $result['user']->name);
+        self::assertSame('sinta@ioms.test', $result['user']->email);
+        self::assertSame(Role::Sales, $result['user']->role);
+        self::assertTrue($result['user']->active);
+        self::assertFalse($result['passwordChanged']);
+        self::assertSame($sinta->passwordHash, $result['user']->passwordHash);
+    }
+
+    public function testOwnPasswordChangeRequiresCorrectCurrentPassword(): void
+    {
+        $sinta = $this->users->findById(2);
+        self::assertNotNull($sinta);
+
+        $result = $this->service->updateOwnProfile($sinta, [
+            'name' => 'Sinta', 'current_password' => 'sales12345', 'password' => 'baru-rahasia', 'password_confirmation' => 'baru-rahasia',
+        ]);
+
+        self::assertTrue($result['passwordChanged']);
+        self::assertTrue(password_verify('baru-rahasia', $result['user']->passwordHash));
+        self::assertFalse(password_verify('sales12345', $result['user']->passwordHash));
+    }
+
+    /**
+     * @param array<string, string> $input
+     */
+    #[DataProvider('invalidOwnPasswordChanges')]
+    public function testInvalidOwnPasswordChangeIsRejectedAndHashUntouched(array $input, string $field, string $message): void
+    {
+        $sinta = $this->users->findById(2);
+        self::assertNotNull($sinta);
+
+        try {
+            $this->service->updateOwnProfile($sinta, $input + ['name' => 'Sinta']);
+            self::fail('ValidationException seharusnya dilempar.');
+        } catch (ValidationException $e) {
+            self::assertSame($message, $e->errors[$field]);
+        }
+        self::assertSame($sinta->passwordHash, $this->users->findById(2)?->passwordHash);
+    }
+
+    /**
+     * @return array<string, array{array<string, string>, string, string}>
+     */
+    public static function invalidOwnPasswordChanges(): array
+    {
+        return [
+            'password saat ini salah' => [['current_password' => 'tebakan123', 'password' => 'baru-rahasia', 'password_confirmation' => 'baru-rahasia'], 'current_password', 'Password saat ini salah.'],
+            'password saat ini kosong' => [['current_password' => '', 'password' => 'baru-rahasia', 'password_confirmation' => 'baru-rahasia'], 'current_password', 'Isi password saat ini untuk mengganti password.'],
+            'sama dengan password lama' => [['current_password' => 'sales12345', 'password' => 'sales12345', 'password_confirmation' => 'sales12345'], 'password', 'Password baru harus berbeda dari password saat ini.'],
+            'konfirmasi berbeda' => [['current_password' => 'sales12345', 'password' => 'baru-rahasia', 'password_confirmation' => 'lain-lagi1'], 'password_confirmation', 'Konfirmasi password tidak sama.'],
+            'terlalu pendek' => [['current_password' => 'sales12345', 'password' => 'pendek', 'password_confirmation' => 'pendek'], 'password', 'Password minimal 8 karakter.'],
+        ];
+    }
+
     /**
      * @param array<string, string> $overrides
      * @return array<string, string>
