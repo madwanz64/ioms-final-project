@@ -32,7 +32,7 @@ $ownPending = $order->status === SalesOrderStatus::PendingApproval && $order->is
 <div class="two-col">
   <section class="panel animate-in">
     <h3>Informasi SO</h3>
-    <table class="data-table" style="border:none;">
+    <table class="data-table info-table">
       <tbody>
         <tr><th scope="row">No. SO</th><td><?= e($order->orderNo) ?></td></tr>
         <tr><th scope="row">Status</th><td><span class="badge <?= e(strtolower($order->status->value)) ?>"><?= e($order->status->label()) ?></span></td></tr>

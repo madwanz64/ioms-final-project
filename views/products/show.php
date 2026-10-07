@@ -35,7 +35,7 @@ $actions = $currentUser->role === Role::Admin
           <span>Tidak ada<br>gambar</span>
         <?php endif; ?>
       </div>
-      <table class="data-table" style="border:none; flex:1; min-width:220px;">
+      <table class="data-table info-table" style="flex:1; min-width:220px;">
         <tbody>
           <tr><th scope="row">SKU</th><td><?= e($product->sku) ?></td></tr>
           <tr><th scope="row">Kategori</th><td><?= e($category) ?></td></tr>

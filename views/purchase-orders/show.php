@@ -24,7 +24,7 @@ $csrfField = '<input type="hidden" name="_csrf" value="' . e($csrfToken) . '">';
 <div class="two-col">
   <section class="panel animate-in">
     <h3>Informasi PO</h3>
-    <table class="data-table" style="border:none;">
+    <table class="data-table info-table">
       <tbody>
         <tr><th scope="row">No. PO</th><td><?= e($order->orderNo) ?></td></tr>
         <tr><th scope="row">Status</th><td><span class="badge <?= e(strtolower($order->status->value)) ?>"><?= e($order->status->label()) ?></span></td></tr>
