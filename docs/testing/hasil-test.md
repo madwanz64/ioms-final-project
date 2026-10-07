@@ -306,3 +306,26 @@ Lingkungan: Docker 29.8.2, Compose 5.5.1 (Docker Desktop, Windows); image `php:8
 `Env::load()` hanya membaca env var sungguhan untuk key yang ada di file `.env`. Di container
 tidak ada `.env`, sehingga `DB_HOST=db` dari Compose akan diabaikan. Diperbaiki sebelum build
 pertama (commit `fix:` terpisah) dengan unit test yang gagal pada implementasi lama.
+
+---
+
+## Slice 8 — Profil sendiri (2026-10-07)
+
+Otomatis: 160 test, 399 assertion, lulus (+7 unit di `UserServiceTest`). Mutation: verifikasi
+password lama dimatikan → test "password saat ini salah" gagal → dikembalikan.
+
+Smoke test di Docker (setelah `docker compose up --build -d app`):
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | `/profile` tanpa login | 302 ke `/login` | ✅ |
+| 2 | Sales / Admin / Warehouse membuka profil | 200, email & role tampil read-only milik masing-masing | ✅ |
+| 3 | POST tanpa token CSRF | 403 | ✅ |
+| 4 | Ubah nama sambil menyisipkan `role=Admin&email=evil@...&active=0` | nama berubah; email, role, status tetap | ✅ |
+| 5 | Password lama salah | 422 "Password saat ini salah."; tidak ada password yang dikirim balik ke form | ✅ |
+| 6 | Ganti password dengan benar | ID session berubah, hash berubah (`$2y$10$`), sesi tetap valid | ✅ |
+| 7 | Login dengan password lama / baru | 401 / 302 ke dashboard | ✅ |
+
+Catatan: satu pengecekan awal (profil Warehouse) sempat gagal karena skrip uji memakai ulang
+cookie jar milik Admin; diulang dengan cookie jar terpisah dan lulus. Bukan bug aplikasi.
+Database Docker di-reset ke seed setelah uji (`down -v`).

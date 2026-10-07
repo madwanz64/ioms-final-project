@@ -7,7 +7,7 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 
 > **Status: dalam pengerjaan.** Seluruh fitur aplikasi §2 sudah jalan (login, master data,
 > PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal) dan dapat
-> dijalankan dengan Docker Compose. Yang belum: halaman profil sendiri dan sebagian dokumen
+> dijalankan dengan Docker Compose. Yang belum: sebagian dokumen
 > bukti (class diagram as-built, audit SRP, screenshot).
 
 ## Fitur yang sudah tersedia
@@ -19,6 +19,7 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 | PRD-01 Produk | ✅ Tambah/edit/nonaktif (tanpa hapus), SKU unik & immutable, angka bulat ≥ 0, upload JPG/PNG divalidasi dari isi file, nama file acak |
 | WH-01 Stok multi-gudang | ✅ Admin mengelola gudang; detail produk menampilkan total & rincian per gudang; produk baru dan gudang baru otomatis melengkapi baris stok 0 |
 | USR-01 Manajemen user | ✅ Admin menambah/mengubah/menonaktifkan user, email unik, role hanya 3 nilai, password di-hash; Sales & Warehouse mendapat 403; Admin tidak bisa menonaktifkan akunnya sendiri |
+| Profil sendiri | ✅ Semua role mengubah nama & password (wajib password lama); email/role/status hanya oleh Admin |
 | Master data | ✅ Kategori (nama unik), supplier & customer (nonaktif, tanpa hapus) — khusus Admin |
 | FIND-01 Produk | ✅ Cari nama/SKU, filter kategori & status stok, sort, pagination 10/halaman, filter tetap aktif saat pindah halaman |
 | DASH-01 Dashboard | ✅ Admin: nilai inventori, produk di bawah reorder point, order per status (PO & SO); Sales: order miliknya per status; Warehouse: antrean goods receipt/issue & low stock — semua dari query agregasi |
