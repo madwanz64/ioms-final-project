@@ -7,6 +7,7 @@ namespace Tests\Unit;
 use App\Entity\StockChange;
 use App\Service\BusinessRuleException;
 use App\Service\StockService;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Tests\Fake\InMemoryStockRepository;
 
@@ -73,6 +74,13 @@ final class StockServiceTest extends TestCase
         $this->service->apply([$this->change('SKU-C', 1), $this->change('SKU-A', 1), $this->change('SKU-B', 1)]);
 
         self::assertSame(['SKU-A@1', 'SKU-B@1', 'SKU-C@1'], $this->repo->lockOrder);
+    }
+
+    public function testZeroDeltaIsRejectedWhenTheChangeIsCreated(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->change('SKU-A', 0);
     }
 
     private function change(string $sku, int $delta): StockChange

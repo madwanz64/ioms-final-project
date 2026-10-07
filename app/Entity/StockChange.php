@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use InvalidArgumentException;
+
 /**
  * Satu perubahan stok yang akan dicatat: satu baris stock_ledger sekaligus
  * perubahan product_stock sebesar $delta (positif = masuk, negatif = keluar).
@@ -22,6 +24,11 @@ final class StockChange
         public readonly string $refId,
         public readonly int $performedBy,
     ) {
+        // Delta 0 tidak mengubah baris, sehingga guard rowCount() di MySqlStockRepository
+        // akan salah membacanya sebagai stok tidak cukup.
+        if ($delta === 0) {
+            throw new InvalidArgumentException('Delta perubahan stok tidak boleh 0.');
+        }
     }
 
     /**
