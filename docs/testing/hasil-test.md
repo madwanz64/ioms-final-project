@@ -265,3 +265,44 @@ Mutation check: `LowStockReportService` hanya membaca halaman pertama → test 1
 - Zona waktu: output script mencetak 03:13 padahal 10:13 WIB. PHP berjalan di UTC, sehingga
   pukul 00:00–07:00 WIB tanggal hari ini akan ditolak sebagai "masa depan". Diperbaiki dengan
   `APP_TIMEZONE` (PHP & sesi MySQL); diverifikasi `date()` PHP = `NOW()` MySQL = 10:14 WIB.
+
+---
+
+## Slice 7 — Docker Compose (2026-10-07)
+
+Lingkungan: Docker 29.8.2, Compose 5.5.1 (Docker Desktop, Windows); image `php:8.3-apache`
+(PHP 8.3.35) dan `mysql:8.0`.
+
+| # | Skenario | Hasil yang diharapkan | Hasil |
+|---|---|---|---|
+| 1 | `docker compose up --build -d` | db *healthy* setelah seed diimpor, lalu app start | ✅ |
+| 2 | Ekstensi PHP di container | pdo_mysql, fileinfo, mbstring | ✅ |
+| 3 | Seed otomatis | 32 produk, 28 order (PO+SO), 6 user; waktu MySQL = WIB | ✅ |
+| 4 | **`docker compose exec app composer test`** | 153 test (unit + integration ke MySQL di container) lulus | ✅ |
+| 5 | `docker compose exec app composer analyse` | PHPStan 0 error | ✅ |
+| 6 | `docker compose exec app php scripts/check-low-stock.php` | ringkasan 5 produk, exit 0 | ✅ |
+| 7 | HTTP: `/login`, CSS/JS statis, API tanpa login | 200, 200, 401 JSON | ✅ |
+| 8 | Akses `/config/config.php`, `/.env`, `/../app/Core/Env.php` | 404 (di luar document root) | ✅ |
+| 9 | Login 3 role; akun nonaktif | 302 ke dashboard; 401 | ✅ |
+| 10 | PO dibuat Warehouse → Ordered (Admin) → terima 8 + 12 | Received | ✅ |
+| 11 | SO Sinta → submit → Sinta approve sendiri → Admin approve → Warehouse goods issue | 403 untuk Sinta; Fulfilled, `approved_by` = 1 | ✅ |
+| 12 | Stok SKU-0002@Jakarta setelah +20 −15 | 6 = SUM(ledger); timestamp ledger WIB | ✅ |
+| 13 | Upload PNG produk | tersimpan di volume, URL gambar 200 `image/png` | ✅ |
+| 14 | CSV ledger hari ini & API availability | 3 baris (Receipt, Receipt, Issue); JSON stok terbaru | ✅ |
+| 15 | Container db dihentikan | halaman 500 pesan umum tanpa SQLSTATE; `PDOException` tercatat di `docker compose logs app` | ✅ |
+
+### Uji dari folder bersih (§5.1 "Uji sebelum submission")
+
+`git clone` ke folder baru (tanpa `vendor/` dan `.env`) → `cp .env.example .env` →
+`docker compose up --build -d` (project & port berbeda agar tidak bentrok):
+
+- 153 test lulus di container clone;
+- login Admin berhasil, dashboard menampilkan nilai inventori Rp 248.575.000 dari seed;
+- JOB-01 berjalan;
+- stack clone dihapus kembali (`down -v`).
+
+### Bug yang ditemukan saat menyiapkan Docker
+
+`Env::load()` hanya membaca env var sungguhan untuk key yang ada di file `.env`. Di container
+tidak ada `.env`, sehingga `DB_HOST=db` dari Compose akan diabaikan. Diperbaiki sebelum build
+pertama (commit `fix:` terpisah) dengan unit test yang gagal pada implementasi lama.

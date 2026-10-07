@@ -55,5 +55,6 @@ Sudah diuji terhadap MySQL 8.0.46 sungguhan (2026-09-18):
 - Query JOIN realistis (produk low-stock lintas 3 tabel, detail Sales
   Order lintas 4 tabel) menghasilkan data yang sesuai ekspektasi.
 
-Belum diuji: menjalankan skema ini di dalam container Docker (menyusul
-saat minggu Docker/backend PHP tiba).
+Docker (2026-10-07): file ini di-mount ke `/docker-entrypoint-initdb.d/` container
+`mysql:8.0` (lihat `compose.yaml`) dan diimpor otomatis saat volume database pertama kali
+dibuat. Terverifikasi dari clone bersih: 32 produk, 28 order, 6 user; 153 test lulus di container.

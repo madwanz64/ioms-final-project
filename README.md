@@ -6,8 +6,9 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 (Admin, Sales, Warehouse Staff).
 
 > **Status: dalam pengerjaan.** Seluruh fitur aplikasi §2 sudah jalan (login, master data,
-> PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal). Yang belum:
-> Docker Compose dan sebagian dokumen bukti (lihat [Known limitations](#known-limitations)).
+> PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal) dan dapat
+> dijalankan dengan Docker Compose. Yang belum: halaman profil sendiri dan sebagian dokumen
+> bukti (class diagram as-built, audit SRP, screenshot).
 
 ## Fitur yang sudah tersedia
 
@@ -48,13 +49,41 @@ prototype/       Prototype HTML/JS statis dari fase sebelumnya (arsip, bukan apl
 docs/            planning, architecture, quality, testing
 ```
 
-## Menjalankan secara lokal (sementara, sebelum Docker)
+## Menjalankan dengan Docker (cara utama)
+
+Kebutuhan: Docker Desktop / Docker Engine dengan Compose v2.
+
+```bash
+cp .env.example .env                     # nilai contoh sudah bisa langsung dipakai
+docker compose up --build -d             # build image + MySQL 8, tunggu sampai selesai
+```
+
+- Aplikasi: **http://localhost:8080** (ubah lewat `APP_PORT` di `.env`).
+- Schema & seed (`database/schema-and-seed.sql`) diimpor **otomatis** oleh container MySQL
+  saat volume database pertama kali dibuat. Service `app` baru start setelah database
+  *healthy* (impor selesai).
+- MySQL juga bisa diakses dari host di `127.0.0.1:3307` (`DB_HOST_PORT`), user `root`,
+  password `DB_PASS` dari `.env`.
+
+Perintah yang sering dipakai:
+
+```bash
+docker compose exec app composer test                     # unit + integration test (MySQL di container)
+docker compose exec app composer analyse                  # PHPStan
+docker compose exec app php scripts/check-low-stock.php   # JOB-01
+docker compose logs -f app                                # log Apache/PHP (error 500 tercatat di sini)
+docker compose down -v && docker compose up -d            # reset database ke kondisi seed awal
+```
+
+> `-v` menghapus volume data MySQL dan gambar upload, jadi seed diimpor ulang dari awal.
+
+## Menjalankan tanpa Docker (opsional)
 
 Kebutuhan: PHP 8.2+ (ekstensi pdo_mysql, fileinfo, mbstring), Composer 2, MySQL 8.
 
 ```bash
 composer install
-cp .env.example .env              # lalu isi DB_PASS sesuai MySQL lokal
+cp .env.example .env              # sesuaikan DB_HOST/DB_PORT/DB_USER/DB_PASS dengan MySQL lokal
 mysql -u root -p < database/schema-and-seed.sql
 composer serve                    # http://localhost:8000
 ```
@@ -73,7 +102,8 @@ GET /api/products/{sku}/availability      (butuh session login, sama seperti hal
 ## Script terjadwal (JOB-01)
 
 ```bash
-php scripts/check-low-stock.php      # atau: composer low-stock
+docker compose exec app php scripts/check-low-stock.php   # di Docker
+php scripts/check-low-stock.php                           # tanpa Docker (atau: composer low-stock)
 ```
 
 Mencetak produk aktif di bawah reorder point (kekurangan terbesar dulu, rincian per gudang).
@@ -92,8 +122,10 @@ Password di atas hanya untuk data demo seed; yang tersimpan di database adalah h
 
 ## Test & static analysis
 
+Di Docker, awali dengan `docker compose exec app`:
+
 ```bash
-composer test               # unit + integration
+composer test               # unit + integration (satu perintah)
 composer test:unit          # unit saja (tanpa database)
 composer test:integration   # butuh MySQL; membangun ulang database DB_TEST_NAME (default ioms_test)
 composer analyse            # PHPStan level 6
@@ -106,7 +138,8 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
 
 ## Known limitations
 
-- Docker Compose belum tersedia; aplikasi & test baru diuji pada PHP 8.3 + MySQL 8.0 lokal.
+- Image aplikasi memasang dev dependency (PHPUnit, PHPStan) agar test bisa dijalankan di
+  container; untuk produksi sungguhan sebaiknya dibuat image terpisah dengan `--no-dev`.
 - Interpretasi requirement yang ambigu (mis. arti "mengusulkan" PO): [docs/planning/catatan-keputusan.md](docs/planning/catatan-keputusan.md).
 - Daftar lengkap jalan pintas: [docs/quality/tech-debt.md](docs/quality/tech-debt.md).
 
