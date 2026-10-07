@@ -7,8 +7,8 @@ stok multi-gudang, Purchase Order, dan Sales Order dengan tiga peran
 
 > **Status: dalam pengerjaan.** Seluruh fitur aplikasi §2 sudah jalan (login, master data,
 > PO, SO, stock ledger, dashboard, laporan CSV, API JSON, script terjadwal) dan dapat
-> dijalankan dengan Docker Compose. Yang belum: sebagian dokumen
-> bukti (class diagram as-built, audit SRP, screenshot).
+> dijalankan dengan Docker Compose. Yang belum: screenshot UI,
+> critique.md (menunggu cuplikan assessor), dan tag release.
 
 ## Fitur yang sudah tersedia
 
@@ -143,6 +143,15 @@ Hasil terakhir: [docs/testing/hasil-test.md](docs/testing/hasil-test.md) ·
   container; untuk produksi sungguhan sebaiknya dibuat image terpisah dengan `--no-dev`.
 - Interpretasi requirement yang ambigu (mis. arti "mengusulkan" PO): [docs/planning/catatan-keputusan.md](docs/planning/catatan-keputusan.md).
 - Daftar lengkap jalan pintas: [docs/quality/tech-debt.md](docs/quality/tech-debt.md).
+
+## Dokumen
+
+| Folder | Isi |
+|---|---|
+| [docs/planning/](docs/planning/) | [user story](docs/planning/user-stories.md), [scope](docs/planning/scope.md), [backlog](docs/planning/backlog.md), [ERD](docs/planning/erd.md), [class diagram initial](docs/planning/class-diagram-initial.md), [catatan keputusan](docs/planning/catatan-keputusan.md), wireframe |
+| [docs/architecture/](docs/architecture/) | [class diagram as-built](docs/architecture/class-diagram-as-built.md), [ADR-001 anti-oversell](docs/architecture/adr-001-mekanisme-anti-oversell.md), [ADR-002 otorisasi SO](docs/architecture/adr-002-otorisasi-sales-order.md) |
+| [docs/quality/](docs/quality/) | [refactor log](docs/quality/refactor-log.md) (R-01…R-03), [audit SRP](docs/quality/srp-audit.md), [tech-debt](docs/quality/tech-debt.md), [static analysis](docs/quality/static-analysis.md) |
+| [docs/testing/](docs/testing/) | [skenario & hasil test](docs/testing/hasil-test.md) per slice, termasuk known bugs |
 
 ## Penggunaan AI
 
