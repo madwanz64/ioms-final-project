@@ -9,14 +9,17 @@
 //   node docs/testing/tools/ui-check.mjs docs/testing/screenshots
 // Path Chrome di bawah (CHROME) sesuaikan bila berbeda.
 // Uji UI di Chrome sungguhan (headless): responsif 360px & desktop, Fetch API, console error,
+// Uji UI di Chrome sungguhan (headless): responsif 360px & desktop, Fetch API, console error,
 // dan screenshot bukti UI-01/VIEW-01. Menguji aplikasi Docker di http://localhost:8080.
 import puppeteer from 'puppeteer-core';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 
 const BASE = 'http://localhost:8080';
 const OUT = process.argv[2];
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 mkdirSync(OUT, { recursive: true });
+// Hapus hasil run sebelumnya: bila script gagal di tengah, tidak ada hasil basi yang terbaca sebagai hasil baru.
+rmSync(`${OUT}/../ui-check-result.json`, { force: true });
 
 const VIEWPORTS = {
   desktop: { width: 1366, height: 768 },
@@ -50,6 +53,10 @@ const PAGES = [
   ['19-profil', 'sales', '/profile'],
   ['20-error-403', 'sales', '/users'],
   ['21-error-404', 'admin', '/products/TIDAK-ADA'],
+  ['23-transfer-daftar', 'warehouse', '/stock-transfers'],
+  ['24-transfer-form', 'warehouse', '/stock-transfers/create'],
+  ['25-po-detail-draft-warehouse', 'warehouse', '/purchase-orders/8'],
+  ['26-transfer-sales-403', 'sales', '/stock-transfers'],
 ];
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--lang=id-ID'] });
@@ -119,8 +126,8 @@ const fetchChecks = [];
   await page.$eval('[name="items[0][qty]"]', (el) => el.dispatchEvent(new Event('change', { bubbles: true })));
   await page.waitForFunction(() => /Stok tersedia/.test(document.querySelector('[data-line-stock]')?.textContent ?? ''), { timeout: 5000 });
   const hint = await page.$eval('[data-line-stock]', (el) => ({ text: el.textContent, insufficient: el.classList.contains('insufficient') }));
-  const priceText = await page.$eval('[data-line-price-text]', (el) => el.textContent);
-  fetchChecks.push({ check: 'Form SO: petunjuk stok SKU-0006 @ Gudang Jakarta, qty 5', expected: 'Stok tersedia: 2 pcs + ditandai kurang', actual: `${hint.text} | insufficient=${hint.insufficient} | harga=${priceText}`, pass: hint.text.trim() === 'Stok tersedia: 2 pcs' && hint.insufficient });
+  const priceText = await page.$eval('[name="items[0][price]"]', (el) => el.value);
+  fetchChecks.push({ check: 'Form SO: petunjuk stok SKU-0006 @ Gudang Jakarta, qty 5', expected: 'Stok tersedia: 2 pcs + ditandai kurang', actual: `${hint.text} | insufficient=${hint.insufficient} | harga=${priceText}`, pass: hint.text.trim() === 'Stok tersedia: 2 pcs' && hint.insufficient && priceText === '1850000' });
 
   await page.select('[name="warehouse_id"]', '2');
   await page.$eval('[name="warehouse_id"]', (el) => el.dispatchEvent(new Event('change', { bubbles: true })));
@@ -131,6 +138,17 @@ const fetchChecks = [];
   const rows = await page.$$eval('tr[data-line]', (trs) => trs.map((tr) => tr.querySelector('select').name));
   fetchChecks.push({ check: 'Tambah baris item (re-index nama field)', expected: 'items[3][sku] ada', actual: rows.join(', '), pass: rows.includes('items[3][sku]') });
   await page.screenshot({ path: `${OUT}/desktop-22-so-form-fetch-stok.jpg`, type: 'jpeg', quality: 72, fullPage: true });
+
+  // K-07: harga dari form tersimpan (Sales mengubah harga katalog).
+  await page.goto(BASE + '/sales-orders/create', { waitUntil: 'networkidle0' });
+  await page.select('[name="customer_id"]', '1');
+  await page.select('[name="warehouse_id"]', '1');
+  await page.select('[name="items[0][sku]"]', 'SKU-0003');
+  await page.type('[name="items[0][qty]"]', '2');
+  await page.$eval('[name="items[0][price]"]', (el) => { el.value = '600000'; });
+  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0' }), page.click('button[type="submit"].primary')]);
+  const soPrice = await page.$$eval('table.data-table td.num', (tds) => tds.map((td) => td.textContent.trim()));
+  fetchChecks.push({ check: 'K-07: SO disimpan dengan harga dari form (600.000, katalog 650.000)', expected: 'Rp 600.000 di detail', actual: page.url() + ' | ' + soPrice.join(' / '), pass: soPrice.includes('Rp 600.000') });
 
   await page.goto(BASE + '/products/SKU-0001', { waitUntil: 'networkidle0' });
   await page.click('[data-refresh-stock]');
@@ -144,6 +162,32 @@ const fetchChecks = [];
   await page.waitForSelector('.toast', { timeout: 5000 });
   const toast = await page.$eval('.toast', (el) => el.textContent);
   fetchChecks.push({ check: 'Fetch setelah session dihapus', expected: 'toast "Sesi berakhir..." (401 JSON, bukan halaman login)', actual: toast, pass: /Sesi berakhir/.test(toast) });
+  await context.close();
+}
+
+// ---- K-08: transfer stok lewat browser (Warehouse) ----
+{
+  const context = await browser.createBrowserContext();
+  const page = await context.newPage();
+  await page.setViewport(VIEWPORTS.desktop);
+  await login(page, 'warehouse');
+  const draftPo = await (await page.goto(BASE + '/purchase-orders/8', { waitUntil: 'networkidle0' })).text();
+  fetchChecks.push({ check: 'K-01: Warehouse melihat tombol "Tandai Ordered" pada PO Draft', expected: 'tombol ada', actual: /Tandai Ordered/.test(draftPo) ? 'ada' : 'tidak ada', pass: /Tandai Ordered/.test(draftPo) });
+  await page.goto(BASE + '/stock-transfers/create', { waitUntil: 'networkidle0' });
+  await page.select('[name="from_warehouse_id"]', '1');
+  await page.select('[name="to_warehouse_id"]', '2');
+  await page.select('[name="items[0][sku]"]', 'SKU-0004');
+  await page.type('[name="items[0][qty]"]', '2');
+  await page.$eval('[name="items[0][qty]"]', (el) => el.dispatchEvent(new Event('change', { bubbles: true })));
+  await page.waitForFunction(() => /Stok tersedia/.test(document.querySelector('[data-line-stock]')?.textContent ?? ''), { timeout: 5000 });
+  const hint = await page.$eval('[data-line-stock]', (el) => el.textContent);
+  fetchChecks.push({ check: 'K-08: form transfer menampilkan stok gudang asal (SKU-0004 @ Jakarta)', expected: 'Stok tersedia: 5 rim', actual: hint, pass: hint.trim() === 'Stok tersedia: 5 rim' });
+  await page.screenshot({ path: OUT + '/desktop-27-transfer-form-isi.jpg', type: 'jpeg', quality: 72, fullPage: true });
+  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle0' }), page.click('button[type="submit"].primary')]);
+  const detail = await page.$$eval('tbody tr', (trs) => trs.map((tr) => tr.textContent.replace(/\s+/g, ' ').trim()));
+  const ledgerRows = detail.filter((t) => /Issue|Receipt/.test(t));
+  fetchChecks.push({ check: 'K-08: transfer 2 rim Jakarta -> Surabaya tersimpan', expected: 'Issue -2 Jakarta + Receipt +2 Surabaya', actual: page.url() + ' | ' + ledgerRows.join(' || '), pass: ledgerRows.length === 2 && /Gudang Jakarta Issue -2/.test(ledgerRows[0]) && /Gudang Surabaya Receipt \+2/.test(ledgerRows[1]) });
+  await page.screenshot({ path: OUT + '/desktop-28-transfer-detail.jpg', type: 'jpeg', quality: 72, fullPage: true });
   await context.close();
 }
 

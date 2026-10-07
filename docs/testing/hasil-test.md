@@ -389,3 +389,45 @@ demo (rinciannya di [tech-debt.md](../quality/tech-debt.md)):
 | 3 | Di layar 360px, kolom "Terima Sekarang" pada detail PO baru terlihat setelah tabel digeser ke samping | Bisa dipakai, tetapi kurang nyaman | baru dicatat |
 | 4 | Konfirmasi batal/tolak/goods issue memakai dialog bawaan browser | Kosmetik | tech-debt #15 |
 | 5 | Gambar produk lama tidak dihapus saat diganti | Disk bertambah | tech-debt #1 |
+
+---
+
+## Slice 10 — Jawaban trainer K-01…K-08 (2026-10-07)
+
+| Keputusan | Perubahan | Bukti |
+|---|---|---|
+| K-01 | Warehouse Staff boleh menandai PO Ordered | Browser: tombol "Tandai Ordered" tampil untuk Warehouse pada PO Draft ✅ |
+| K-03 | `purchase_orders.created_by` | Unit: pembuat tercatat; integration: `createdByName` = "Rudi Hartono" ✅ |
+| K-07 | Harga jual SO dari form | Unit: 2.300 dipakai (katalog 2.500), 3 harga tidak valid ditolak; mutation (abaikan harga form) → 4 test gagal; browser: SO disimpan Rp 600.000 (katalog 650.000) ✅ |
+| K-08 | Transfer stok antar-gudang | lihat di bawah |
+| K-02, K-04, K-06 | sesuai implementasi | tidak ada perubahan |
+
+### Transfer stok (K-08)
+
+| Jenis | Skenario | Hasil |
+|---|---|---|
+| Unit | 2 item Jakarta → Surabaya | 4 baris ledger (Issue/Receipt per item, ref TRF, oleh Rudi), satu transaksi ✅ |
+| Unit | Total stok semua gudang | tidak berubah ✅ |
+| Unit | Item kedua kurang stok | seluruh transfer ditolak, tidak ada ledger, stok tetap ✅ |
+| Unit | Gudang sama / gudang nonaktif / tanpa item | 422 dengan pesan per field ✅ |
+| Integration (MySQL) | Transfer 4 rim SKU-0004 | Jakarta 5 → 1, Surabaya 3 → 7; total tetap; **semua** baris stok = SUM(ledger); nomor `TRF-2026-NNNN` ✅ |
+| Integration (MySQL) | Transfer 6 dari stok 5 | ditolak "tersedia 5, dibutuhkan 6"; **dokumen transfer ikut dibatalkan**; jumlah ledger tetap ✅ |
+| Mutation | `ROLLBACK TO SAVEPOINT` dimatikan | test pembatalan dokumen gagal → dikembalikan ✅ |
+| Database | INSERT transfer gudang asal = tujuan | ditolak `CHECK chk_transfer_different_warehouse` ✅ |
+| Browser | Form transfer: gudang asal Jakarta + SKU-0004 | petunjuk "Stok tersedia: 5 rim" (Fetch API) ✅ |
+| Browser | Simpan transfer 2 rim | detail: Issue −2 Jakarta + Receipt +2 Surabaya ✅ |
+| Browser | Sales membuka `/stock-transfers` | 403 ✅ |
+
+Total otomatis: **169 test, 440 assertion, lulus** (lokal & di container Docker setelah volume
+database dibuat ulang dengan skema baru). PHPStan level 6: 0 error.
+Uji browser: responsif **50/50** (25 halaman × desktop/360px), fungsional **9/9**.
+
+**Temuan selama slice ini:**
+- `Database::transactional` bersarang tidak membatalkan pekerjaannya sendiri saat gagal.
+  Diperbaiki dengan SAVEPOINT (lihat ADR-001, catatan lanjutan).
+- Tabel kecil di panel dua kolom menyembunyikan kolom terakhir (Qty) walau di desktop.
+  Diperbaiki dengan `.two-col table.data-table{min-width:0}`.
+- Alat uji browser sempat crash di tengah jalan karena `$$` di teks pengganti
+  `String.replace()` JavaScript dibaca sebagai satu `$`. Hasil "lulus" pertama ternyata berasal
+  dari file hasil lama. Alat kini menghapus hasil lama di awal run, dan run diulang sampai lulus
+  dengan output lengkap.

@@ -83,3 +83,18 @@ Memakai **A sebagai mekanisme utama, B dan CHECK constraint sebagai lapis pengam
   - Conditional update menolak pengurangan melebihi stok walaupun lock dilewati.
 - Simulasi thread/paralel sungguhan tidak dipakai (brief §3.1 tidak mewajibkan). Skenario
   terkontrol dengan dua koneksi PDO menunjukkan perilaku yang sama secara deterministik.
+
+## Catatan lanjutan (2026-10-07)
+
+Transfer stok antar-gudang (K-08) dibangun **tanpa mengubah `StockService` maupun
+`MySqlStockRepository`**: `StockTransferService` cukup membuat dua `StockChange` per item
+(Issue di gudang asal, Receipt di gudang tujuan). Kedua baris stok ikut dikunci dalam urutan
+yang sama (SKU lalu gudang), sehingga dua transfer yang berlawanan arah pada produk yang sama
+tidak bisa saling deadlock, dan transfer yang bersamaan dengan goods issue tetap tidak bisa
+membuat stok negatif.
+
+Saat menulis integration test transfer, ditemukan bahwa `Database::transactional` yang
+dipanggil di dalam transaksi lain hanya "ikut" transaksi luar, sehingga kegagalan blok dalam
+tidak membatalkan tulisannya sendiri. Kini blok bersarang memakai **SAVEPOINT** dan
+`ROLLBACK TO SAVEPOINT` (commit `2a42d5e`), sehingga jaminan "semua atau tidak sama sekali"
+berlaku di setiap tingkat.

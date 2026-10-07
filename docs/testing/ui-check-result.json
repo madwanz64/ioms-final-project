@@ -190,6 +190,42 @@
       "offenders": []
     },
     {
+      "vp": "desktop",
+      "name": "23-transfer-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "24-transfer-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "25-po-detail-draft-warehouse",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
+      "vp": "desktop",
+      "name": "26-transfer-sales-403",
+      "status": 403,
+      "pageScrollsX": false,
+      "scrollWidth": 1366,
+      "vw": 1366,
+      "offenders": []
+    },
+    {
       "vp": "mobile",
       "name": "01-login",
       "status": 200,
@@ -377,13 +413,49 @@
       "scrollWidth": 360,
       "vw": 360,
       "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "23-transfer-daftar",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "24-transfer-form",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "25-po-detail-draft-warehouse",
+      "status": 200,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
+    },
+    {
+      "vp": "mobile",
+      "name": "26-transfer-sales-403",
+      "status": 403,
+      "pageScrollsX": false,
+      "scrollWidth": 360,
+      "vw": 360,
+      "offenders": []
     }
   ],
   "fetchChecks": [
     {
       "check": "Form SO: petunjuk stok SKU-0006 @ Gudang Jakarta, qty 5",
       "expected": "Stok tersedia: 2 pcs + ditandai kurang",
-      "actual": "Stok tersedia: 2 pcs | insufficient=true | harga=Rp 1.850.000",
+      "actual": "Stok tersedia: 2 pcs | insufficient=true | harga=1850000",
       "pass": true
     },
     {
@@ -399,9 +471,15 @@
       "pass": true
     },
     {
+      "check": "K-07: SO disimpan dengan harga dari form (600.000, katalog 650.000)",
+      "expected": "Rp 600.000 di detail",
+      "actual": "http://localhost:8080/sales-orders/17 | 2 pcs / Rp 600.000 / Rp 1.200.000",
+      "pass": true
+    },
+    {
       "check": "Detail produk: tombol Muat ulang stok",
       "expected": "status \"Diperbarui ...\"",
-      "actual": "Diperbarui 11.23.42 — di bawah reorder point.",
+      "actual": "Diperbarui 13.35.03 — di bawah reorder point.",
       "pass": true
     },
     {
@@ -409,12 +487,32 @@
       "expected": "toast \"Sesi berakhir...\" (401 JSON, bukan halaman login)",
       "actual": "Sesi berakhir, silakan login ulang.",
       "pass": true
+    },
+    {
+      "check": "K-01: Warehouse melihat tombol \"Tandai Ordered\" pada PO Draft",
+      "expected": "tombol ada",
+      "actual": "ada",
+      "pass": true
+    },
+    {
+      "check": "K-08: form transfer menampilkan stok gudang asal (SKU-0004 @ Jakarta)",
+      "expected": "Stok tersedia: 5 rim",
+      "actual": "Stok tersedia: 5 rim",
+      "pass": true
+    },
+    {
+      "check": "K-08: transfer 2 rim Jakarta -> Surabaya tersimpan",
+      "expected": "Issue -2 Jakarta + Receipt +2 Surabaya",
+      "actual": "http://localhost:8080/stock-transfers/1 | 07 Oct 2026 13:35 SKU-0004 Gudang Jakarta Issue -2 || 07 Oct 2026 13:35 SKU-0004 Gudang Surabaya Receipt +2",
+      "pass": true
     }
   ],
   "consoleErrors": [
     "[desktop/sales] Failed to load resource: the server responded with a status of 403 (Forbidden)",
     "[desktop/admin] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[desktop/sales] Failed to load resource: the server responded with a status of 403 (Forbidden)",
     "[mobile/sales] Failed to load resource: the server responded with a status of 403 (Forbidden)",
-    "[mobile/admin] Failed to load resource: the server responded with a status of 404 (Not Found)"
+    "[mobile/admin] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[mobile/sales] Failed to load resource: the server responded with a status of 403 (Forbidden)"
   ]
 }

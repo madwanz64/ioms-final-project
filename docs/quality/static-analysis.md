@@ -52,6 +52,7 @@ karena skema database sudah menjamin tipe kolom.
 |---|---|---|
 | 2026-10-02 | 0 error | Slice 1 (auth + produk). Level 8: 1 jenis temuan (kontrak Router). |
 | 2026-10-07 | 0 error | Seluruh fitur §2. Level 8 menemukan 1 temuan baru di `UserService::create()` (`Role\|null` ke konstruktor `User`). Aman di runtime karena `throwIfInvalid()`, tetapi invariannya kini dinyatakan eksplisit di kode, jadi temuan tertutup. Tersisa hanya pola Router. |
+| 2026-10-07 (sore) | 0 error | Setelah perubahan K-01/K-03/K-07 dan fitur transfer (K-08): tetap 0 error, 138+ file. Output mentah: [phpstan-output.txt](../testing/phpstan-output.txt). |
 
 Selama pengembangan, PHPStan juga menangkap masalah nyata sebelum masuk commit, antara lain:
 - anotasi `array<string,string>` untuk input `receive[12]`, padahal PHP mengubah key numerik

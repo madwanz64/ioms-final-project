@@ -32,16 +32,20 @@
 | B-20 | Docker Compose + uji dari clone bersih | §5.1, §5.2 | ✅ | `630fd50`, `1f6e59f` |
 | B-21 | Profil sendiri | §1.2 | ✅ | `eed3abe` |
 | B-22 | Refactor R-03 `RowMapper` | DESIGN-03 | ✅ | `842dc18` |
-| B-23 | Static analysis report, class diagram as-built, SRP audit, dokumen planning | TEST-03, DESIGN-01/03 | ✅ | (commit dokumen 2026-10-07) |
+| B-23 | Static analysis report, class diagram as-built, SRP audit, dokumen planning | TEST-03, DESIGN-01/03 | ✅ | `cc74e9f` |
+| B-24 | Warehouse boleh menandai PO Ordered | K-01 | ✅ | `66940c9` |
+| B-25 | Pembuat PO tercatat (`created_by`) | K-03 | ✅ | `7efc322` |
+| B-26 | Harga jual SO dari form | K-07 | ✅ | `00b843f` |
+| B-27 | Transfer stok antar-gudang (+ SAVEPOINT untuk transaksi bersarang) | K-08 | ✅ | `810a8b5`, `2a42d5e` |
 
 ## Sisa sebelum submission
 
 | # | Item | Requirement | Status | Catatan |
 |---|---|---|---|---|
-| B-30 | Screenshot desktop & 360px (login, dashboard, daftar, detail, form; berisi data & kosong) | UI-01, VIEW-01 | ⏳ | Perlu diambil manual di browser |
-| B-31 | Cek manual Fetch API di browser (petunjuk stok form SO, tombol muat ulang stok) | API-01 | ⏳ | Belum bisa diuji otomatis di sesi pengembangan |
+| B-30 | Screenshot desktop & 360px (login, dashboard, daftar, detail, form; berisi data & kosong) | UI-01, VIEW-01 | ✅ | 47 screenshot otomatis (Chrome headless), `docs/testing/screenshots/` |
+| B-31 | Cek Fetch API di browser (petunjuk stok form SO/transfer, tombol muat ulang stok) | API-01 | ✅ | Diuji di Chrome sungguhan, lihat hasil-test slice 9–10 |
 | B-32 | `docs/quality/critique.md` | DESIGN-04 | ⏳ | Menunggu cuplikan kode dari assessor |
-| B-33 | Konfirmasi interpretasi K-01…K-04, K-06, K-07 ke trainer | §9 no. 12 | ⏳ | K-05 sudah dikonfirmasi |
+| B-33 | Konfirmasi interpretasi K-01…K-07 ke trainer | §9 no. 12 | ✅ | Dijawab 2026-10-07; K-01, K-03, K-07 mengubah implementasi |
 | B-34 | Uji akhir dari folder bersih, lalu tag release final | §5.1, §7 | ⏳ | |
 
 ## Kandidat bonus (§4.4) — hanya setelah semua wajib stabil

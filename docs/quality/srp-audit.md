@@ -64,6 +64,9 @@ perubahan.
   `SalesOrderPolicy::canReview()`. `StockService` dan seluruh test stok tidak tersentuh.
 - **Goods issue SO** dibangun setelah PO tanpa mengubah `StockService` sama sekali; SO cukup
   membuat `StockChange` dengan delta negatif.
+- **Transfer antar-gudang (K-08)** dibangun tanpa mengubah `StockService`: layanan baru
+  `StockTransferService` cukup menyusun `StockChange` Issue + Receipt. Seandainya rencana awal
+  (`StockService::receive/issue`) dipakai, `StockService` harus diubah lagi untuk alasan ketiga.
 - Mutation test pada `FOR UPDATE` dan guard SQL (slice 3) hanya menyentuh
   `MySqlStockRepository`, dan test yang gagal hanya test stok, bukan test alur PO/SO.
 

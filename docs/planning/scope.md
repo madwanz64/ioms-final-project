@@ -9,7 +9,7 @@
 |---|---|---|
 | Autentikasi & user | Login/logout berbasis session, 3 role, manajemen user oleh Admin, profil sendiri | ✅ |
 | Master data | Produk (+gambar), kategori, gudang, supplier, customer — nonaktif, bukan hapus | ✅ |
-| Stok multi-gudang | Baris stok per produk per gudang; stok hanya berubah lewat ledger | ✅ |
+| Stok multi-gudang | Baris stok per produk per gudang; stok hanya berubah lewat ledger; transfer antar-gudang (K-08) | ✅ |
 | Purchase Order | Draft → Ordered → PartiallyReceived/Received, Cancelled; goods receipt transaksional | ✅ |
 | Sales Order | Draft → PendingApproval → Approved → Fulfilled / Cancelled; approval di server; goods issue anti-oversell | ✅ |
 | Daftar & laporan | Search/filter/sort/pagination, dashboard 3 role, CSV, empty state | ✅ |
@@ -25,7 +25,7 @@ end-to-end test (browser).
 
 Hal lain yang **sengaja tidak dibuat** karena tidak diminta brief:
 - retur barang / pembatalan PO yang sudah menerima barang (K-02);
-- edit PO/SO Draft (tech-debt #10), diskon atau harga per order (K-07);
+- edit PO/SO Draft (tech-debt #10);
 - reservasi stok saat SO disetujui (tech-debt #14);
 - registrasi publik (dilarang §2.1);
 - fitur bonus §4.4 (email simulasi, audit trail master data, grafik). Bisa dikerjakan setelah

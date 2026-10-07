@@ -29,7 +29,7 @@ Format: *Sebagai <peran>, saya ingin <tujuan>, agar <manfaat>.*
 
 | ID | Story | Kriteria penerimaan | Req | Bukti |
 |---|---|---|---|---|
-| US-20 | Sebagai Sales, saya ingin membuat Sales Order dari katalog dan stok yang tersedia. | Status Draft, harga dari katalog, qty dicek terhadap stok gudang asal (petunjuk stok via API). | SO-01, API-01 | `SalesOrderServiceTest`, slice 4 #4–#5 |
+| US-20 | Sebagai Sales, saya ingin membuat Sales Order dari katalog dan stok yang tersedia. | Status Draft; harga jual per item dari form, default harga katalog (K-07); qty dicek terhadap stok gudang asal (petunjuk stok via API). | SO-01, API-01 | `SalesOrderServiceTest`, slice 4 #4–#5, slice 10 |
 | US-21 | Sebagai Sales, saya ingin mengajukan order agar diproses Admin. | Draft → PendingApproval; tidak bisa menyetujui order sendiri. | SO-01 | slice 4 #7–#8 |
 | US-22 | Sebagai Sales, saya ingin melihat ringkasan dan laporan order **milik saya** saja. | Daftar, dashboard, dan CSV dibatasi `created_by` di query; order orang lain 404. | DASH-01, REPORT-01 | `SalesOrderFulfillmentTest`, slice 4 #1, #3 |
 
@@ -37,11 +37,12 @@ Format: *Sebagai <peran>, saya ingin <tujuan>, agar <manfaat>.*
 
 | ID | Story | Kriteria penerimaan | Req | Bukti |
 |---|---|---|---|---|
-| US-30 | Sebagai Warehouse Staff, saya ingin mengusulkan Purchase Order saat stok rendah. | PO Draft; Admin yang menandai Ordered (K-01). | PO-01 | `PurchaseOrderServiceTest` |
+| US-30 | Sebagai Warehouse Staff, saya ingin membuat dan memesan Purchase Order saat stok rendah. | Warehouse boleh membuat PO dan menandainya Ordered (K-01); pembuat PO tercatat (K-03); pembatalan oleh Admin. | PO-01 | `PurchaseOrderServiceTest`, `PurchaseOrderReceiptTest`, slice 10 |
 | US-31 | Sebagai Warehouse Staff, saya ingin mencatat penerimaan barang, termasuk sebagian. | Stok bertambah + ledger Receipt dalam satu transaksi; sisa qty tercatat; status Partially/Received. | PO-01, ARCH-02 | `PurchaseOrderReceiptTest`, slice 3 |
 | US-32 | Sebagai Warehouse Staff, saya ingin memproses goods issue SO yang Approved tanpa risiko oversell. | Ditolak bila stok kurang; aman bila dua proses berjalan bersamaan. | SO-01, ARCH-02 | `StockConcurrencyTest`, slice 4 #15 |
 | US-33 | Sebagai Warehouse Staff, saya ingin melihat antrean penerimaan/pengiriman dan produk low-stock. | Antrean PO Ordered/PartiallyReceived dan SO Approved. | DASH-01 | slice 5 #3 |
 | US-34 | Sebagai Warehouse Staff, saya ingin ringkasan harian produk di bawah reorder point dari script terjadwal. | `php scripts/check-low-stock.php` berjalan di luar web, bisa via `docker compose exec`. | JOB-01 | `LowStockReportTest`, slice 6–7 |
+| US-35 | Sebagai Warehouse Staff, saya ingin memindahkan stok dari satu gudang ke gudang lain. | Gudang asal ≠ tujuan & aktif; Issue asal + Receipt tujuan dalam satu transaksi; ditolak seluruhnya bila stok asal kurang; total stok semua gudang tetap. | K-08, ARCH-02 | `StockTransferServiceTest`, `StockTransferTest`, slice 10 |
 
 ## Lintas peran (non-fungsional)
 

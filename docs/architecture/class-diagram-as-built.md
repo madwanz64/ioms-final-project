@@ -1,6 +1,6 @@
 # Class Diagram — As-Built (DESIGN-01)
 
-Diagram ini menggambarkan kode final per **2026-10-07** (commit setelah refactor R-03).
+Diagram ini menggambarkan kode final per **2026-10-07** (diperbarui setelah jawaban trainer K-01…K-08: transfer stok, pembuat PO, harga SO dari form).
 Diagram rencana awal ada di [`docs/planning/class-diagram-initial.md`](../planning/class-diagram-initial.md).
 
 **Cara diagram ini dibuat:** setiap panah dependency diambil dari **parameter konstruktor**
@@ -67,13 +67,18 @@ semua modul berikut.
 
 ---
 
-## 2. Order & stok — PO, SO, goods receipt/issue (PO-01, SO-01, ARCH-02)
+## 2. Order & stok — PO, SO, transfer, goods receipt/issue (PO-01, SO-01, K-08, ARCH-02)
 
 ```mermaid
 classDiagram
     direction TB
     class PurchaseOrderController
     class SalesOrderController
+    class StockTransferController
+    class StockTransferService
+    class StockTransferRepositoryInterface
+    <<interface>> StockTransferRepositoryInterface
+    class MySqlStockTransferRepository
     class PurchaseOrderService
     class SalesOrderService
     class StockService {
@@ -140,6 +145,16 @@ classDiagram
     MySqlSalesOrderRepository ..|> SalesOrderRepositoryInterface
     MySqlStockRepository ..|> StockRepositoryInterface
     InMemoryStockRepository ..|> StockRepositoryInterface
+
+    StockTransferController --> StockTransferService
+    StockTransferService ..> StockTransferRepositoryInterface
+    StockTransferService ..> WarehouseRepositoryInterface
+    StockTransferService ..> ProductRepositoryInterface
+    StockTransferService ..> StockRepositoryInterface : riwayat ledger
+    StockTransferService ..> TransactionManagerInterface
+    StockTransferService --> StockService
+    StockTransferService *-- OrderLineValidator
+    MySqlStockTransferRepository ..|> StockTransferRepositoryInterface
 ```
 
 Inti ARCH-02 ([ADR-001](adr-001-mekanisme-anti-oversell.md)) ada di dua kelas:
@@ -148,7 +163,7 @@ Inti ARCH-02 ([ADR-001](adr-001-mekanisme-anti-oversell.md)) ada di dua kelas:
 - `MySqlStockRepository`: `lockQuantities()` dengan `FOR UPDATE`, dan `recordMovement()`
   yang menulis ledger + stok dengan guard `quantity + delta >= 0`.
 
-Batas transaksi dimiliki `PurchaseOrderService` / `SalesOrderService` lewat
+Batas transaksi dimiliki `PurchaseOrderService` / `SalesOrderService` / `StockTransferService` lewat
 `TransactionManagerInterface`. Aturan otorisasi SO ada di `SalesOrderPolicy`
 ([ADR-002](adr-002-otorisasi-sales-order.md)).
 
@@ -303,6 +318,7 @@ Supplier dan customer disatukan menjadi `Party` + `PartyType` karena field-nya i
 | Transaksi | tidak digambarkan | `TransactionManagerInterface` ← `PdoTransactionManager` / `ImmediateTransactionManager` |
 | Otorisasi SO | di `SalesOrderService` | `SalesOrderPolicy`, dipakai service (menegakkan) dan view (tombol) |
 | Laporan | `ReportController --> DashboardService` | `ReportController --> ReportService`; `DashboardService --> ReportService`; keduanya `..> ReportRepositoryInterface` |
+| Transfer antar-gudang | tidak ada | `StockTransferService` (K-08) memakai ulang `StockService::apply` tanpa mengubahnya: Issue asal + Receipt tujuan per item |
 | Supplier/Customer | dua repository terpisah (tersirat) | satu `PartyRepositoryInterface` + `PartyType` |
 | API JSON | `ProductApiController --> ProductService` | sama (sesuai rencana) |
 | Validasi | di tiap service | `InputValidator` (R-01), `OrderLineValidator` (R-02) |
