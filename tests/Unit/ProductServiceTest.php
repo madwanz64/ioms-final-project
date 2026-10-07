@@ -90,6 +90,32 @@ final class ProductServiceTest extends TestCase
         self::assertSame(0, $product->reorderPoint);
     }
 
+    #[DataProvider('invalidUnits')]
+    public function testUnitMustStartWithALetter(string $unit): void
+    {
+        try {
+            $this->service->create($this->validInput(['unit' => $unit]), null);
+            self::fail('ValidationException seharusnya dilempar.');
+        } catch (ValidationException $e) {
+            self::assertArrayHasKey('unit', $e->errors);
+        }
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function invalidUnits(): array
+    {
+        return ['angka negatif' => ['-55'], 'angka saja' => ['10'], 'simbol' => ['#pcs'], 'terlalu panjang' => [str_repeat('a', 21)]];
+    }
+
+    public function testCommonUnitsAreAccepted(): void
+    {
+        foreach (['pcs', 'box', 'rim', 'm2', 'box/12', 'Lusin'] as $unit) {
+            self::assertSame($unit, $this->service->create($this->validInput(['sku' => 'NEW-' . strtoupper(bin2hex($unit)), 'unit' => $unit]), null)->unit);
+        }
+    }
+
     #[DataProvider('invalidSkus')]
     public function testSkuFormatIsValidated(string $sku): void
     {
